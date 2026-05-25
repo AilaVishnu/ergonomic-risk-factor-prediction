@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Office lock files
+~$*.pptx
+~$*.docx
+~$*.xlsx
+
+# Temp / backup
+*.bak
+*.tmp
+*.log
+
+# Notebook scratch
+notebooks/Untitled*.ipynb
