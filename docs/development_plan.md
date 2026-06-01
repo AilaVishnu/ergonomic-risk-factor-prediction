@@ -72,9 +72,11 @@ NASA-TLX strings → 0/25/50/75/100); missing values. Output `data/processed/cle
 Encode bins → ordinal **and** to numeric midpoints for the work-exposure variables that
 Phase 3 formulas need (e.g. `Working Hours per Day`: `<3` → 2, `3-5` → 4, `6-8` → 7,
 `>8` → 9; same for `Number of deliveries per day`, `Working days per week`, `Rest break`,
-`Age`, `Monthly income`). Derive `workload_score` (reverse Performance, mean of 6 NASA-TLX),
-`fatigue_score` (mean of Borg items), `force_exertion` (Borg lifting item), `vehicle_rank`,
-`carrying_contact_rank`, `vibration_index`, `discomfort` target (Nordic). Output `model_ready.csv`.
+`Age`, `Monthly income`). **Binary-encode all Yes/No items → 1/0** (9 Nordic body-area
+questions, 4 seven-day discomfort items, the 5 other Yes/No items). Derive `workload_score`
+(reverse Performance, mean of 6 NASA-TLX), `fatigue_score` (mean of Borg items),
+`force_exertion` (Borg lifting item), `vehicle_rank`, `carrying_contact_rank`,
+`vibration_index`, `discomfort` target (Nordic). Output `model_ready.csv`.
 
 **Phase 3 — Stage 1: risk-factor scoring** → `src/03_risk_scoring.py`
 Compute & bin to Low/Med/High:
@@ -82,7 +84,8 @@ Compute & bin to Low/Med/High:
   hours × vehicle weight; optional ISO 2631 A(8) refine) · Contact Stress (carrying rank ×
   hours, factor in age) · **Duration** (continuous riding/posture duration from working hours).
 - **Deferred (1):** **Posture** — needs RULA & QEC data (under process). Placeholder column.
-Output `risk_profile.csv`.
+Output `risk_profile.csv` with **both** the string label (`Low` / `Medium` / `High`) **and**
+the integer code (`0` / `1` / `2`) for each risk factor, so Phase 6 can use the ordinal form.
 
 **Phase 4 — EDA** → `src/04_eda.py`
 Demographics, risk-factor distributions, discomfort prevalence by body area/group → `outputs/figures/`.
