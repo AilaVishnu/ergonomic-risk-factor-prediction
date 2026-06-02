@@ -81,7 +81,7 @@ questions, 4 seven-day discomfort items, the 5 other Yes/No items). Derive `work
 **Phase 3 — Stage 1: risk-factor scoring** → `src/03_risk_scoring.py`
 Compute & bin to Low/Med/High:
 - **Doable now (5):** Force (Borg) · Repetition (deliveries÷hours) · Vibration (working
-  hours × vehicle weight; optional ISO 2631 A(8) refine) · Contact Stress (carrying rank ×
+  hours × vehicle weight; · Contact Stress (carrying rank ×
   hours, factor in age) · **Duration** (continuous riding/posture duration from working hours).
 - **Deferred (1):** **Posture** — needs RULA & QEC data (under process). Placeholder column.
 Output `risk_profile.csv` with **both** the string label (`Low` / `Medium` / `High`) **and**
