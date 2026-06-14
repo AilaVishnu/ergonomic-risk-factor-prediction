@@ -1,0 +1,21 @@
+test,finding,effect,p_value
+Chi-square,force risk associated with discomfort,"chi2=6.718, dof=2",0.0348
+Kruskal-Wallis,job_duration_ord differs across Age groups,H=26.538,0.0
+Kruskal-Wallis,income_ord differs across Age groups,H=15.456,0.0015
+Kruskal-Wallis,fatigue_score differs across Age groups,H=11.016,0.0116
+Kruskal-Wallis,force_exertion differs across Age groups,H=8.046,0.0451
+Logistic regression,workload_score -> discomfort,OR=1.055 (95% CI 1.024-1.088),0.0005
+Logistic regression,age_ord -> discomfort,OR=3.583 (95% CI 1.697-7.564),0.0008
+Logistic regression,job_duration_ord -> discomfort,OR=2.886 (95% CI 1.539-5.414),0.001
+Logistic regression,fatigue_score -> discomfort,OR=1.428 (95% CI 1.133-1.8),0.0026
+Logistic regression,income_ord -> discomfort,OR=2.003 (95% CI 1.253-3.202),0.0037
+Logistic regression,education_ord -> discomfort,OR=0.33 (95% CI 0.116-0.937),0.0373
+Logistic regression,deliveries_num -> discomfort,OR=1.051 (95% CI 1.001-1.103),0.0454
+Mann-Whitney,age_ord differs between pain vs no-pain,median 0.0 vs 1.0,0.0001
+Mann-Whitney,job_duration_ord differs between pain vs no-pain,median 0.0 vs 1.0,0.0002
+Mann-Whitney,workload_score differs between pain vs no-pain,median 41.7 vs 50.0,0.0007
+Mann-Whitney,income_ord differs between pain vs no-pain,median 1.0 vs 2.0,0.0023
+Mann-Whitney,fatigue_score differs between pain vs no-pain,median 3.75 vs 4.585,0.0078
+Mann-Whitney,force_exertion differs between pain vs no-pain,median 3.0 vs 4.0,0.0247
+Mann-Whitney,education_ord differs between pain vs no-pain,median 2.0 vs 2.0,0.0305
+Mann-Whitney,deliveries_num differs between pain vs no-pain,median 15.0 vs 25.0,0.0413

@@ -1,0 +1,15 @@
+predictor,OR,CI_low,CI_high,p_value,significant
+workload_score,1.055,1.024,1.088,0.0005,True
+age_ord,3.583,1.697,7.564,0.0008,True
+job_duration_ord,2.886,1.539,5.414,0.001,True
+fatigue_score,1.428,1.133,1.8,0.0026,True
+income_ord,2.003,1.253,3.202,0.0037,True
+education_ord,0.33,0.116,0.937,0.0373,True
+deliveries_num,1.051,1.001,1.103,0.0454,True
+force_exertion,1.183,0.997,1.404,0.0537,False
+carrying_contact_rank,0.687,0.436,1.081,0.1043,False
+work_days_num,1.229,0.933,1.619,0.1423,False
+vibration_index,1.033,0.951,1.123,0.4395,False
+work_hours_num,1.073,0.88,1.308,0.484,False
+vehicle_rank,1.299,0.577,2.927,0.5278,False
+rest_break_num,0.992,0.965,1.02,0.5726,False

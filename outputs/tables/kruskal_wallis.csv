@@ -1,0 +1,9 @@
+feature,grouping,H_statistic,p_value,significant
+job_duration_ord,Age,26.538,0.0,True
+income_ord,Age,15.456,0.0015,True
+fatigue_score,Age,11.016,0.0116,True
+force_exertion,Age,8.046,0.0451,True
+workload_score,Age,7.058,0.0701,False
+deliveries_num,Age,3.385,0.336,False
+work_hours_num,Age,1.41,0.7032,False
+vibration_index,Age,0.484,0.9223,False
