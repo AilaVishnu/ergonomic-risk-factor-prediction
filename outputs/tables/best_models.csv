@@ -1,0 +1,7 @@
+target,best_model,cv_accuracy,cv_f1_macro,overfit_gap,saved_to
+force,LogReg,0.522,0.474,0.14,outputs\models\best_force.pkl
+repetition,XGBoost,0.697,0.646,0.303,outputs\models\best_repetition.pkl
+duration,XGBoost,1.0,1.0,0.0,outputs\models\best_duration.pkl
+vibration,XGBoost,0.516,0.51,0.484,outputs\models\best_vibration.pkl
+contact_stress,RandomForest,0.588,0.577,0.412,outputs\models\best_contact_stress.pkl
+posture,RandomForest,0.891,0.765,0.109,outputs\models\best_posture.pkl
