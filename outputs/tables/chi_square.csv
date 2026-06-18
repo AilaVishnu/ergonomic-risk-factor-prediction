@@ -1,4 +1,5 @@
 risk_factor,chi2,dof,p_value,significant
+posture,45.665,1,0.0,True
 force,6.718,2,0.0348,True
 duration,0.623,2,0.7325,False
 vibration,0.6,2,0.7408,False
