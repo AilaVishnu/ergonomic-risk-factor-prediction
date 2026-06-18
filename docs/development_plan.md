@@ -96,8 +96,7 @@ logistic regression with odds ratios → `outputs/tables/`.
 
 **Phase 6 — Stage 2: ML modeling** → `src/06_modeling.py`
 Per-factor classifiers: target = each factor's L/M/H label; features = rider profile
-**excluding that factor's own defining variable**. Models: Logistic Regression, Decision
-Tree, Random Forest, XGBoost. Stratified k-fold CV; class-imbalance handling → `outputs/models/`.
+**excluding that factor's own defining variable**. Models: Logistic Regression, Decision Tree, Random Forest, XGBoost. Stratified k-fold CV; class-imbalance handling → `outputs/models/`.
 
 **Phase 7 — Evaluation** → `src/07_evaluation.py`
 Accuracy, Precision, Recall, F1, Confusion Matrix, ROC-AUC, feature importance;
