@@ -1,0 +1,17 @@
+factor,class,AUC
+force,Low,0.8
+force,Medium,0.601
+force,High,0.811
+repetition,Low,0.857
+repetition,Medium,0.841
+repetition,High,0.804
+duration,Low,0.831
+duration,Medium,0.649
+duration,High,0.823
+vibration,Low,0.796
+vibration,Medium,0.544
+vibration,High,0.755
+contact_stress,Low,0.762
+contact_stress,Medium,0.746
+contact_stress,High,0.802
+posture,High,0.888
