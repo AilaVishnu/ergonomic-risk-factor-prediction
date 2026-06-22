@@ -88,6 +88,16 @@ def add_section_header(prs, title, subtitle):
 
 
 def main():
+    # If the destination file is open in PowerPoint, the copy will fail with
+    # WinError 32. PowerPoint leaves a ~$ lock file next to the open file -
+    # check for it and bail with a useful message instead of a stack trace.
+    lock = DST.parent / f"~${DST.name}"
+    if lock.exists():
+        print(f"ERROR: {DST.name} is currently open in PowerPoint")
+        print(f"       Close PowerPoint and re-run this script.")
+        print(f"       (lock file present: {lock.name})")
+        raise SystemExit(1)
+
     shutil.copy2(SRC, DST)
     prs = Presentation(DST)
     thank_you_idx = find_thank_you_index(prs)
