@@ -1,7 +1,7 @@
 risk_factor,chi2,dof,p_value,significant
 posture,45.665,1,0.0,True
+repetition,8.617,2,0.0135,True
 force,6.718,2,0.0348,True
 duration,0.623,2,0.7325,False
 vibration,0.6,2,0.7408,False
 contact_stress,0.544,2,0.7617,False
-repetition,0.415,2,0.8128,False

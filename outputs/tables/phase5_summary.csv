@@ -1,5 +1,6 @@
 test,finding,effect,p_value
 Chi-square,posture risk associated with discomfort,"chi2=45.665, dof=1",0.0
+Chi-square,repetition risk associated with discomfort,"chi2=8.617, dof=2",0.0135
 Chi-square,force risk associated with discomfort,"chi2=6.718, dof=2",0.0348
 Kruskal-Wallis,job_duration_ord differs across Age groups,H=26.538,0.0
 Kruskal-Wallis,income_ord differs across Age groups,H=15.456,0.0015
