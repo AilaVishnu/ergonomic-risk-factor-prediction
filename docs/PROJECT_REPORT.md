@@ -454,7 +454,15 @@ Phase 4 (`notebooks/04_eda.ipynb`) produces six figures saved to
 - `risk_vs_discomfort.png`: per-factor bar of discomfort
   prevalence within each risk band.
 - `correlation_heatmap.png`: Pearson correlation matrix across the
-  numeric feature pool, masked above the diagonal.
+  numeric feature pool, masked above the diagonal. Pearson
+  correlation for two variables `x` and `y` is
+
+  ```
+  r = sum((xi - x_mean) * (yi - y_mean))
+      / sqrt(sum((xi - x_mean)^2) * sum((yi - y_mean)^2))
+  ```
+
+  computed pairwise by `pandas.DataFrame.corr(method='pearson')`.
 
 ## 9. Phase 5: Statistical analysis
 
@@ -466,6 +474,17 @@ For each of the six risk factors, a 2 x 3 contingency table is
 built (discomfort = 0/1 vs risk = Low/Medium/High) and the
 chi-square test of independence is run with
 `scipy.stats.chi2_contingency` at significance threshold p < 0.05.
+
+The Pearson chi-square statistic is
+
+```
+chi2 = sum_over_cells((observed - expected)^2 / expected)
+```
+
+where `expected_ij = row_total_i * col_total_j / grand_total`,
+evaluated against the chi-square distribution with
+`(rows - 1) * (cols - 1)` degrees of freedom. For our 2 x 3 tables
+the degrees of freedom is 2.
 
 | Factor | chi-square | p | Significant |
 |---|---|---|---|
@@ -485,6 +504,23 @@ merge (see Limitations).
 following predictors: workload_score, age_ord, job_duration_ord,
 fatigue_score, income_ord, education_ord, deliveries_num,
 work_hours_num, vehicle_rank, carrying_contact_rank, gender_rank.
+
+The logistic model is
+
+```
+P(discomfort = 1 | X) = 1 / (1 + exp(-(b0 + b1*x1 + b2*x2 + ... + bk*xk)))
+```
+
+equivalently
+
+```
+logit(P) = log(P / (1 - P)) = b0 + b1*x1 + b2*x2 + ... + bk*xk
+```
+
+with maximum-likelihood fitting via the Newton-Raphson iterations
+that statsmodels uses by default. The odds ratio for predictor `j`
+is `exp(bj)`, and the 95% confidence interval for the OR is
+`exp(bj +/- 1.96 * SE(bj))`.
 
 Significant predictors (p < 0.05) reported with odds ratio and 95%
 confidence interval:
@@ -635,7 +671,16 @@ hyperparameter grid is searched at the stacking level.
 SMOTE (Synthetic Minority Over-sampling Technique) generates
 synthetic training examples for minority classes by linearly
 interpolating between an existing minority sample and one of its
-k nearest minority neighbours. We use
+k nearest minority neighbours. For a minority sample `x_i` and one
+of its k nearest minority neighbours `x_nn` chosen at random, the
+synthetic sample is
+
+```
+x_new = x_i + lambda * (x_nn - x_i)        with lambda ~ Uniform(0, 1)
+```
+
+The k nearest neighbours are computed in the original (un-rescaled)
+feature space using Euclidean distance. We use
 `imblearn.over_sampling.SMOTE` inside an `imblearn.Pipeline` so
 the resampling happens inside every CV fold, never on the held-out
 validation data.
@@ -735,7 +780,48 @@ target and produces confusion matrices, ROC curves, and feature
 importance, using `cross_val_predict` so the predictions are honest
 out-of-fold values.
 
-### 11.1 Confusion matrices
+### 11.1 Metric definitions
+
+For each class `c` in a target with the multi-class confusion matrix
+counts (TP, FP, FN, TN computed in a one-vs-rest sense):
+
+```
+precision_c = TP_c / (TP_c + FP_c)
+recall_c    = TP_c / (TP_c + FN_c)
+F1_c        = 2 * precision_c * recall_c / (precision_c + recall_c)
+```
+
+Macro-averaged scores treat each class equally:
+
+```
+precision_macro = mean over c of precision_c
+recall_macro    = mean over c of recall_c
+F1_macro        = mean over c of F1_c
+```
+
+Macro-averaged scoring is what `GridSearchCV` optimises here so a
+model that ignores the minority classes is penalised even if its
+raw accuracy is high.
+
+Raw accuracy is
+
+```
+accuracy = correct_predictions / total_predictions
+```
+
+`overfit_gap = train_accuracy - cv_accuracy` flags models that
+generalise poorly; we mark any factor with `overfit_gap > 0.15`
+in `phase6_summary.csv`.
+
+ROC-AUC (Area Under the Receiver Operating Characteristic Curve)
+for a single class is the probability that a randomly chosen
+positive instance is ranked higher by the model's predicted score
+than a randomly chosen negative instance. The Mann-Whitney U
+statistic provides a closed-form equivalent. Per-class AUC is
+computed one-vs-rest; macro AUC is the unweighted mean across
+classes.
+
+### 11.2 Confusion matrices
 
 `sklearn.metrics.confusion_matrix(y_true, y_pred,
 labels=present_codes)` produces a square matrix. Rows are true
@@ -744,7 +830,7 @@ classes, columns are predicted classes. The figure
 in a 2x3 grid with one matrix per target. The long-form data is
 saved to `outputs/tables/confusion_matrices.csv`.
 
-### 11.2 Classification reports
+### 11.3 Classification reports
 
 `sklearn.metrics.classification_report(y_true, y_pred,
 target_names=label_names, output_dict=True, zero_division=0)`
