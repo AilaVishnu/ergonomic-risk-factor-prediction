@@ -81,7 +81,10 @@ pip install pandas numpy scikit-learn scipy matplotlib seaborn xgboost \
 ```
 
 ## Documentation
-- **`docs/PROJECT_EXPLAINED.md`** — non-technical complete guide for any audience
-- `docs/results.md` — mentor-facing write-up (sample, Stage-1, Stage-2,
+- `docs/PROJECT_EXPLAINED.md` / `.docx` - general project overview
+- `docs/METHODS_DETAILED.md` / `.docx` - full technical write-up (every
+  algorithm, threshold, hyperparameter, design choice; sized for
+  paper preparation)
+- `docs/results.md` - mentor-facing summary (sample, Stage-1, Stage-2,
   per-factor positioning, limitations, recommendations)
-- `docs/development_plan.md` — full execution plan and methodology
+- `docs/development_plan.md` - original execution plan
