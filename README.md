@@ -6,6 +6,8 @@ a 182-rider survey + 182-observation RULA/QEC posture dataset.
 ## The 6 risk factors
 Force · Repetition · Posture · Duration · Contact Stress · Vibration
 
+> **New to this project?** Read [`docs/PROJECT_EXPLAINED.md`](docs/PROJECT_EXPLAINED.md) — a non-technical, plain-English walkthrough of the entire project, what it does, why it matters, every term defined, every result explained.
+
 ## Design (2 stages)
 - **Stage 1** — calculate each risk factor with a recognised method (Borg CR10
   action levels, RULA, sample terciles) → Low/Medium/High labels.
@@ -79,6 +81,7 @@ pip install pandas numpy scikit-learn scipy matplotlib seaborn xgboost \
 ```
 
 ## Documentation
-- `docs/development_plan.md` — full execution plan, methodology, references
+- **`docs/PROJECT_EXPLAINED.md`** — non-technical complete guide for any audience
 - `docs/results.md` — mentor-facing write-up (sample, Stage-1, Stage-2,
   comparison with published benchmarks, limitations, recommendations)
+- `docs/development_plan.md` — full execution plan, methodology, references
