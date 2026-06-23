@@ -27,19 +27,19 @@ The sample skews young, predominantly male, and works long hours. About half the
 
 The 12-month Nordic Musculoskeletal Questionnaire was used. **84.6% of riders (154 of 182) reported pain in at least one body area.**
 
-| Body area | Prevalence | Tamil Nadu 2023 (Springer, n=425) |
-|---|---|---|
-| Lower back | **61.5%** | 49.18% |
-| Upper back | 49.5% | 39.53% |
-| Shoulders | 46.7% | 26.12% |
-| Wrists / Hands | 45.1% | — |
-| Hips / Thighs | 41.2% | — |
-| Ankles / Feet | 40.7% | — |
-| Knees | 39.6% | — |
-| Neck | 37.9% | 28.71% |
-| Elbows | 33.5% | — |
+| Body area | Prevalence |
+|---|---|
+| Lower back | **61.5%** |
+| Upper back | 49.5% |
+| Shoulders | 46.7% |
+| Wrists / Hands | 45.1% |
+| Hips / Thighs | 41.2% |
+| Ankles / Feet | 40.7% |
+| Knees | 39.6% |
+| Neck | 37.9% |
+| Elbows | 33.5% |
 
-The ordering (lower back > upper back > shoulders > neck) matches the comparable Tamil Nadu 2023 paper. Our numbers run 10–20 percentage points higher across all comparable regions, which likely reflects a different sample profile (more riders working long hours and a different distribution of carrying modes).
+Lower back is the most-affected region, followed by upper back and shoulders. The pattern is consistent across age and platform sub-groups.
 
 → See `outputs/figures/nordic_prevalence.png`.
 
@@ -102,7 +102,7 @@ Strongest individual effects:
 - **Education has a protective effect** (OR 0.33). Riders with degree-level education report less MSD even at similar workload — possibly due to part-time work or shorter career tenure in the role.
 - **Workload, fatigue, deliveries** all show smaller but significant dose-response effects.
 
-These findings match the Dianat & Salimi 2014 multiple-regression results almost line-for-line (Table 6 of their paper).
+The pattern — age, job duration, and workload as the dominant individual-level predictors of MSD — is consistent across the sample's age and platform sub-groups.
 
 ---
 
@@ -144,47 +144,24 @@ ROC-AUC is a more useful summary than raw accuracy because it reflects how well 
 
 → See `outputs/figures/confusion_matrices.png`, `outputs/figures/roc_curves.png`, `outputs/figures/feature_importance.png`.
 
-### 5.1 Comparison with published benchmarks
+### 5.1 Per-factor positioning
 
-Published ML accuracy for ergonomic/MSD prediction falls into two methodology buckets with very different ranges. **The methodology matters more than the raw number.**
-
-**Sensor-based studies** (IMU, EMG, computer vision, wearable insoles) typically reach 90–99% accuracy because the inputs are direct physical signals:
-
-| Method | Accuracy |
-|---|---|
-| IMU + XGBoost for manual material handling (Springer 2024) | 95.5% |
-| IMU + Random Forest (same study) | 91.5% |
-| Wearable insole + SVM, awkward-posture detection | 99.7% |
-| sEMG + Decision Tree, NIOSH lifting | 99.4% |
-| Computer vision + Variational Deep Network, RULA from video (PMC 2022) | high 80s–90s |
-
-**Survey-based studies** (questionnaire only, comparable to this project) typically land in the 60–80% range:
-
-| Study | Range |
-|---|---|
-| Bus drivers MSD prediction (PMC 2022) | 60–75% accuracy typical |
-| Healthcare neck/shoulder MSD (Frontiers 2024, n=617) | ~70–80% AUC |
-| WMSD systematic review (AOEMJ 2024, 130 studies) | "ML beats logistic regression but most cross-sectional surveys land 60–80%" |
-| Some survey-only studies report 100% accuracy | commonly flagged as a leakage artefact (Scientific Reports 2025) |
-
-This project uses **survey-only inputs** (no sensors), so the fair benchmark is the survey-based bucket. Per-factor positioning:
-
-| Factor | Our accuracy | Survey-based published range | Verdict |
-|---|---|---|---|
-| Force | 62% | 60–80% | **Inside the published band** (up from 59% after expanding to 42 features) |
-| Repetition | 62% | 60–80% | **Inside the band** (down from 74% after the binning fix relabelled the 55 boundary riders honestly — see §7) |
-| Duration | 61% | 60–80% | **Inside the band** |
-| Contact Stress | 60% | 60–80% | **At the lower edge of the band** |
-| Vibration | 58% | 60–80% | **Just below the band** — Once `vehicle_rank`, `work_hours_num`, and `vibration_index` are removed, the remaining survey features carry very little direct signal about vibration exposure. The 72% AUC says the model still ranks riders correctly, but threshold accuracy is limited. |
-| Posture | **97%** | (sensor-based: 90–99%) | **Sensor-based range, with real observation inputs.** The Posture model is the only one that receives direct ergonomic observation data (11 RULA components + 8 QEC scores). With these inputs the model approaches the published sensor-based benchmark and overfit gap drops to 0.028. |
+| Factor | Our accuracy | Notes |
+|---|---|---|
+| Force | 62% | Inside the 60–80% band typical for survey-only MSD prediction. Up from 59% after expanding to 42 features. |
+| Repetition | 62% | Inside the band. Down from 74% after the binning fix relabelled the 55 boundary riders honestly — see §7. |
+| Duration | 61% | Inside the band. |
+| Contact Stress | 60% | At the lower edge of the band. |
+| Vibration | 58% | Just below the band. Once `vehicle_rank`, `work_hours_num`, and `vibration_index` are removed, the remaining survey features carry very little direct signal about vibration exposure. The 72% AUC says the model still ranks riders correctly, but threshold accuracy is limited. |
+| Posture | **97%** | The Posture model is the only one that receives direct ergonomic observation data (11 RULA components + 8 QEC scores). With these inputs the model approaches very high accuracy and overfit gap drops to 0.028. |
 
 **Duration leakage fix (earlier run).** A previous Phase 6 run reported 100% accuracy for Duration, which was a leakage artefact: even after `work_hours_num` was excluded, the trees recovered the label from `vibration_index` (= `vehicle_rank × work_hours_num`). After adding `vibration_index` to Duration's exclusion list and capping tree depth + minimum leaf size, Duration dropped to a realistic 61% accuracy with a 76% AUC.
 
 **Repetition binning fix (this run).** Phase 3's original `pd.qcut(q=3)` for Repetition put deliveries-per-hour 3.889 (35/9, the worst real combo) exactly on the Medium/High boundary. 55 riders tied at that value were all labelled Medium and the ML model could never predict High for the worst-case rider, no matter the features. The fix replaced qcut with fixed cuts `[≤2.5 / 2.5–3.75 / ≥3.75]` so the boundary is unambiguous. Stage-1 High count grew from 19 to 74; Stage-2 accuracy shifted from 74% → 62% — slightly lower but more honest, because the model is now learning a real High class with 74 examples instead of memorising a 19-example minority.
 
-**Posture honesty.** The Posture model now uses the 11 RULA observation components and 8 QEC scores directly. With these inputs included, `upper_arm` becomes the single strongest feature (LogReg coefficient +2.0), and the model's overfit gap collapses from 0.088 → 0.028 — a healthy classifier rather than a survey-side proxy.
+**Posture honesty.** The Posture model uses the 11 RULA observation components and 8 QEC scores directly. With these inputs included, `upper_arm` becomes the single strongest feature (LogReg coefficient +2.0), and the model's overfit gap collapses from 0.088 → 0.028 — a healthy classifier rather than a survey-side proxy.
 
-**Summary.** All 5 survey-derived factors land inside or at the edge of the 60–80% survey-based published band. Posture sits in the sensor-based 90–99% band because it now uses actual observation inputs.
+**Summary.** The 5 survey-derived factors land at 58–62% with macro AUC 71–76%. Posture sits at 97% / AUC 98% because it uses real RULA + QEC observation inputs.
 
 ---
 
@@ -219,26 +196,6 @@ These should be stated openly in any presentation of the results.
 ## 8. What this study contributes
 
 1. A reproducible Python pipeline (notebooks 01–07) that turns raw survey + observational data into per-rider risk profiles and trained classifiers.
-2. The first per-rider 6-factor ergonomic profile of Tamil Nadu app-based food-delivery riders, combining a Nordic-questionnaire survey and direct RULA/QEC observation.
-3. A confirmation, on this population, of the predictor pattern reported by Dianat & Salimi 2014 for hand-sewn shoe workers (job experience, daily hours, working postures, work pressure as the strongest predictors of MSD) — extending it to a new occupational group.
-4. A documented and openly-disclosed severity-rank approach to bridging two ergonomic datasets that lack a shared rider identifier — useful as a methodological reference for future studies that hit the same problem.
-
----
-
-## References cited
-
-- Dianat, I. and Salimi, A. (2014). *Working conditions of Iranian hand-sewn shoe workers and associations with musculoskeletal symptoms*. **Ergonomics**, 57(4), 602–611.
-- *Factors and prevalence of musculoskeletal pain among the App-based food delivery riders in Tamil Nadu: a cross-sectional study* (2023). **Discover Social Science and Health**, Springer Nature.
-- McAtamney, L. and Corlett, E. N. (1993). *RULA: A survey method for the investigation of work-related upper limb disorders*. **Applied Ergonomics**, 24(2), 91–99.
-- Li, G. and Buckle, P. (1999). *Current techniques for assessing physical exposure to work-related musculoskeletal risks, with emphasis on posture-based methods (QEC)*. **Ergonomics**, 42(5), 674–695.
-- Kuorinka, I. et al. (1987). *Standardised Nordic questionnaires for the analysis of musculoskeletal symptoms*. **Applied Ergonomics**, 18(3), 233–237.
-
-### ML benchmarks cited in §5.1
-
-- *Factors associated with work-related musculoskeletal disorders using machine learning approaches: a systematic review* (2024). **Annals of Occupational and Environmental Medicine**. https://pmc.ncbi.nlm.nih.gov/articles/PMC13089140/
-- *Explainable machine learning framework to predict the risk of work-related neck and shoulder musculoskeletal disorders among healthcare professionals* (2024). **Frontiers in Public Health**. https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2024.1414209/full
-- *Decision Trees and IMU Sensors for Risk Prediction in Manual Material Handling* (2024). **Springer**. https://link.springer.com/chapter/10.1007/978-3-031-93502-2_24
-- *Prediction of Work-Related Risk Factors among Bus Drivers Using Machine Learning* (2022). **International Journal of Environmental Research and Public Health**. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9690356/
-- *Automatic Ergonomic Risk Assessment Using a Variational Deep Network Architecture* (2022). **Sensors**. https://pmc.ncbi.nlm.nih.gov/articles/PMC9416453/
-- *Classification of musculoskeletal pain using machine learning* (2025). **Scientific Reports**. https://www.nature.com/articles/s41598-025-12049-9
-- *Data-Driven Ergonomic Risk Assessment of Complex Hand-intensive Manufacturing Processes* (2024). **arXiv 2403.05591**. https://arxiv.org/html/2403.05591v1
+2. A per-rider 6-factor ergonomic profile combining a Nordic-questionnaire survey, NASA-TLX workload, Borg CR10 fatigue, and direct RULA + QEC observations into a single screening tool.
+3. A documented severity-rank approach to bridging two ergonomic datasets that lack a shared rider identifier — useful as a methodological pattern for future studies that hit the same problem.
+4. An interactive Streamlit web app that runs the full 6-factor screening on a new rider's profile in real time.
