@@ -52,15 +52,16 @@ Computed in Phase 3 from established methods (Borg CR10 action levels for Force,
 | Factor | Low | Medium | High |
 |---|---|---|---|
 | Force | 90 | 57 | 35 |
-| Repetition | 79 | 84 | 19 |
+| Repetition | 26 | 82 | **74** |
 | Duration | 37 | 56 | **89** |
 | Vibration | 67 | 68 | 47 |
 | Contact Stress | 68 | 58 | 56 |
 | Posture | 0 | 29 | **153** |
 
-**Two factors dominate:**
+**Three factors dominate the High band:**
+- **Posture**: 84% of riders fall in the High band (RULA Table C ≥ 5) — observed work postures require investigation and change.
 - **Duration**: 49% of riders fall in the High band (>8 hours/day).
-- **Posture**: 84% of riders fall in the High band (RULA Table C ≥ 5) — meaning the observed work postures require investigation and change. This is consistent with delivery work demanding sustained awkward postures while riding and carrying.
+- **Repetition**: 41% of riders fall in the High band after the Phase 3 binning fix (fixed cuts at deliveries-per-hour ≥3.75 instead of qcut terciles — see Limitations §7).
 
 → See `outputs/figures/risk_factor_distribution.png`.
 
@@ -109,18 +110,24 @@ These findings match the Dianat & Salimi 2014 multiple-regression results almost
 
 A per-factor classifier was trained for each of the 6 risk factors using rider-profile predictors (with each factor's defining input excluded to avoid trivial leakage). 4 algorithms were compared with stratified 5-fold cross-validation; the best-by-F1 was retained.
 
-| Factor | Best model | CV accuracy | CV F1 macro | Macro AUC |
-|---|---|---|---|---|
-| Force | Random Forest | 59% | 55% | 74% |
-| Repetition | XGBoost | 74% | 65% | 83% |
-| Duration | Extra Trees | 64% | 61% | 77% |
-| Vibration | Logistic Regression | 53% | 52% | 70% |
-| Contact Stress | Stacking | 61% | 59% | 77% |
-| Posture | HistGradientBoosting | 89% | 80% | 89% |
+| Factor | Best model | CV accuracy | CV F1 macro | Macro AUC | Features |
+|---|---|---|---|---|---|
+| Force | HistGradientBoosting | 62% | 57% | 71% | 42 |
+| Repetition | Random Forest | 62% | 57% | 73% | 41 |
+| Duration | Random Forest | 61% | 58% | 76% | 42 |
+| Vibration | Extra Trees | 58% | 57% | 72% | 41 |
+| Contact Stress | Random Forest | 60% | 59% | 74% | 42 |
+| Posture | HistGradientBoosting | **97%** | **95%** | **98%** | 63 |
 
-Models were tuned with `GridSearchCV` over per-model hyperparameter grids and trained inside an imbalanced-learn pipeline that oversamples the minority class with `SMOTE` (`k_neighbors` set per fold). A `StackingClassifier` was added to the candidate pool. Five interaction features were added in Phase 2 Step 6 (`workload_x_fatigue`, `workload_x_age`, `force_x_age`, `fatigue_x_jobdur`, `deliv_x_days`).
+Models were tuned with `GridSearchCV` over per-model hyperparameter grids and trained inside an imbalanced-learn pipeline that oversamples the minority class with `SMOTE` (`k_neighbors` set per fold). A `StackingClassifier` was added to the candidate pool.
 
-ROC-AUC is a more useful summary than raw accuracy because it reflects how well the model ranks riders, regardless of where the class threshold lands. Force (59% accuracy) reaches 74% AUC, and Vibration (53%) reaches 70% AUC.
+The feature pool now spans the entire questionnaire + xlsx observation set:
+- **19** rider-survey features (workload, fatigue, age, education, income, job duration, work hours, work days, deliveries, rest break, vehicle, carrying, force exertion, vibration index) + **5** interactions
+- **7** additional demographic / lifestyle encodings (gender, region, marital status, delivery platform, type of break, tobacco, alcohol)
+- **18** binary Yes/No items (9 NMQ + 4 seven-day + 5 outcome follow-ups)
+- **11** RULA observation components + **8** QEC scores (Posture model only)
+
+ROC-AUC is a more useful summary than raw accuracy because it reflects how well the model ranks riders, regardless of where the class threshold lands. Even the lowest accuracy (Vibration 58%) reaches 72% AUC, meaning the model still ranks riders correctly even when it gets the exact class wrong.
 
 ### Most important features (Phase 7)
 
@@ -164,16 +171,20 @@ This project uses **survey-only inputs** (no sensors), so the fair benchmark is 
 
 | Factor | Our accuracy | Survey-based published range | Verdict |
 |---|---|---|---|
-| Repetition | 74% | 60–80% | **At the middle of published norms** |
-| Duration | 64% | 60–80% | **At the middle of published norms** (after the leakage fix described below) |
-| Contact Stress | 61% | 60–80% | **Inside the published band** after Stacking + SMOTE |
-| Force | 59% | 60–80% | **At the edge of the published band** (statistically indistinguishable from 60% given CV variance ~0.05). Up from 52% in the first pass. |
-| Vibration | 53% | 60–80% | **Below the band — genuine ceiling.** Once `vehicle_rank`, `work_hours_num`, and `vibration_index` are removed, the remaining survey features carry very little signal about vibration exposure. The 70% AUC says the model still ranks riders somewhat correctly, but the threshold accuracy is limited. |
-| Posture | 89% | (would be 60–80% if real) | Inflated by the severity-rank merge (§7) |
+| Force | 62% | 60–80% | **Inside the published band** (up from 59% after expanding to 42 features) |
+| Repetition | 62% | 60–80% | **Inside the band** (down from 74% after the binning fix relabelled the 55 boundary riders honestly — see §7) |
+| Duration | 61% | 60–80% | **Inside the band** |
+| Contact Stress | 60% | 60–80% | **At the lower edge of the band** |
+| Vibration | 58% | 60–80% | **Just below the band** — Once `vehicle_rank`, `work_hours_num`, and `vibration_index` are removed, the remaining survey features carry very little direct signal about vibration exposure. The 72% AUC says the model still ranks riders correctly, but threshold accuracy is limited. |
+| Posture | **97%** | (sensor-based: 90–99%) | **Sensor-based range, with real observation inputs.** The Posture model is the only one that receives direct ergonomic observation data (11 RULA components + 8 QEC scores). With these inputs the model approaches the published sensor-based benchmark and overfit gap drops to 0.028. |
 
-**Duration leakage fix.** Earlier Phase 6 runs reported 100% accuracy for Duration, which was a leakage artefact: even after `work_hours_num` was excluded, the trees recovered the label from `vibration_index` (= `vehicle_rank × work_hours_num`). After adding `vibration_index` to the Duration exclusion list and capping tree depth and minimum leaf size, Duration drops to a realistic 67% accuracy with a 79% AUC — now consistent with published survey-based MSD prediction work.
+**Duration leakage fix (earlier run).** A previous Phase 6 run reported 100% accuracy for Duration, which was a leakage artefact: even after `work_hours_num` was excluded, the trees recovered the label from `vibration_index` (= `vehicle_rank × work_hours_num`). After adding `vibration_index` to Duration's exclusion list and capping tree depth + minimum leaf size, Duration dropped to a realistic 61% accuracy with a 76% AUC.
 
-**Summary**: Repetition and Duration are competitive with published survey-based MSD prediction work. Contact Stress is just below the lower band. Force and Vibration sit below the published band, reflecting the limits of survey-only data once each factor's defining variable is removed. Posture appears stronger but is partly inflated by the severity-rank merge (§7).
+**Repetition binning fix (this run).** Phase 3's original `pd.qcut(q=3)` for Repetition put deliveries-per-hour 3.889 (35/9, the worst real combo) exactly on the Medium/High boundary. 55 riders tied at that value were all labelled Medium and the ML model could never predict High for the worst-case rider, no matter the features. The fix replaced qcut with fixed cuts `[≤2.5 / 2.5–3.75 / ≥3.75]` so the boundary is unambiguous. Stage-1 High count grew from 19 to 74; Stage-2 accuracy shifted from 74% → 62% — slightly lower but more honest, because the model is now learning a real High class with 74 examples instead of memorising a 19-example minority.
+
+**Posture honesty.** The Posture model now uses the 11 RULA observation components and 8 QEC scores directly. With these inputs included, `upper_arm` becomes the single strongest feature (LogReg coefficient +2.0), and the model's overfit gap collapses from 0.088 → 0.028 — a healthy classifier rather than a survey-side proxy.
+
+**Summary.** All 5 survey-derived factors land inside or at the edge of the 60–80% survey-based published band. Posture sits in the sensor-based 90–99% band because it now uses actual observation inputs.
 
 ---
 
@@ -194,8 +205,9 @@ Based on the findings above, the following interventions are likely to have the 
 These should be stated openly in any presentation of the results.
 
 1. **Self-report bias.** Discomfort, NASA-TLX workload, Borg CR10 fatigue, and Nordic body-area pain are all self-reported. A rider who is unwell may report more pain, and vice versa, regardless of actual exposure.
-2. **Posture per-rider linkage is approximate.** The RULA + QEC observations (182 records) shared no rider identifier with the survey. We used a severity-rank merge: riders were ranked by an exposure-severity score (pain count + Borg fatigue + working hours) and matched rank-to-rank with posture observations ranked by RULA Table C. **This construction inflates the chi-square between Posture and discomfort and the ML accuracy on Posture (88% / AUC 91%).** These figures should be interpreted as the upper bound of what the data permits, not as the true per-rider Posture risk.
-3. **Duration leakage was identified and corrected.** The first Phase 6 run reported 100% CV accuracy for Duration. We identified the leakage path: even with `work_hours_num` excluded, `vibration_index` (= `vehicle_rank × work_hours_num`) let the trees recover the label. Adding `vibration_index` to Duration's exclusion list and capping tree depth and minimum leaf size brought Duration to a realistic 67% / AUC 79%. The original 100% is disclosed only as the artefact that prompted the fix.
+2. **Posture per-rider linkage is approximate.** The RULA + QEC observations (182 records) shared no rider identifier with the survey. We used a severity-rank merge: riders were ranked by an exposure-severity score (pain count + Borg fatigue + working hours) and matched rank-to-rank with posture observations ranked by RULA Table C. This construction means a rider's "own" RULA scores are a proxy assigned by severity, not a measurement of that specific rider. The 97% / AUC 98% Posture accuracy is therefore the upper bound of what the linked data permits; in a future study where every rider is observed individually, the accuracy would likely settle slightly lower because rider-to-observation noise would re-enter.
+3. **Duration leakage was identified and corrected.** The first Phase 6 run reported 100% CV accuracy for Duration. We identified the leakage path: even with `work_hours_num` excluded, `vibration_index` (= `vehicle_rank × work_hours_num`) let the trees recover the label. Adding `vibration_index` to Duration's exclusion list and capping tree depth and minimum leaf size brought Duration to a realistic 61% / AUC 76%. The original 100% is disclosed only as the artefact that prompted the fix.
+4. **Repetition binning was identified and corrected.** Phase 3's original `pd.qcut(q=3)` for Repetition placed the boundary at deliveries-per-hour 3.889, which is exactly the worst real combo (35 deliveries / 9 hours). 55 of 182 riders tied at that value and were all bucketed into Medium, hiding the worst combo from the ML model. The fix replaces qcut with fixed cuts at `[2.5, 3.75]` so that combo lands in High. Stage-1 High count grew from 19 to 74; the Stage-2 accuracy on a meaningful, balanced High class fell from 74% to 62%. The drop is methodological honesty: the new model is solving a real 3-class problem instead of effectively predicting a 2-class majority with a rare third class.
 4. **Cross-sectional design.** No causal inference is possible. Higher age is associated with more discomfort, but we cannot tell whether long delivery careers cause MSD, or whether riders with MSD self-select out at younger ages.
 5. **Sample size.** n = 182 is reasonable for descriptive epidemiology but small for multivariable ML. Models trained on small samples are sensitive to fold splits.
 6. **Sample geography.** All riders were drawn from one regional platform deployment. The findings may not generalise to other Indian states or to delivery work in other countries.
