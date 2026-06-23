@@ -40,3 +40,7 @@ desktop.ini
 notebooks/Untitled*.ipynb
 
 finalize.ipynb
+
+# Workflow / diagnostic scratch dirs
+sandbox/
+tmp_diag/
