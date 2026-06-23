@@ -1,0 +1,21 @@
+{
+  "workload_score":        55,
+  "fatigue_score":         5.0,
+  "age_ord":               1,
+  "income_ord":            2,
+  "education_ord":         2,
+  "job_duration_ord":      2,
+  "work_hours_num":        7,
+  "work_days_num":         5.5,
+  "deliveries_num":        25,
+  "rest_break_num":        10,
+  "vehicle_rank":          2,
+  "carrying_contact_rank": 2,
+  "force_exertion":        4,
+  "vibration_index":       14,
+  "workload_x_fatigue":    2.75,
+  "workload_x_age":        5.5,
+  "force_x_age":           4,
+  "fatigue_x_jobdur":      10,
+  "deliv_x_days":          137.5
+}

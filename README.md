@@ -1,33 +1,84 @@
 # Ergonomic Risk Factor Prediction — Delivery Riders
 
-AI/ML project predicting 6 ergonomic risk factors for food-delivery riders from survey data.
-
-## Folder structure
-```
-Ergonomic_Project/
-  data/raw/         delivery_rider_survey.csv      survey responses (182 riders)
-  data/processed/   cleaned / model-ready / risk-profile tables (generated)
-  notebooks/        01_data_cleaning.ipynb …       per-phase Jupyter notebooks
-  src/              optional .py versions of the pipeline
-  deck/             Ergonomic_Risk_Factor_Prediction_Project_Plan_Final.pptx
-  outputs/          figures/ , tables/ , models/   (generated)
-  docs/             development_plan.md
-```
+AI/ML project predicting 6 ergonomic risk factors for food-delivery riders from
+a 182-rider survey + 182-observation RULA/QEC posture dataset.
 
 ## The 6 risk factors
 Force · Repetition · Posture · Duration · Contact Stress · Vibration
 
 ## Design (2 stages)
-- **Stage 1** — calculate each risk factor with a recognised method → Low/Med/High labels.
-- **Stage 2** — train ML to reproduce those levels from a rider's profile = automated
+- **Stage 1** — calculate each risk factor with a recognised method (Borg CR10
+  action levels, RULA, sample terciles) → Low/Medium/High labels.
+- **Stage 2** — train ML (LogReg / DT / RF / ExtraTrees / HistGBM / XGBoost /
+  Stacking) to reproduce those labels from a rider's profile = automated
   ergonomic screening tool.
 
-## Status
-- ✅ Data available: survey CSV (182 responses)
-- ✅ Borg CR10 emoji scale decoded (😁 = 0 Extremely Easy → 😭 = 10 Extremely Hard)
-- ✅ Phase 1 — Data cleaning complete (`notebooks/01_data_cleaning.ipynb` → `data/processed/cleaned.csv`)
-- ⏳ Pending: RULA & QEC posture data (under process) → the **Posture** factor is deferred
+## Folder structure
+```
+Ergonomic_Project/
+  data/raw/         delivery_rider_survey.csv, posture_data.xlsx
+  data/processed/   cleaned.csv, model_ready.csv, risk_profile.csv
+  notebooks/        01_data_cleaning … 07_evaluation (7 notebooks)
+  src/              predict.py, build_results_deck.py, finalize_deck.py
+  app/              streamlit_app.py (web demo)
+  deck/             Final.pptx + WITH_RESULTS.pptx (+ archive backups)
+  outputs/          figures/, tables/, models/
+  docs/             development_plan.md, results.md
+```
 
-## Pipeline (see docs/development_plan.md for detail)
-Phase 1 cleaning → 2 feature engineering → 3 risk scoring → 4 EDA → 5 statistics →
-6 ML modeling → 7 evaluation → 8 results → 9 finalize deck
+## Pipeline status
+| Phase | Notebook / file | Output |
+|---|---|---|
+| 1 Cleaning            | notebooks/01_data_cleaning.ipynb       | data/processed/cleaned.csv |
+| 2 Feature engineering | notebooks/02_feature_engineering.ipynb | data/processed/model_ready.csv |
+| 3 Risk scoring        | notebooks/03_risk_scoring.ipynb        | data/processed/risk_profile.csv |
+| 4 EDA                 | notebooks/04_eda.ipynb                 | 6 figures in outputs/figures/ |
+| 5 Statistics          | notebooks/05_stats.ipynb               | 5 tables in outputs/tables/ |
+| 6 ML modelling        | notebooks/06_modeling.ipynb            | 6 pickled models + 5 result tables |
+| 7 Evaluation          | notebooks/07_evaluation.ipynb          | 3 figures + 3 tables |
+| 8 Results write-up    | docs/results.md                        | full mentor-facing write-up |
+| 9 Deck                | src/build_results_deck.py              | deck/...WITH_RESULTS.pptx (53 slides) |
+
+All 9 phases complete.
+
+## Predict for a new rider
+
+### Web app (recommended for demos)
+```bash
+streamlit run app/streamlit_app.py
+```
+Opens a form in the browser. Fill in the rider's survey answers, hit
+**Predict risk levels**, see Low / Medium / High for all 6 factors with
+colour-coded badges.
+
+### Command line
+```bash
+# From a row already in model_ready.csv
+python src/predict.py --rider-id 0
+
+# From a JSON profile you wrote (see data/example_rider.json for the schema)
+python src/predict.py --json data/example_rider.json
+
+# List the features each model expects
+python src/predict.py --list-features
+```
+
+### Python API
+```python
+from src.predict import predict_rider
+predict_rider({'workload_score': 55, 'age_ord': 1, ...})
+# -> {'force': 'Low', 'repetition': 'Medium', 'duration': 'Low',
+#     'vibration': 'Low', 'contact_stress': 'Low', 'posture': 'Medium'}
+```
+
+## Setup
+```bash
+pip install pandas numpy scikit-learn scipy matplotlib seaborn xgboost \
+            statsmodels imbalanced-learn python-pptx joblib streamlit \
+            openpyxl
+```
+
+## Documentation
+- `docs/development_plan.md` — full execution plan, methodology, references
+- `docs/results.md` — mentor-facing write-up (sample, Stage-1, Stage-2,
+  comparison with published benchmarks, limitations, recommendations)
