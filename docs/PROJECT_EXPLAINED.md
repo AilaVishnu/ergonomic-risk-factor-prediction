@@ -84,7 +84,7 @@ A page that anyone can open in a browser, fill in a rider's questionnaire (36 qu
 ### Output for the mentor
 
 - **A PowerPoint deck** (`deck/...WITH_RESULTS.pptx`, 53 slides) that walks through every phase and shows the key findings
-- **A results write-up** (`docs/results.md`) with all the numbers and comparisons with published research
+- **A results write-up** (`docs/results.md`) with all the numbers
 - **This document** that explains it all in plain English
 
 ---
@@ -99,7 +99,7 @@ Means: how hard the rider has to **push or lift**. A rider carrying a heavy pack
 
 We use the standard **Borg CR10 lifting scale** — a 0-10 rating where the rider says how hard the lifting felt.
 
-**Low / Medium / High thresholds** (published Borg action levels):
+**Low / Medium / High thresholds** (standard Borg action levels):
 - 0-3 = Low (acceptable)
 - 4-6 = Medium (monitor)
 - 7-10 = High (intervene)
@@ -108,7 +108,7 @@ We use the standard **Borg CR10 lifting scale** — a 0-10 rating where the ride
 
 Means: deliveries-per-hour. A rider who does 35 drop-offs in a 7-hour shift is doing 5 per hour — high repetition. A rider who does 10 in 9 hours is doing 1 per hour — low repetition.
 
-There's no published threshold specific to delivery work, so we chose cut-offs that match the data realistically:
+There is no standard threshold specific to delivery work, so we chose cut-offs that match the data realistically:
 - Below 2.5 deliveries/hour = Low
 - 2.5 to 3.75 = Medium
 - Above 3.75 = High
@@ -151,7 +151,7 @@ Two data sources.
 
 ### Source 1 — The rider survey (CSV file)
 
-182 food-delivery riders in Tamil Nadu, India, filled in a 36-question survey. Questions covered:
+182 food-delivery riders filled in a 36-question survey. Questions covered:
 
 **Q1-17 — Background** (Demographic, lifestyle, work pattern)
 - Gender, age, education, region, marital status
@@ -218,7 +218,7 @@ Output: `data/processed/model_ready.csv` with 121 columns.
 ### Phase 3 — Risk Scoring (`notebooks/03_risk_scoring.ipynb`)
 **Goal:** Compute each rider's Low / Medium / High level on all 6 factors.
 
-This is where the published thresholds (Borg action levels, RULA Table C bands, etc.) are applied to give every rider a 6-factor risk profile.
+This is where the standard thresholds (Borg action levels, RULA Table C bands, etc.) are applied to give every rider a 6-factor risk profile.
 
 Output: `data/processed/risk_profile.csv`.
 
@@ -261,7 +261,7 @@ Produces:
 - **Feature importance** — which inputs matter most for each model.
 
 ### Phase 8 — Results write-up (`docs/results.md`)
-A mentor-facing summary of every number, with comparisons to published research and an honest limitations section.
+A mentor-facing summary of every number and an honest limitations section.
 
 ### Phase 9 — Slide deck (`src/build_results_deck.py`)
 A script that opens the Final.pptx, appends 14 results slides (the Phase 4-7 figures plus text slides for the ML metrics, benchmarks, limitations, and recommendations), and saves `WITH_RESULTS.pptx`.
@@ -282,7 +282,7 @@ The most common pain areas (12-month prevalence):
 3. Shoulders — 47%
 4. Wrists/Hands — 45%
 
-This matches the published Tamil Nadu 2023 study (lower back is the worst), but our numbers are 10-20 percentage points higher across the board, probably because more of our riders work long hours.
+Lower back is the worst-affected region, with upper back and shoulders close behind. The pattern is consistent across age and platform sub-groups in this sample.
 
 ### Which risk bands the riders fall into
 | Factor | Low | Medium | High |
@@ -313,10 +313,8 @@ Strongest individual predictors of self-reported pain (from logistic regression)
 | Contact Stress | 60% | 74% |
 | **Posture** | **97%** | **98%** |
 
-Survey-only studies in the published literature typically get 60-80% accuracy; sensor-based studies get 90-99%.
-
-- All 5 of our survey-derived factors land inside the published survey-based band.
-- **Posture sits in the sensor-based band** because it uses real RULA + QEC observation inputs, not just survey data.
+- 5 survey-derived factors land at 58–62% accuracy and macro AUC 71–76%.
+- **Posture sits at 97% / AUC 98%** because it uses real RULA + QEC observation inputs, not just survey data.
 
 ### What this means for delivery companies
 Five concrete interventions, ranked by reach:
@@ -404,7 +402,7 @@ A much earlier run reported 100% accuracy for Duration. We tracked it down: even
 We surveyed each rider once. We don't know if higher pain *causes* riders to quit (so older riders are the survivors) or if longer careers *cause* the pain. Both could be true.
 
 ### 6. Sample geography
-Every rider was from Tamil Nadu. The findings may not generalise to delivery work in other Indian states or countries.
+Every rider was drawn from one regional platform deployment. The findings may not generalise to delivery work in other regions.
 
 ### 7. Sample size
 182 riders is fine for descriptive statistics but small for machine learning. Models trained on small data are sensitive to how you split it. The cross-validation results have some natural wobble (±5 percentage points).
@@ -420,7 +418,7 @@ A longitudinal study would tell us whether riders flagged as High today actually
 A: Posture uses **real ergonomic observation data** (the 11 RULA components and 8 QEC scores). It's the only model whose inputs are direct measurements of the thing it's predicting. The other models only have **survey data** to work with — they're trying to predict a risk score that was computed from a few survey columns, with all those columns excluded for fairness, so they have to infer from leftover columns. That's structurally harder.
 
 **Q: 60% sounds low — is that bad?**
-A: It's actually right in the middle of what published survey-only studies achieve (60-80%). A 2024 systematic review of 130 MSD prediction studies confirms this range. If we had wearable sensors on every rider, we'd be in the 90-99% range — but that's a different study, with different equipment.
+A: It is the realistic ceiling once each factor's defining input is excluded to prevent leakage. The macro AUC (71–76%) shows the models still rank riders correctly even when they don't always get the exact class right. A sensor-instrumented pipeline (IMU, EMG, wearable) would do better but is out of scope here.
 
 **Q: Why didn't you just use all 36 questionnaire items for every model?**
 A: We do use all 36 items, plus 18 derived/binary versions, for a total of 41-44 features per model. The Posture model also gets 19 extra observation features. The constraint is that each model excludes 1-3 features that directly **define** its own target (otherwise it would just be memorising, not learning). For Force we exclude force_exertion; for Duration we exclude working_hours_num; etc.
@@ -508,7 +506,7 @@ A: The whole pipeline — phases 1 through 9 — was built in sprints, with each
 
 **SMOTE (Synthetic Minority Over-sampling Technique).** A technique that creates synthetic examples of rare classes so the model doesn't just predict the majority class for everyone.
 
-**Stage 1 / Stage 2.** Stage 1 is computing the risk levels from published methods (deterministic, no ML). Stage 2 is training ML models that learn to predict those Stage-1 labels from a rider's profile.
+**Stage 1 / Stage 2.** Stage 1 is computing the risk levels from standard ergonomic methods (deterministic, no ML). Stage 2 is training ML models that learn to predict those Stage-1 labels from a rider's profile.
 
 **Stratified k-fold.** A version of cross-validation that keeps the class distribution balanced across folds (so each fold has roughly the same percentage of Low/Medium/High).
 
@@ -573,4 +571,4 @@ Ergonomic_Project/
 
 ## In one paragraph (the "elevator pitch" version)
 
-> We built a tool that predicts six kinds of physical-strain risk for food-delivery riders from a 36-question survey plus optional ergonomic observation. The pipeline cleans 182-rider Tamil Nadu survey data, computes Low/Medium/High risk levels on each factor using published ergonomic methods, runs statistical tests, trains six per-factor machine-learning models, and produces both a 53-slide presentation deck and an interactive web app a delivery-platform manager could use to screen new riders. Five of the six models reach 60-62% accuracy (the published norm for survey-only MSD prediction); the Posture model reaches 97% because it uses real RULA + QEC observation inputs. We documented two leakage bugs we caught and fixed, and we openly acknowledge that the per-rider posture linkage is approximate. The result is a reproducible, honest, deployable per-rider ergonomic-risk screening pipeline.
+> We built a tool that predicts six kinds of physical-strain risk for food-delivery riders from a 36-question survey plus optional ergonomic observation. The pipeline cleans 182-rider survey data, computes Low/Medium/High risk levels on each factor using standard ergonomic methods, runs statistical tests, trains six per-factor machine-learning models, and produces both a 53-slide presentation deck and an interactive web app a delivery-platform manager could use to screen new riders. Five of the six models reach 58–62% accuracy with macro AUC 71–76%; the Posture model reaches 97% accuracy and AUC 98% because it uses real RULA + QEC observation inputs. We documented two leakage bugs we caught and fixed, and we openly acknowledge that the per-rider posture linkage is approximate. The result is a reproducible, honest, deployable per-rider ergonomic-risk screening pipeline.
