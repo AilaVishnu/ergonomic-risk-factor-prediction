@@ -140,8 +140,8 @@ def main():
         "Contact Stress  Random Forest               60%   AUC 74%   (42 features)",
         "Posture         HistGradientBoosting        97%   AUC 98%   (63 features)",
         "",
-        "5 survey-derived factors land inside the 60-80% published survey-based band.",
-        "Posture uses real RULA + QEC observation inputs and reaches sensor-based range.",
+        "5 survey-derived factors land at 58-62% accuracy with macro AUC 71-76%.",
+        "Posture uses real RULA + QEC observation inputs and reaches 97% / AUC 98%.",
     ])
 
     add_image_slide(prs, "Confusion matrices (best model per factor)",
@@ -155,21 +155,21 @@ def main():
                     "feature_importance.png",
                     caption="workload_score, fatigue_score, and age_ord recur across factors")
 
-    add_text_slide(prs, "Comparison with published benchmarks", [
-        "Survey-based MSD-prediction studies typically reach 60-80% accuracy",
-        "(Annals of Occupational and Environmental Medicine 2024, review of 130 studies).",
+    add_text_slide(prs, "Per-factor positioning", [
+        "Survey-only inputs limit how high the 5 survey-derived models can go,",
+        "because each model excludes the variable that defines its own target.",
         "",
-        "Sensor-based studies (IMU / EMG / computer vision) reach 90-99% because",
-        "the inputs are direct physical signals.",
+        "The 5 survey-derived factors land at 58-62% accuracy and macro AUC 71-76%.",
         "",
-        "Our 5 survey-derived factors all land inside the survey-based band.",
+        "Macro AUC > 0.70 means the models still rank riders correctly,",
+        "even when they don't always predict the exact class.",
         "",
         "Posture uses real RULA + QEC observation inputs (not survey proxies),",
-        "so it sits in the sensor-based range at 97% / AUC 98%.",
+        "so it reaches 97% / AUC 98%.",
     ])
 
     add_text_slide(prs, "Limitations", [
-        "1. n = 182 self-report sample. Cross-sectional, single-region (Tamil Nadu).",
+        "1. n = 182 self-report sample. Cross-sectional, single-region deployment.",
         "",
         "2. Posture per-rider linkage is approximate. RULA + QEC observations shared",
         "   no rider identifier with the survey - a severity-rank merge was used.",
