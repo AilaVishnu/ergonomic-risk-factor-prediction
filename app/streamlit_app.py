@@ -35,7 +35,7 @@ VEHICLE_MAP      = {"Scooter": 1, "Motor bike": 2}
 CARRYING_MAP     = {"Bike storage / carrier": 1, "Backpack": 2, "Bike handle": 3, "Handheld": 4}
 
 GENDER_MAP     = {"Male": 1, "Female": 2}
-REGION_MAP     = {"Local": 1, "Non-Local (not Tamil Nadu)": 2}
+REGION_MAP     = {"Local": 1, "Non-Local": 2}
 MARITAL_MAP    = {"Unmarried": 0, "Married": 1}
 PLATFORM_MAP   = {"Blinkit": 1, "Zepto": 2, "Both": 3}
 BREAK_TYPE_MAP = {"Uneven": 0, "Even": 1}
