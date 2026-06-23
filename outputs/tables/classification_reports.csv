@@ -1,30 +1,30 @@
 target,model,class,precision,recall,f1,support
-force,RandomForest,Low,0.753,0.711,0.731,90
-force,RandomForest,Medium,0.434,0.404,0.418,57
-force,RandomForest,High,0.455,0.571,0.506,35
-force,RandomForest,macro avg,0.547,0.562,0.552,182
-force,RandomForest,weighted avg,0.596,0.588,0.59,182
-repetition,XGBoost,Low,0.759,0.759,0.759,79
-repetition,XGBoost,Medium,0.75,0.786,0.767,84
-repetition,XGBoost,High,0.6,0.474,0.529,19
-repetition,XGBoost,macro avg,0.703,0.673,0.685,182
-repetition,XGBoost,weighted avg,0.738,0.742,0.739,182
-duration,ExtraTrees,Low,0.587,0.73,0.651,37
-duration,ExtraTrees,Medium,0.49,0.446,0.467,56
-duration,ExtraTrees,High,0.753,0.719,0.736,89
-duration,ExtraTrees,macro avg,0.61,0.632,0.618,182
-duration,ExtraTrees,weighted avg,0.638,0.637,0.636,182
-vibration,LogReg,Low,0.671,0.701,0.686,67
-vibration,LogReg,Medium,0.431,0.324,0.37,68
-vibration,LogReg,High,0.443,0.574,0.5,47
-vibration,LogReg,macro avg,0.515,0.533,0.519,182
-vibration,LogReg,weighted avg,0.523,0.527,0.52,182
-contact_stress,Stacking,Low,0.652,0.632,0.642,68
-contact_stress,Stacking,Medium,0.548,0.586,0.567,58
-contact_stress,Stacking,High,0.63,0.607,0.618,56
-contact_stress,Stacking,macro avg,0.61,0.609,0.609,182
-contact_stress,Stacking,weighted avg,0.612,0.61,0.611,182
-posture,HistGBM,Medium,0.645,0.69,0.667,29
-posture,HistGBM,High,0.94,0.928,0.934,153
-posture,HistGBM,macro avg,0.793,0.809,0.8,182
-posture,HistGBM,weighted avg,0.893,0.89,0.892,182
+force,HistGBM,Low,0.734,0.767,0.75,90
+force,HistGBM,Medium,0.49,0.421,0.453,57
+force,HistGBM,High,0.487,0.543,0.514,35
+force,HistGBM,macro avg,0.57,0.577,0.572,182
+force,HistGBM,weighted avg,0.61,0.615,0.611,182
+repetition,RandomForest,Low,0.562,0.346,0.429,26
+repetition,RandomForest,Medium,0.593,0.622,0.607,82
+repetition,RandomForest,High,0.65,0.703,0.675,74
+repetition,RandomForest,macro avg,0.602,0.557,0.57,182
+repetition,RandomForest,weighted avg,0.612,0.615,0.609,182
+duration,RandomForest,Low,0.583,0.757,0.659,37
+duration,RandomForest,Medium,0.45,0.321,0.375,56
+duration,RandomForest,High,0.691,0.73,0.71,89
+duration,RandomForest,macro avg,0.575,0.603,0.581,182
+duration,RandomForest,weighted avg,0.595,0.61,0.597,182
+vibration,ExtraTrees,Low,0.583,0.627,0.604,67
+vibration,ExtraTrees,Medium,0.551,0.559,0.555,68
+vibration,ExtraTrees,High,0.61,0.532,0.568,47
+vibration,ExtraTrees,macro avg,0.581,0.573,0.576,182
+vibration,ExtraTrees,weighted avg,0.578,0.577,0.576,182
+contact_stress,RandomForest,Low,0.635,0.588,0.611,68
+contact_stress,RandomForest,Medium,0.525,0.552,0.538,58
+contact_stress,RandomForest,High,0.638,0.661,0.649,56
+contact_stress,RandomForest,macro avg,0.599,0.6,0.599,182
+contact_stress,RandomForest,weighted avg,0.601,0.599,0.599,182
+posture,HistGBM,Medium,0.929,0.897,0.912,29
+posture,HistGBM,High,0.981,0.987,0.984,153
+posture,HistGBM,macro avg,0.955,0.942,0.948,182
+posture,HistGBM,weighted avg,0.972,0.973,0.972,182
