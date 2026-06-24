@@ -44,3 +44,9 @@ finalize.ipynb
 # Workflow / diagnostic scratch dirs
 sandbox/
 tmp_diag/
+
+# Local IDE / editor settings
+.claude/
+.vscode/
+.cursor/
+.aider*
