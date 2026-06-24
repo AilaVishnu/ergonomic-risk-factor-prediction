@@ -60,18 +60,22 @@ QEC_KEYS  = ["qec_back", "qec_shoulder_arm", "qec_wrist_hand", "qec_neck",
 # Sample profiles - one click to populate the whole form
 PRESETS = {
     "low": {
+        # Hours and deliveries picked so deliveries/hour = 15/7 = 2.14,
+        # solidly inside the Low band AND a profile that exists in the
+        # training data (extreme short shifts don't, and the model
+        # extrapolates badly out there).
         "age": "<25", "gender": "Male", "region": "Local", "marital_status": "Unmarried",
         "income": "10,000-19,999", "education": "Degree / Master's",
         "job_duration": "<6 months",
-        "work_hours": "< 3 hrs", "work_days": "< 3", "deliveries": "<= 10",
+        "work_hours": "6-8 hrs", "work_days": "3-4", "deliveries": "11-20",
         "rest_break": "> 30 min", "type_of_break": "Even",
         "delivery_platform": "Blinkit", "vehicle": "Scooter",
         "carrying": "Bike storage / carrier",
         "tobacco": "Never", "alcohol": "Never",
         "nmq": ["No"]*9, "d7": ["No"]*4,
         "outcomes": ["No"]*5,
-        "nasa": [10, 10, 20, 20, 10, 10],  # mental, physical, time, dissatisfied, effort, frustration
-        "borg": [1, 1, 1, 1, 1, 1],
+        "nasa": [25, 25, 25, 25, 25, 25],
+        "borg": [2, 2, 2, 2, 2, 2],
         "rula": [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
         "qec":  [14, 14, 14, 10, 4, 4, 1, 1],
     },
@@ -677,6 +681,13 @@ if submitted:
         .configure_view(strokeWidth=0)
     )
     st.altair_chart(chart, use_container_width=True)
+    st.caption(
+        "Note on Posture: the 182 RULA observations in the training data have "
+        "a minimum Table-C score of 3, which is Medium. The Posture model "
+        "therefore has only Medium and High classes; Low cannot be predicted "
+        "even with mild RULA inputs. See `docs/PROJECT_REPORT.md` §15 for the "
+        "full discussion."
+    )
 
     # Summary banner
     high = sum(v == "High" for v in predictions.values())
