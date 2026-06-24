@@ -160,6 +160,15 @@ def parse_table(lines, start):
 
 def build():
     doc = Document()
+
+    # Document metadata - match the project owner so file properties
+    # don't carry the python-docx default
+    cp = doc.core_properties
+    cp.author = "Vishnu vardhan"
+    cp.last_modified_by = "Vishnu vardhan"
+    cp.title = "Ergonomic Risk Factor Prediction - Project Report"
+    cp.comments = ""
+
     s = doc.styles["Normal"]
     s.font.name = "Calibri"
     s.font.size = Pt(11)
