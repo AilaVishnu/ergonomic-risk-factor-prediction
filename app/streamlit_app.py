@@ -12,6 +12,7 @@ the trained models consume.
 
 from pathlib import Path
 
+import altair as alt
 import joblib
 import pandas as pd
 import streamlit as st
@@ -646,14 +647,36 @@ if submitted:
             level = predictions[factor]
             st.metric(nice[factor], f"{badge[level]} {level}")
 
-    # Visual bar chart of risk score (Low=1, Medium=2, High=3)
+    # Horizontal bar chart, ordered to match the metric strip, colour-coded
+    # by risk level. Altair gives us proper control over both, unlike
+    # st.bar_chart which alphabetises and accepts only a single colour.
     chart_df = pd.DataFrame({
         "Factor": [nice[f] for f in FACTORS],
-        "Risk score": [score[predictions[f]] for f in FACTORS],
+        "Level":  [predictions[f] for f in FACTORS],
+        "Score":  [score[predictions[f]] for f in FACTORS],
     })
-    st.bar_chart(chart_df, x="Factor", y="Risk score", color="#2E86AB",
-                 height=250, use_container_width=True)
-    st.caption("1 = Low, 2 = Medium, 3 = High. Anything at 3 is the headline concern.")
+    factor_order = [nice[f] for f in FACTORS]
+    chart = (
+        alt.Chart(chart_df)
+        .mark_bar(cornerRadiusEnd=4, size=26)
+        .encode(
+            y=alt.Y("Factor:N", sort=factor_order, title=None,
+                    axis=alt.Axis(labelFontSize=13, labelPadding=8)),
+            x=alt.X("Score:Q",
+                    scale=alt.Scale(domain=[0, 3]),
+                    axis=alt.Axis(values=[1, 2, 3], title=None,
+                                  labelExpr="{'1':'Low','2':'Medium','3':'High'}[datum.label]",
+                                  labelFontSize=12)),
+            color=alt.Color("Level:N",
+                            scale=alt.Scale(domain=["Low", "Medium", "High"],
+                                            range=["#2ecc71", "#f1c40f", "#e74c3c"]),
+                            legend=None),
+            tooltip=[alt.Tooltip("Factor:N"), alt.Tooltip("Level:N")],
+        )
+        .properties(height=240)
+        .configure_view(strokeWidth=0)
+    )
+    st.altair_chart(chart, use_container_width=True)
 
     # Summary banner
     high = sum(v == "High" for v in predictions.values())
