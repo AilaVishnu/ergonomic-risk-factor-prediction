@@ -66,7 +66,7 @@ exclusions remove the inputs that define the label so the model has
 to learn from the remaining profile rather than memorising the rule.
 Each classifier is evaluated by 5-fold stratified cross-validation.
 
-The two-stage split lets us audit the labels (Stage 1 is transparent)
+The two-stage split lets us audit the labels (Stage 1 is auditable by hand)
 and at the same time produce a screening tool that can run on a
 rider's profile without re-applying the ergonomic worksheets.
 
@@ -819,7 +819,7 @@ hyperparameter to the `clf` step, not the SMOTE step.
 
 ### 10.6 Cross-validation strategy
 
-Cross-validation is how we test the model honestly. We split the
+Cross-validation is how we test the model fairly. We split the
 182 riders into 5 groups, then repeat the same training-and-testing
 procedure 5 times, so that each group serves once as the test set.
 The split (`StratifiedKFold(n_splits=5, shuffle=True,
