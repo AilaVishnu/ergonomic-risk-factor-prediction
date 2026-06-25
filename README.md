@@ -21,7 +21,7 @@ Ergonomic_Project/
   data/raw/         delivery_rider_survey.csv, posture_data.xlsx
   data/processed/   cleaned.csv, model_ready.csv, risk_profile.csv
   notebooks/        01_data_cleaning … 07_evaluation (7 notebooks)
-  src/              predict.py, build_results_deck.py, finalize_deck.py
+  src/              predict.py
   app/              streamlit_app.py (web demo)
   deck/             Final.pptx + WITH_RESULTS.pptx (+ archive backups)
   outputs/          figures/, tables/, models/
@@ -38,8 +38,8 @@ Ergonomic_Project/
 | 5 Statistics          | notebooks/05_stats.ipynb               | 5 tables in outputs/tables/ |
 | 6 ML modelling        | notebooks/06_modeling.ipynb            | 6 pickled models + 5 result tables |
 | 7 Evaluation          | notebooks/07_evaluation.ipynb          | 3 figures + 3 tables |
-| 8 Results write-up    | docs/results.md                        | full mentor-facing write-up |
-| 9 Deck                | src/build_results_deck.py              | deck/...WITH_RESULTS.pptx (53 slides) |
+| 8 Results write-up    | docs/PROJECT_REPORT.md                 | full mentor-facing write-up |
+| 9 Deck                | deck/...WITH_RESULTS.pptx              | presentation slides |
 
 All 9 phases complete.
 

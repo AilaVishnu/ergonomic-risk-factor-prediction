@@ -84,11 +84,6 @@ The work is split across seven Jupyter notebooks:
 - `07_evaluation` produces confusion matrices, ROC curves, and
   feature importance plots
 
-Two helper scripts produce polished outputs. `src/build_results_deck.py`
-appends the Phase 4-7 figures and result tables onto the original
-presentation deck. `src/build_project_doc.py` builds the Word version
-of this report.
-
 The end product is a Streamlit web app where someone fills in the
 rider's questionnaire (plus optional RULA and QEC scores), clicks
 Predict, and reads six coloured risk levels.
@@ -1023,13 +1018,11 @@ python -m nbconvert --to notebook --execute notebooks/04_eda.ipynb --output 04_e
 python -m nbconvert --to notebook --execute notebooks/05_stats.ipynb --output 05_stats.ipynb
 python -m nbconvert --to notebook --execute notebooks/06_modeling.ipynb --output 06_modeling.ipynb
 python -m nbconvert --to notebook --execute notebooks/07_evaluation.ipynb --output 07_evaluation.ipynb
-python src/build_results_deck.py
-python src/build_project_doc.py
 ```
 
-All saved artefacts (CSV tables, PNG figures, PKL models, the PPTX
-deck, the DOCX write-up) are regenerated bit-identically on re-run
-(modulo PNG metadata timestamps inserted by matplotlib).
+All saved artefacts (CSV tables, PNG figures, PKL models) are
+regenerated bit-identically on re-run (modulo PNG metadata timestamps
+inserted by matplotlib).
 
 ## 15. Limitations
 
@@ -1133,10 +1126,8 @@ Ergonomic_Project/
   notebooks/                        01..07 (the seven phases)
   src/
     predict.py                      command-line predictor
-    build_results_deck.py           builds the WITH_RESULTS PowerPoint
-    build_project_doc.py            builds this Word doc
   app/streamlit_app.py              interactive demo
-  deck/                             Final.pptx and WITH_RESULTS.pptx
+  deck/                             presentation slides
   outputs/
     figures/                        all PNGs
     tables/                         result CSVs
