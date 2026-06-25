@@ -539,14 +539,17 @@ evaluated against the chi-square distribution with
 `(rows - 1) * (cols - 1)` degrees of freedom. For our 2 x 3 tables
 the degrees of freedom is 2.
 
-| Factor | chi-square | p | Significant |
-|---|---|---|---|
-| Posture | 45.67 | <0.001 | yes |
-| Force | 6.72 | 0.035 | yes |
-| Duration | 0.62 | 0.73 | no |
-| Vibration | 0.60 | 0.74 | no |
-| Contact Stress | 0.54 | 0.76 | no |
-| Repetition | 0.42 | 0.81 | no |
+**Table 1. Chi-square test of independence between each risk factor
+and self-reported 12-month discomfort.**
+
+| Factor | chi-square | dof | p | Significant |
+|---|---|---|---|---|
+| Posture | 45.67 | 1 | <0.001 | yes |
+| Repetition | 8.62 | 2 | 0.014 | yes |
+| Force | 6.72 | 2 | 0.035 | yes |
+| Duration | 0.62 | 2 | 0.73 | no |
+| Vibration | 0.60 | 2 | 0.74 | no |
+| Contact Stress | 0.54 | 2 | 0.76 | no |
 
 The very large effect on Posture partly reflects the severity-rank
 merge (see Limitations).
@@ -586,8 +589,9 @@ reporting discomfort. The odds ratio is `exp(bj)`, and the 95
 percent confidence interval is `exp(bj +/- 1.96 * SE(bj))` where
 `SE(bj)` is the standard error of the coefficient.
 
-Significant predictors (p < 0.05) reported with odds ratio and 95%
-confidence interval:
+**Table 2. Multivariable logistic regression of discomfort on rider
+profile, significant predictors (p < 0.05) reported with odds ratio
+and 95% confidence interval.**
 
 | Predictor | OR | 95% CI | p |
 |---|---|---|---|
@@ -659,6 +663,8 @@ a model see those same inputs, it would just memorise the rule
 instead of learning to predict. This is called label leakage. To
 prevent it, each target removes the inputs that define its own
 Stage-1 rule before training:
+
+**Table 3. Per-target feature exclusions and final feature count.**
 
 | Target | Excluded | Final feature count |
 |---|---|---|
@@ -1003,8 +1009,12 @@ under 25, 66 in the 25-35 band, 30 in 36-45, and 8 in 46 and above.
 scooters and 88 ride motor bikes. Blinkit accounts for 97 riders,
 Zepto for 80, with 5 working both platforms.
 
+![Figure 1. Sample profile across gender, age band, delivery platform, vehicle type, and carrying mode.](outputs/figures/demographics.png)
+
 84.6 percent of the riders reported pain in at least one body area
-in the last 12 months. The body-area prevalence:
+in the last 12 months.
+
+**Table 4. NMQ 12-month pain prevalence per body area.**
 
 | Body area | Prevalence |
 |---|---|
@@ -1022,7 +1032,13 @@ Lower back is the most-affected region, with upper back and
 shoulders close behind. The pattern is consistent across age and
 platform sub-groups.
 
+![Figure 2. NMQ 12-month pain prevalence per body area, sorted by frequency.](outputs/figures/nordic_prevalence.png)
+
+![Figure 3. Discomfort prevalence broken down by age, gender, vehicle, and carrying mode.](outputs/figures/discomfort_by_demographic.png)
+
 ### 12.1 Stage-1 risk distribution
+
+**Table 5. Stage-1 risk band counts per factor (n = 182).**
 
 | Factor | Low | Medium | High |
 |---|---|---|---|
@@ -1038,9 +1054,17 @@ High band dominates. Posture is at 84 percent High (153 of 182
 observations), Duration at 49 percent, Repetition at 41 percent
 after the binning fix.
 
+![Figure 4. Stage-1 Low / Medium / High counts per risk factor.](outputs/figures/risk_factor_distribution.png)
+
+![Figure 5. Discomfort prevalence within each Low / Medium / High band, per risk factor.](outputs/figures/risk_vs_discomfort.png)
+
+![Figure 6. Pearson correlation matrix across the numeric feature pool.](outputs/figures/correlation_heatmap.png)
+
 ### 12.2 Stage-2 model performance
 
-| Factor | Best model | Accuracy | F1 macro | AUC | Features |
+**Table 6. Best Stage-2 model per risk factor, 5-fold stratified CV.**
+
+| Factor | Best model | Accuracy | F1 macro | Macro AUC | Features |
 |---|---|---|---|---|---|
 | Force | HistGradientBoosting | 62% | 57% | 71% | 42 |
 | Repetition | RandomForest | 62% | 57% | 73% | 41 |
@@ -1054,6 +1078,24 @@ accuracy with macro AUC in the 71-76 percent range. Posture reaches
 97 percent accuracy and 98 percent AUC because it is the only model
 that receives real observation inputs (11 RULA components and 8 QEC
 scores) on top of the survey features.
+
+**Table 7. Per-class ROC AUC (one-vs-rest) for the best model per
+factor.**
+
+| Factor | Low | Medium | High |
+|---|---|---|---|
+| Force | 0.798 | 0.580 | 0.760 |
+| Repetition | 0.745 | 0.669 | 0.782 |
+| Duration | 0.822 | 0.649 | 0.797 |
+| Vibration | 0.775 | 0.615 | 0.779 |
+| Contact Stress | 0.763 | 0.651 | 0.791 |
+| Posture | - | - | 0.984 |
+
+![Figure 7. Confusion matrices for the best model per factor (rows = true class, columns = predicted class).](outputs/figures/confusion_matrices.png)
+
+![Figure 8. ROC curves (one-vs-rest) for the best model per factor.](outputs/figures/roc_curves.png)
+
+![Figure 9. Top 10 features by importance for the best model per factor.](outputs/figures/feature_importance.png)
 
 ### 12.3 Statistical predictors of discomfort
 

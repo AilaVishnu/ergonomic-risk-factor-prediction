@@ -14,6 +14,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from docx.shared import Cm, Pt, RGBColor
@@ -93,6 +94,30 @@ def add_bullet(doc, text):
     p = doc.add_paragraph(style="List Bullet")
     p.paragraph_format.space_after = Pt(2)
     add_runs(p, text)
+
+
+def add_figure(doc, caption, image_path):
+    """Embed an image with a styled caption below it."""
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.space_before = Pt(8)
+    p.paragraph_format.space_after  = Pt(2)
+    full = ROOT / image_path
+    if not full.exists():
+        r = p.add_run(f"[missing figure: {image_path}]")
+        set_font(r, "Calibri"); r.font.size = Pt(10); r.italic = True
+        return
+    run = p.add_run()
+    run.add_picture(str(full), width=Cm(15))
+    # Caption underneath
+    cp = doc.add_paragraph()
+    cp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    cp.paragraph_format.space_after = Pt(10)
+    cr = cp.add_run(caption)
+    set_font(cr, "Calibri")
+    cr.font.size = Pt(10)
+    cr.italic = True
+    cr.font.color.rgb = MUTED
 
 
 def add_code_block(doc, lines):
@@ -221,6 +246,13 @@ def build():
                 block.append(src_lines[i])
                 i += 1
             add_code_block(doc, block)
+            i += 1
+            continue
+
+        # Markdown image marker: ![caption](path)
+        img_match = re.match(r"^!\[(?P<cap>[^\]]*)\]\((?P<path>[^)]+)\)\s*$", stripped)
+        if img_match:
+            add_figure(doc, img_match.group("cap"), img_match.group("path"))
             i += 1
             continue
 
