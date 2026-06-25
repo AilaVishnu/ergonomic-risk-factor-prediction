@@ -50,6 +50,8 @@ Contact Stress, Vibration.
 
 ## 2. What the project does
 
+![Figure 1. Pipeline overview: raw inputs to interactive prediction. The two-stage split keeps the Stage-1 risk labels auditable while letting Stage 2 generalise from the rider profile to new riders.](outputs/figures/methodology_flowchart.png)
+
 The pipeline runs in two stages.
 
 **Stage 1** computes Low/Medium/High labels for the six ergonomic risk
@@ -871,6 +873,21 @@ Low/Medium/High codes. This matters specifically for the Posture
 model because its `classes` list is `[1, 2]` only (no Low class
 exists in the data).
 
+The exact hyperparameters that `GridSearchCV` settled on per target
+(introspected from the saved bundles) are listed in Table 10. These
+are the values to reproduce if you want a bit-identical refit.
+
+**Table 10. Winning hyperparameters per target.**
+
+| Factor | Best model | Tuned hyperparameters | SMOTE k |
+|---|---|---|---|
+| Force | HistGradientBoosting | `max_depth=None`, `learning_rate=0.05` | 5 |
+| Repetition | RandomForest | `n_estimators=300`, `max_depth=None`, `min_samples_leaf=1` | 5 |
+| Duration | RandomForest | `n_estimators=500`, `max_depth=5`, `min_samples_leaf=1` | 5 |
+| Vibration | ExtraTrees | `n_estimators=300`, `max_depth=None`, `min_samples_leaf=1` | 5 |
+| Contact Stress | RandomForest | `n_estimators=500`, `max_depth=None`, `min_samples_leaf=1` | 5 |
+| Posture | HistGradientBoosting | `max_depth=5`, `learning_rate=0.05` | 5 |
+
 ### 10.9 Output tables
 
 Phase 6 also saves three CSV tables so we can look at the numbers
@@ -1009,7 +1026,7 @@ under 25, 66 in the 25-35 band, 30 in 36-45, and 8 in 46 and above.
 scooters and 88 ride motor bikes. Blinkit accounts for 97 riders,
 Zepto for 80, with 5 working both platforms.
 
-![Figure 1. Sample profile across gender, age band, delivery platform, vehicle type, and carrying mode.](outputs/figures/demographics.png)
+![Figure 2. Sample profile across gender, age band, delivery platform, vehicle type, and carrying mode.](outputs/figures/demographics.png)
 
 84.6 percent of the riders reported pain in at least one body area
 in the last 12 months.
@@ -1032,9 +1049,9 @@ Lower back is the most-affected region, with upper back and
 shoulders close behind. The pattern is consistent across age and
 platform sub-groups.
 
-![Figure 2. NMQ 12-month pain prevalence per body area, sorted by frequency.](outputs/figures/nordic_prevalence.png)
+![Figure 3. NMQ 12-month pain prevalence per body area, sorted by frequency.](outputs/figures/nordic_prevalence.png)
 
-![Figure 3. Discomfort prevalence broken down by age, gender, vehicle, and carrying mode.](outputs/figures/discomfort_by_demographic.png)
+![Figure 4. Discomfort prevalence broken down by age, gender, vehicle, and carrying mode.](outputs/figures/discomfort_by_demographic.png)
 
 ### 12.1 Stage-1 risk distribution
 
@@ -1054,11 +1071,11 @@ High band dominates. Posture is at 84 percent High (153 of 182
 observations), Duration at 49 percent, Repetition at 41 percent
 after the binning fix.
 
-![Figure 4. Stage-1 Low / Medium / High counts per risk factor.](outputs/figures/risk_factor_distribution.png)
+![Figure 5. Stage-1 Low / Medium / High counts per risk factor.](outputs/figures/risk_factor_distribution.png)
 
-![Figure 5. Discomfort prevalence within each Low / Medium / High band, per risk factor.](outputs/figures/risk_vs_discomfort.png)
+![Figure 6. Discomfort prevalence within each Low / Medium / High band, per risk factor.](outputs/figures/risk_vs_discomfort.png)
 
-![Figure 6. Pearson correlation matrix across the numeric feature pool.](outputs/figures/correlation_heatmap.png)
+![Figure 7. Pearson correlation matrix across the numeric feature pool.](outputs/figures/correlation_heatmap.png)
 
 ### 12.2 Stage-2 model performance
 
@@ -1117,7 +1134,7 @@ model per factor.**
 **Table 9. Top 5 most important features per factor (from
 `feature_importances_` for tree-ensemble models). Force and Posture
 are omitted because the best model for both is HistGradientBoosting,
-which does not expose split-based importances directly; the Figure 9
+which does not expose split-based importances directly; the Figure 10
 panel is built from a parallel logistic-coefficient fit instead.**
 
 | Factor | Rank 1 | Rank 2 | Rank 3 | Rank 4 | Rank 5 |
@@ -1127,11 +1144,11 @@ panel is built from a parallel logistic-coefficient fit instead.**
 | Vibration | deliveries_num | income_ord | deliv_x_days | rest_break_num | workload_score |
 | Contact Stress | vibration_index | workload_x_fatigue | fatigue_score | workload_x_age | deliv_x_days |
 
-![Figure 7. Confusion matrices for the best model per factor (rows = true class, columns = predicted class).](outputs/figures/confusion_matrices.png)
+![Figure 8. Confusion matrices for the best model per factor (rows = true class, columns = predicted class).](outputs/figures/confusion_matrices.png)
 
-![Figure 8. ROC curves (one-vs-rest) for the best model per factor.](outputs/figures/roc_curves.png)
+![Figure 9. ROC curves (one-vs-rest) for the best model per factor.](outputs/figures/roc_curves.png)
 
-![Figure 9. Top 10 features by importance for the best model per factor.](outputs/figures/feature_importance.png)
+![Figure 10. Top 10 features by importance for the best model per factor.](outputs/figures/feature_importance.png)
 
 ### 12.3 Statistical predictors of discomfort
 
@@ -1154,15 +1171,15 @@ discomfort in this sample.
 saved bundles once via `@st.cache_resource` and exposes a form with
 six sections that together cover every column in the CSV and xlsx.
 
-![Figure 10. Web interface, header and sample-profile shortcuts above the demographic section (Q1-17).](outputs/app_screenshots/web_01_header_demographic.png)
+![Figure 11. Web interface, header and sample-profile shortcuts above the demographic section (Q1-17).](outputs/app_screenshots/web_01_header_demographic.png)
 
-![Figure 11. Web interface, Nordic Musculoskeletal Questionnaire (Q18-24).](outputs/app_screenshots/web_02_nmq.png)
+![Figure 12. Web interface, Nordic Musculoskeletal Questionnaire (Q18-24).](outputs/app_screenshots/web_02_nmq.png)
 
-![Figure 12. Web interface, NASA-TLX workload (Q25-30) and Borg CR10 fatigue (Q31-36) sliders.](outputs/app_screenshots/web_03_nasa_borg.png)
+![Figure 13. Web interface, NASA-TLX workload (Q25-30) and Borg CR10 fatigue (Q31-36) sliders.](outputs/app_screenshots/web_03_nasa_borg.png)
 
-![Figure 13. Web interface, RULA posture observation (11 inputs) and Quick Exposure Check (8 inputs) followed by the Predict button.](outputs/app_screenshots/web_04_rula_qec.png)
+![Figure 14. Web interface, RULA posture observation (11 inputs) and Quick Exposure Check (8 inputs) followed by the Predict button.](outputs/app_screenshots/web_04_rula_qec.png)
 
-![Figure 14. Web interface, predicted risk profile with colour-coded bars per factor, summary banner, and risk-band recommendations.](outputs/app_screenshots/web_05_prediction_output.png)
+![Figure 15. Web interface, predicted risk profile with colour-coded bars per factor, summary banner, and risk-band recommendations.](outputs/app_screenshots/web_05_prediction_output.png)
 
 ### 13.1 Form layout
 
