@@ -25,7 +25,7 @@ Ergonomic_Project/
   app/              streamlit_app.py (web demo)
   deck/             Final.pptx + WITH_RESULTS.pptx (+ archive backups)
   outputs/          figures/, tables/, models/
-  docs/             development_plan.md, results.md
+  docs/             PROJECT_REPORT.md / .docx
 ```
 
 ## Pipeline status
@@ -84,4 +84,3 @@ pip install pandas numpy scikit-learn scipy matplotlib seaborn xgboost \
 - `docs/PROJECT_REPORT.md` / `.docx` - single comprehensive project
   report (background, methods, results, web app, limitations,
   reproducibility, output-file index)
-- `docs/development_plan.md` - original execution plan

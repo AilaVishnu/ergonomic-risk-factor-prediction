@@ -1118,7 +1118,6 @@ Ergonomic_Project/
   README.md
   docs/
     PROJECT_REPORT.md / .docx       this write-up
-    development_plan.md             original execution plan
   data/
     raw/                            delivery_rider_survey.csv, posture_data.xlsx
     processed/                      cleaned.csv, model_ready.csv, risk_profile.csv
