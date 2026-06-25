@@ -278,9 +278,10 @@ Four single numbers summarise heavy chunks of the survey. Combining
 related items into one composite score makes the downstream models
 easier to interpret and reduces noise.
 
-**Workload score.** Mean of the six NASA-TLX items, with the
-satisfaction item (Q28) reversed so the composite runs in
-load-direction:
+**Workload score.** The six NASA-TLX items are averaged into one
+overall workload measure. The satisfaction item (Q28) is reversed
+first, because a higher satisfaction score actually means lower
+mental load:
 
 ```
 workload_score = (mental + physical + time_pressure
@@ -292,24 +293,27 @@ In the web form the satisfaction slider is re-labelled as
 "dissatisfied" so the user sees a single load-direction scale and
 the reversal is no longer needed at the form layer.
 
-**Fatigue score.** Mean of the six Borg CR10 items:
+**Fatigue score.** The six Borg CR10 items are similarly averaged
+into a single physical-fatigue measure. No reversal is needed
+because all six items already point the same way (higher means
+harder):
 
 ```
 fatigue_score = (overall + legs + breathing
                  + lifting + traffic + exhaustion) / 6
 ```
 
-**Force exertion.** The Borg lifting / carrying item, pulled out
-as its own feature because Phase 3 uses it directly to bin the
-Force risk level:
+**Force exertion.** Phase 3 needs a separate force measurement (the
+Borg lifting/carrying item) to compute the Force risk level, so we
+pull that single item out as its own feature:
 
 ```
 force_exertion = borg_lifting
 ```
 
-**Vibration index.** A proxy for hand-arm vibration exposure
-(no per-rider accelerometer was available): vehicle type multiplied
-by working hours per day:
+**Vibration index.** Without an actual vibration sensor, we
+approximate exposure by multiplying the vehicle type (scooters
+vibrate less than motorbikes) by working hours per day:
 
 ```
 vibration_index = vehicle_rank * work_hours_num
@@ -320,9 +324,11 @@ more than 8 hours).
 
 ### 6.6 Interaction features
 
-Five product-form features to capture combined effects (older rider
-plus high workload, fatigued rider plus long tenure, and so on)
-that are not picked up by the additive terms alone:
+Sometimes the effect of two factors together is bigger than either
+one alone. An older rider with high workload is at extra risk on top
+of what age and workload would each suggest separately. We add five
+features that capture these combinations by multiplying the relevant
+inputs:
 
 - `workload_x_fatigue = workload_score * fatigue_score / 100`
 - `workload_x_age     = workload_score * age_ord / 10`
@@ -407,19 +413,23 @@ Sample distribution: Low 90, Medium 57, High 35.
 
 ### 7.2 Repetition
 
-Deliveries per hour:
+The Repetition factor is about how fast a rider works: how many
+deliveries they make per hour:
 
 ```
 deliveries_per_hour = deliveries_num / work_hours_num
 ```
 
-The first version binned by sample tercile
-(`pd.qcut(deliveries_per_hour, q=3)`). The 66.7th percentile fell
-exactly on 3.889 dph (= 35 deliveries / 9 hours, the worst real
-combination), and 55 of the 182 riders tied at that value. Because
-`pd.qcut` is right-inclusive at the upper edge, all 55 landed in
-Medium and the Stage-2 model could never predict High for that
-combination. Phase 3 now uses fixed cuts instead:
+The first version of the binning split the riders into three equal-
+sized groups (using `pd.qcut(deliveries_per_hour, q=3)`). That ran
+into a real problem. The boundary between the Medium and High groups
+landed on the value 3.889 deliveries per hour, which happens to be
+exactly 35 deliveries over 9 hours. 55 of the 182 riders worked at
+that pace. Because of how `pd.qcut` resolves boundaries, all 55 of
+them fell into the Medium group. The model never saw a High example
+that matched the busiest real schedule and so could never predict
+High for that rider. Phase 3 now uses fixed cuts instead of equal-
+sized groups:
 
 ```
 deliveries_per_hour <= 2.5  -> Low
@@ -506,12 +516,19 @@ Phase 5 (`notebooks/05_stats.ipynb`) runs two analyses.
 
 ### 9.1 Chi-square test (factor vs discomfort)
 
-For each of the six risk factors we build a 2 x 3 contingency
-table (discomfort = 0/1 vs risk = Low/Medium/High) and run the
-chi-square test of independence with
-`scipy.stats.chi2_contingency` at p < 0.05.
+The chi-square test asks a simple question: are riders in the High
+band of this risk factor more likely to report discomfort than
+riders in the Low band, beyond what random chance would explain?
 
-The Pearson chi-square statistic:
+For each of the six risk factors, we build a small 2 by 3 table
+counting how many riders reported discomfort and how many did not,
+broken down by Low / Medium / High. The chi-square test of
+independence (`scipy.stats.chi2_contingency`) compares the observed
+counts against the counts we would expect if discomfort and risk
+were unrelated. We treat p < 0.05 as significant.
+
+The Pearson chi-square statistic adds up the squared differences
+between observed and expected, scaled by expected:
 
 ```
 chi2 = sum_over_cells((observed - expected)^2 / expected)
@@ -536,12 +553,20 @@ merge (see Limitations).
 
 ### 9.2 Multivariable logistic regression
 
-`statsmodels.api.Logit` is fit with discomfort as the outcome and
-these predictors: workload_score, age_ord, job_duration_ord,
-fatigue_score, income_ord, education_ord, deliveries_num,
-work_hours_num, vehicle_rank, carrying_contact_rank, gender_rank.
+A chi-square test treats one factor at a time. Logistic regression
+goes one step further: it estimates the effect of each predictor
+while controlling for the others, so we can tell whether (say) age
+is still a significant predictor of discomfort after accounting for
+work hours and workload.
 
-The model:
+We fit a logistic regression (`statsmodels.api.Logit`) with
+discomfort as the outcome and these predictors: workload_score,
+age_ord, job_duration_ord, fatigue_score, income_ord, education_ord,
+deliveries_num, work_hours_num, vehicle_rank, carrying_contact_rank,
+gender_rank.
+
+The model itself estimates the probability that a rider reports
+discomfort as a function of their profile:
 
 ```
 P(discomfort = 1 | X) = 1 / (1 + exp(-(b0 + b1*x1 + b2*x2 + ... + bk*xk)))
@@ -553,9 +578,13 @@ equivalently
 logit(P) = log(P / (1 - P)) = b0 + b1*x1 + b2*x2 + ... + bk*xk
 ```
 
-Coefficients `bj` are fit by maximum likelihood (Newton-Raphson).
-The odds ratio for each predictor is `exp(bj)`, with the 95 percent
-CI given by `exp(bj +/- 1.96 * SE(bj))`.
+The coefficients `bj` are fit by maximum likelihood (Newton-Raphson
+iterations under the hood). The result for each predictor is
+typically reported as an odds ratio. An odds ratio of 2 means that
+each one-unit increase in that predictor doubles the odds of
+reporting discomfort. The odds ratio is `exp(bj)`, and the 95
+percent confidence interval is `exp(bj +/- 1.96 * SE(bj))` where
+`SE(bj)` is the standard error of the coefficient.
 
 Significant predictors (p < 0.05) reported with odds ratio and 95%
 confidence interval:
