@@ -1091,6 +1091,42 @@ factor.**
 | Contact Stress | 0.763 | 0.651 | 0.791 |
 | Posture | - | - | 0.984 |
 
+**Table 8. Per-class precision, recall, F1, and support for the best
+model per factor.**
+
+| Factor | Class | Precision | Recall | F1 | Support |
+|---|---|---|---|---|---|
+| Force | Low | 0.734 | 0.767 | 0.750 | 90 |
+| Force | Medium | 0.490 | 0.421 | 0.453 | 57 |
+| Force | High | 0.487 | 0.543 | 0.514 | 35 |
+| Repetition | Low | 0.562 | 0.346 | 0.429 | 26 |
+| Repetition | Medium | 0.593 | 0.622 | 0.607 | 82 |
+| Repetition | High | 0.650 | 0.703 | 0.675 | 74 |
+| Duration | Low | 0.583 | 0.757 | 0.659 | 37 |
+| Duration | Medium | 0.450 | 0.321 | 0.375 | 56 |
+| Duration | High | 0.691 | 0.730 | 0.710 | 89 |
+| Vibration | Low | 0.583 | 0.627 | 0.604 | 67 |
+| Vibration | Medium | 0.551 | 0.559 | 0.555 | 68 |
+| Vibration | High | 0.610 | 0.532 | 0.568 | 47 |
+| Contact Stress | Low | 0.658 | 0.588 | 0.621 | 68 |
+| Contact Stress | Medium | 0.526 | 0.552 | 0.539 | 58 |
+| Contact Stress | High | 0.617 | 0.661 | 0.638 | 56 |
+| Posture | Medium | 0.724 | 0.724 | 0.724 | 29 |
+| Posture | High | 0.948 | 0.948 | 0.948 | 153 |
+
+**Table 9. Top 5 most important features per factor (from
+`feature_importances_` for tree-ensemble models). Force and Posture
+are omitted because the best model for both is HistGradientBoosting,
+which does not expose split-based importances directly; the Figure 9
+panel is built from a parallel logistic-coefficient fit instead.**
+
+| Factor | Rank 1 | Rank 2 | Rank 3 | Rank 4 | Rank 5 |
+|---|---|---|---|---|---|
+| Repetition | income_ord | vibration_index | fatigue_score | workload_x_fatigue | out_riding_worsens |
+| Duration | deliveries_num | deliv_x_days | income_ord | fatigue_x_jobdur | rest_break_num |
+| Vibration | deliveries_num | income_ord | deliv_x_days | rest_break_num | workload_score |
+| Contact Stress | vibration_index | workload_x_fatigue | fatigue_score | workload_x_age | deliv_x_days |
+
 ![Figure 7. Confusion matrices for the best model per factor (rows = true class, columns = predicted class).](outputs/figures/confusion_matrices.png)
 
 ![Figure 8. ROC curves (one-vs-rest) for the best model per factor.](outputs/figures/roc_curves.png)
@@ -1117,6 +1153,16 @@ discomfort in this sample.
 `app/streamlit_app.py` is the interactive demo. It loads the six
 saved bundles once via `@st.cache_resource` and exposes a form with
 six sections that together cover every column in the CSV and xlsx.
+
+![Figure 10. Web interface, header and sample-profile shortcuts above the demographic section (Q1-17).](outputs/app_screenshots/web_01_header_demographic.png)
+
+![Figure 11. Web interface, Nordic Musculoskeletal Questionnaire (Q18-24).](outputs/app_screenshots/web_02_nmq.png)
+
+![Figure 12. Web interface, NASA-TLX workload (Q25-30) and Borg CR10 fatigue (Q31-36) sliders.](outputs/app_screenshots/web_03_nasa_borg.png)
+
+![Figure 13. Web interface, RULA posture observation (11 inputs) and Quick Exposure Check (8 inputs) followed by the Predict button.](outputs/app_screenshots/web_04_rula_qec.png)
+
+![Figure 14. Web interface, predicted risk profile with colour-coded bars per factor, summary banner, and risk-band recommendations.](outputs/app_screenshots/web_05_prediction_output.png)
 
 ### 13.1 Form layout
 
