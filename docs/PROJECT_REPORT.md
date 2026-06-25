@@ -198,7 +198,12 @@ Phase 2 (`notebooks/02_feature_engineering.ipynb`) builds
 
 ### 6.1 Ordinal encodings
 
-Categorical bins that have a natural order get integer codes:
+A machine-learning model cannot work directly with text answers like
+"25-35" or "Degree". We convert each ordered category into a number,
+preserving the order. For example, the age band gets a code from 0
+(under 25) to 3 (46 or older), and similar codes are assigned to
+education, income, job duration, hours per day, days per week,
+deliveries per day, and rest-break duration:
 
 - `age_ord`: `<25` -> 0, `25-35` -> 1, `36-45` -> 2, `>=46` -> 3
 - `education_ord`: `Middle / Primary school` -> 0, `High school` -> 1,
@@ -214,7 +219,9 @@ Categorical bins that have a natural order get integer codes:
 - `rest_break_ord`: `<5 min` -> 0, `5-15` -> 1, `16-30` -> 2,
   `>30 min` -> 3
 
-Phase 2 Step 5b adds seven additional ranks:
+The same idea is applied to the remaining demographic and lifestyle
+items in Step 5b. Each category is given a numeric rank in the order
+that makes physical sense:
 
 - `gender_rank`: `Male` -> 1, `Female` -> 2
 - `region_rank`: `Local` -> 1, `Non-Local` -> 2
@@ -227,8 +234,11 @@ Phase 2 Step 5b adds seven additional ranks:
 
 ### 6.2 Numeric midpoints
 
-Bin ranges that need a number for an arithmetic formula get a
-sensible midpoint:
+Some bins need to be used in arithmetic later (for example, computing
+deliveries per hour). For those, we assign each bin a sensible
+midpoint value rather than just an order code. A rider in the "6-8
+hours" band is treated as working 7 hours, the "11-20 deliveries"
+band as 15 deliveries, and so on:
 
 - `work_hours_num`: `<3 hrs` -> 2, `3-5` -> 4, `6-8` -> 7, `>8` -> 9
 - `deliveries_num`: `<=10` -> 5, `11-20` -> 15, `21-30` -> 25,
@@ -239,16 +249,21 @@ sensible midpoint:
 
 ### 6.3 Vehicle and carrying mode ranks
 
-- `vehicle_rank`: `Scooter` -> 1, `Motor bike` -> 2 (motorbikes
-  transmit more vibration than scooters)
+Vehicle type and the way a rider carries packages both affect
+ergonomic exposure, so each is given a rank. Motorbikes vibrate more
+than scooters; a handheld bag stays in contact with the body more
+than a fitted bike-storage box:
+
+- `vehicle_rank`: `Scooter` -> 1, `Motor bike` -> 2
 - `carrying_contact_rank`: `Bike storage / carrier` -> 1,
-  `Backpack` -> 2, `Bike handle` -> 3, `Handheld` -> 4 (ordered
-  from least to most body contact)
+  `Backpack` -> 2, `Bike handle` -> 3, `Handheld` -> 4
 
 ### 6.4 Binary aliases
 
-Phase 2 Step 4b creates short-named copies of the 18 Yes/No survey
-items so the feature pool remains readable:
+The survey contains 18 Yes/No items: 9 NMQ 12-month pain items, 4
+seven-day discomfort items, and 5 follow-up questions. Their original
+column names are long (the full survey question text). Step 4b makes
+short-named copies of each so later code stays readable:
 
 - `nmq_neck`, `nmq_shoulders`, `nmq_upper_back`, `nmq_lower_back`,
   `nmq_elbows`, `nmq_wrists_hands`, `nmq_hips_thighs`, `nmq_knees`,
@@ -259,8 +274,14 @@ items so the feature pool remains readable:
 
 ### 6.5 Composite scores
 
-**Workload score.** Mean of the six NASA-TLX items, with the
-satisfaction item (Q28) reversed so that 100 always means heavy load:
+Four single numbers summarise heavy chunks of the survey. Combining
+related items into one composite score makes the downstream models
+easier to interpret and reduces noise.
+
+**Workload score.** The six NASA-TLX items are averaged into one
+overall workload measure. The satisfaction item (Q28) is reversed
+first, because a higher satisfaction score actually means lower
+mental load:
 
 ```
 workload_score = (mental + physical + time_pressure
@@ -272,20 +293,27 @@ In the web form the satisfaction slider is re-labelled as
 "dissatisfied" so the user sees a single load-direction scale and
 the reversal is no longer needed at the form layer.
 
-**Fatigue score.** Simple mean of the six Borg CR10 items:
+**Fatigue score.** The six Borg CR10 items are similarly averaged
+into a single physical-fatigue measure. No reversal is needed
+because all six items already point the same way (higher means
+harder):
 
 ```
 fatigue_score = (overall + legs + breathing
                  + lifting + traffic + exhaustion) / 6
 ```
 
-**Force exertion.** The Borg lifting/carrying item by itself:
+**Force exertion.** Phase 3 needs a separate force measurement (the
+Borg lifting/carrying item) to compute the Force risk level, so we
+pull that single item out as its own feature:
 
 ```
 force_exertion = borg_lifting
 ```
 
-**Vibration index.** Vehicle type times working hours:
+**Vibration index.** Without an actual vibration sensor, we
+approximate exposure by multiplying the vehicle type (scooters
+vibrate less than motorbikes) by working hours per day:
 
 ```
 vibration_index = vehicle_rank * work_hours_num
@@ -296,8 +324,11 @@ more than 8 hours).
 
 ### 6.6 Interaction features
 
-Five product-form interactions are added so tree models can pick up
-non-additive effects:
+Sometimes the effect of two factors together is bigger than either
+one alone. An older rider with high workload is at extra risk on top
+of what age and workload would each suggest separately. We add five
+features that capture these combinations by multiplying the relevant
+inputs:
 
 - `workload_x_fatigue = workload_score * fatigue_score / 100`
 - `workload_x_age     = workload_score * age_ord / 10`
@@ -310,20 +341,35 @@ single-digit ranges so they do not dominate the feature scale.
 
 ### 6.7 Outcome variable
 
+The Phase 5 statistical analysis needs a single Yes/No outcome to
+compare against. We define "discomfort" as 1 if the rider reported
+pain in any of the 9 NMQ body areas in the last 12 months, otherwise
+0:
+
 ```
 discomfort = 1 if any nmq_* == 1 else 0
 ```
 
-This is the binary outcome used by Phase 5 (chi-square, logistic
-regression). It is not used as an input to any of the six Stage-2
-classifiers.
+This is only used as the outcome inside the statistical models. It
+is not fed as an input to any of the six Stage-2 risk classifiers,
+because those predict the Stage-1 risk labels, not discomfort.
 
 ### 6.8 Severity-rank merge for posture observations
 
-The posture observations do not carry rider IDs. Phase 2 Step 8
-performs a rank-to-rank merge:
+The posture xlsx file contains 182 RULA and QEC observation records,
+but they do not carry any rider identifier. There is no direct way
+to say "this observation belongs to rider 57". Phase 2 Step 8
+handles this with a severity-rank merge. The idea is simple: the
+rider who looks the most strained based on the survey is paired with
+the observation that has the worst RULA score, and so on down the
+list.
 
-1. Compute a per-rider exposure-severity score:
+The five steps:
+
+1. Compute an exposure-severity score for each rider. It combines
+   reported pain count, fatigue score, and working hours per day,
+   each normalised to its maximum so they contribute on the same
+   scale:
 
 ```
 exposure_severity = (nmq_count / nmq_count.max()
@@ -334,20 +380,21 @@ exposure_severity = (nmq_count / nmq_count.max()
 where `nmq_count` is the count of "Yes" answers across the 9 NMQ
 12-month items.
 
-2. Rank riders by `exposure_severity` descending (`method='first'`
-   for tie-breaking), giving each rider a rank 1 to 182.
-3. Concatenate the posture xlsx sheets and drop any rows where
-   `rula_table_c` is missing. Fill remaining NaN cells in the
-   muscle/force columns with 0 (the "no static or repetitive
-   component" default for the standard worksheet).
-4. Sort the posture rows by `rula_table_c` descending and assign
-   posture rank 1 to 182.
-5. Inner-join survey rows and posture rows on the shared rank
-   column. Every rider ends up paired with one posture observation.
+2. Sort riders by their severity score from most to least severe.
+   The most-strained rider gets rank 1, the least gets rank 182.
+3. Read and concatenate the posture xlsx sheets. Drop any rows that
+   have no RULA Table C value. Fill any blank muscle/force cells
+   with 0, which is the standard worksheet's default for "no static
+   or repetitive component".
+4. Sort the posture rows by RULA Table C from highest (worst) to
+   lowest (best). The worst observation gets rank 1, the mildest
+   gets rank 182.
+5. Match rank 1 to rank 1, rank 2 to rank 2, and so on. Every rider
+   ends up paired with one posture observation.
 
-The implication: a rider's "own" RULA score is approximate, not a
-direct measurement of that specific rider. This is discussed under
-Limitations.
+The honest implication is that a rider's "own" RULA score is
+approximate, not a direct measurement of that specific person. This
+is discussed under Limitations.
 
 ## 7. Phase 3: Risk scoring
 
@@ -366,19 +413,23 @@ Sample distribution: Low 90, Medium 57, High 35.
 
 ### 7.2 Repetition
 
-Deliveries per hour:
+The Repetition factor is about how fast a rider works: how many
+deliveries they make per hour:
 
 ```
 deliveries_per_hour = deliveries_num / work_hours_num
 ```
 
-Earlier versions used `pd.qcut(deliveries_per_hour, q=3)`. The
-66.7th percentile fell on 3.889 dph (the worst real combination,
-35 deliveries over 9 hours), and 55 of 182 riders tied at that
-value. `pd.qcut` is right-inclusive at the upper edge, so all 55
-tied riders landed in Medium. The Stage-2 model could not predict
-High for the worst real combination no matter what features it was
-given. Phase 3 now uses fixed cuts:
+The first version of the binning split the riders into three equal-
+sized groups (using `pd.qcut(deliveries_per_hour, q=3)`). That ran
+into a real problem. The boundary between the Medium and High groups
+landed on the value 3.889 deliveries per hour, which happens to be
+exactly 35 deliveries over 9 hours. 55 of the 182 riders worked at
+that pace. Because of how `pd.qcut` resolves boundaries, all 55 of
+them fell into the Medium group. The model never saw a High example
+that matched the busiest real schedule and so could never predict
+High for that rider. Phase 3 now uses fixed cuts instead of equal-
+sized groups:
 
 ```
 deliveries_per_hour <= 2.5  -> Low
@@ -465,12 +516,19 @@ Phase 5 (`notebooks/05_stats.ipynb`) runs two analyses.
 
 ### 9.1 Chi-square test (factor vs discomfort)
 
-For each of the six risk factors, a 2 x 3 contingency table is
-built (discomfort = 0/1 vs risk = Low/Medium/High) and the
-chi-square test of independence is run with
-`scipy.stats.chi2_contingency` at significance threshold p < 0.05.
+The chi-square test asks a simple question: are riders in the High
+band of this risk factor more likely to report discomfort than
+riders in the Low band, beyond what random chance would explain?
 
-The Pearson chi-square statistic is
+For each of the six risk factors, we build a small 2 by 3 table
+counting how many riders reported discomfort and how many did not,
+broken down by Low / Medium / High. The chi-square test of
+independence (`scipy.stats.chi2_contingency`) compares the observed
+counts against the counts we would expect if discomfort and risk
+were unrelated. We treat p < 0.05 as significant.
+
+The Pearson chi-square statistic adds up the squared differences
+between observed and expected, scaled by expected:
 
 ```
 chi2 = sum_over_cells((observed - expected)^2 / expected)
@@ -495,12 +553,20 @@ merge (see Limitations).
 
 ### 9.2 Multivariable logistic regression
 
-`statsmodels.api.Logit` fit with discomfort as outcome and the
-following predictors: workload_score, age_ord, job_duration_ord,
-fatigue_score, income_ord, education_ord, deliveries_num,
-work_hours_num, vehicle_rank, carrying_contact_rank, gender_rank.
+A chi-square test treats one factor at a time. Logistic regression
+goes one step further: it estimates the effect of each predictor
+while controlling for the others, so we can tell whether (say) age
+is still a significant predictor of discomfort after accounting for
+work hours and workload.
 
-The logistic model is
+We fit a logistic regression (`statsmodels.api.Logit`) with
+discomfort as the outcome and these predictors: workload_score,
+age_ord, job_duration_ord, fatigue_score, income_ord, education_ord,
+deliveries_num, work_hours_num, vehicle_rank, carrying_contact_rank,
+gender_rank.
+
+The model itself estimates the probability that a rider reports
+discomfort as a function of their profile:
 
 ```
 P(discomfort = 1 | X) = 1 / (1 + exp(-(b0 + b1*x1 + b2*x2 + ... + bk*xk)))
@@ -512,10 +578,13 @@ equivalently
 logit(P) = log(P / (1 - P)) = b0 + b1*x1 + b2*x2 + ... + bk*xk
 ```
 
-with maximum-likelihood fitting via the Newton-Raphson iterations
-that statsmodels uses by default. The odds ratio for predictor `j`
-is `exp(bj)`, and the 95% confidence interval for the OR is
-`exp(bj +/- 1.96 * SE(bj))`.
+The coefficients `bj` are fit by maximum likelihood (Newton-Raphson
+iterations under the hood). The result for each predictor is
+typically reported as an odds ratio. An odds ratio of 2 means that
+each one-unit increase in that predictor doubles the odds of
+reporting discomfort. The odds ratio is `exp(bj)`, and the 95
+percent confidence interval is `exp(bj +/- 1.96 * SE(bj))` where
+`SE(bj)` is the standard error of the coefficient.
 
 Significant predictors (p < 0.05) reported with odds ratio and 95%
 confidence interval:
@@ -541,7 +610,10 @@ of the six targets.
 
 ### 10.1 Feature pool
 
-The survey feature pool used by all six targets has 44 features:
+A "feature pool" is the full list of inputs the model is allowed to
+look at. All five survey-based factors share the same starting pool
+of 44 features, which is everything we engineered in Phase 2 minus
+the items unique to the observation worksheets:
 
 ```python
 feature_pool = [
@@ -563,7 +635,9 @@ feature_pool = [
 ]
 ```
 
-Posture additionally receives 11 RULA components and 8 QEC scores:
+The Posture model is special. On top of the 44 survey features, it
+also gets the 11 RULA components and the 8 QEC scores. These are the
+real ergonomic observation inputs:
 
 ```python
 rula_components = [
@@ -579,8 +653,12 @@ qec_scores = [
 
 ### 10.2 Per-target exclusions
 
-To avoid trivial label leakage, each target excludes the inputs that
-define its own Stage-1 rule:
+There is one important fairness rule. Phase 3 uses certain survey
+inputs directly to decide the Low/Medium/High label. If we then let
+a model see those same inputs, it would just memorise the rule
+instead of learning to predict. This is called label leakage. To
+prevent it, each target removes the inputs that define its own
+Stage-1 rule before training:
 
 | Target | Excluded | Final feature count |
 |---|---|---|
@@ -591,110 +669,134 @@ define its own Stage-1 rule:
 | Contact Stress | `carrying_contact_rank`, `work_hours_num` | 42 |
 | Posture | (none from the survey pool) | 44 + 11 + 8 = 63 |
 
-`vibration_index` had to be added to the Duration exclusion list
-after an earlier run reported 100 percent CV accuracy. The trees
-were reconstructing `work_hours_num` from
-`vibration_index = vehicle_rank * work_hours_num`. The fix and
-result are documented in the Limitations section.
+A note on Duration: `vibration_index` had to be added to its
+exclusion list after an earlier run reported a suspicious 100 percent
+accuracy. The decision trees had figured out that
+`vibration_index = vehicle_rank * work_hours_num`, so they were
+recovering `work_hours_num` indirectly even though we had blocked it
+directly. The fix is documented in the Limitations section.
 
-For Posture, the derived RULA Table A, B, and C scores are NOT
-included because `posture_risk` is computed by binning
-`rula_table_c`. Including any of them would be direct leakage. The
-11 components and 8 QEC scores are included because they are the
-raw inputs the observer recorded; the model has to learn the lookup
-relationships between them and the Stage-1 label.
+For Posture, the derived RULA Table A, B, and C scores are also
+left out, even though they sit in the same xlsx file. The Posture
+Stage-1 label is just `rula_table_c` divided into bands, so handing
+that column to the model would be like giving it the answer key.
+The 11 raw components and 8 QEC scores are fine, because the model
+has to learn the lookup relationship between them and the final
+band.
 
 ### 10.3 The seven candidate algorithms
 
-For each of the six targets we evaluate seven algorithms and pick the
-best by F1 macro.
+We do not commit to a single algorithm up front. For each of the
+six targets, we train seven different classifiers and pick whichever
+one performs best (measured by F1 macro, defined later). The seven
+candidates cover a wide range of model families:
 
-**LogisticRegression** (`sklearn.linear_model`). Linear model that
-fits log-odds of class membership via maximum likelihood with L2
-regularisation by default. Configuration: `class_weight='balanced'`
-to weight minority classes inversely to their frequency,
-`max_iter=2000` to ensure convergence on this dataset,
-`random_state=42`. The tuned hyperparameter is the inverse
-regularisation strength `C` over `{0.1, 1.0, 10.0}`.
+**LogisticRegression** (`sklearn.linear_model`). The simplest of
+the seven. It draws a straight (linear) boundary between classes
+and is the same family as the statistical model in Phase 5. We
+configure it with `class_weight='balanced'` so minority classes are
+not ignored, `max_iter=2000` so it has enough iterations to settle
+on a final fit, and `random_state=42`. The one hyperparameter we
+tune is the regularisation strength `C` across `{0.1, 1.0, 10.0}`,
+which controls how much the model is penalised for using large
+coefficients.
 
-**DecisionTreeClassifier** (`sklearn.tree`). A single CART tree that
-recursively splits the feature space to maximise child-node purity
-(Gini impurity by default). Configuration:
-`class_weight='balanced'`, `random_state=42`. Tuned: `max_depth`
-over `{3, 5, 7}` and `min_samples_leaf` over `{1, 3, 5}` to control
-overfitting on the 182-row sample.
+**DecisionTreeClassifier** (`sklearn.tree`). A single tree that
+asks a series of Yes/No questions about the features and lands the
+rider in a leaf with a predicted class. With only 182 rows the tree
+can easily memorise the data, so we tune `max_depth` over
+`{3, 5, 7}` to limit how many questions deep it can go and
+`min_samples_leaf` over `{1, 3, 5}` to require each leaf to cover
+at least a few riders. Class balance and random seed are the same
+as Logistic Regression.
 
-**RandomForestClassifier** (`sklearn.ensemble`). A bagging ensemble
-of CART trees, each trained on a bootstrap sample of the training
-data and each split considering a random subset of features. The
-class prediction is the modal class across trees. Configuration:
-`class_weight='balanced'`, `random_state=42`. Tuned: `n_estimators`
-over `{300, 500}` and `max_depth` over `{5, 10, None}`.
+**RandomForestClassifier** (`sklearn.ensemble`). A forest of many
+trees, each trained on a slightly different random subsample of the
+data and looking at a random subset of features at each split. The
+final prediction is the most-voted class across the forest. This
+averaging usually makes the forest more accurate and more stable
+than any single tree. Tuned: `n_estimators` (300 or 500 trees) and
+`max_depth` (5, 10, or unlimited).
 
-**ExtraTreesClassifier** (`sklearn.ensemble`). Like Random Forest
-but each split threshold is chosen at random instead of via the
-best Gini reduction. This further reduces variance at the cost of
-a small bias increase, often helpful on small samples.
-Configuration and grid identical to Random Forest.
+**ExtraTreesClassifier** (`sklearn.ensemble`). A close cousin of
+Random Forest, but each split point inside a tree is chosen
+randomly instead of being optimised. The extra randomness reduces
+variance further and often helps on small samples like ours.
+Configuration and tuned hyperparameter grid are identical to Random
+Forest.
 
-**HistGradientBoostingClassifier** (`sklearn.ensemble`). A
-histogram-binned implementation of gradient boosting. Each tree
-fits the negative gradient of the cross-entropy loss with respect
-to the current ensemble prediction. Configuration:
-`random_state=42`. Tuned: `max_depth` over `{3, 5, None}` and
-`learning_rate` over `{0.05, 0.1}`.
+**HistGradientBoostingClassifier** (`sklearn.ensemble`). Boosting
+builds trees one after the other, with each new tree trying to fix
+the mistakes the previous trees made. The "Hist" version groups
+similar values into bins for speed and works very well on tabular
+data like ours. Tuned: `max_depth` (3, 5, or unlimited) and
+`learning_rate` (0.05 or 0.1), which controls how much each new
+tree is allowed to change the running prediction.
 
-**XGBClassifier** (`xgboost`). Gradient-boosted trees with L1/L2
-regularisation on leaf weights and shrinkage. Configuration:
-`eval_metric='mlogloss'` for multi-class log-loss tracking,
-`verbosity=0`, `random_state=42`. Tuned: `n_estimators` over
-`{200, 400}`, `max_depth` over `{3, 4, 6}`, `learning_rate` over
-`{0.05, 0.1}`.
+**XGBClassifier** (`xgboost`). Another boosted-trees implementation
+that adds an extra regularisation term, often topping leaderboards
+on tabular problems. We track multi-class log-loss during fitting
+(`eval_metric='mlogloss'`), keep the console quiet
+(`verbosity=0`), and fix the random seed. Tuned: `n_estimators`
+(200 or 400 trees), `max_depth` (3, 4, or 6), `learning_rate` (0.05
+or 0.1).
 
-**StackingClassifier** (`sklearn.ensemble`). A meta-ensemble whose
-final estimator (Logistic Regression with
-`class_weight='balanced'`, `max_iter=2000`, `random_state=42`) is
-trained on the out-of-fold predictions of four base learners: a
-RandomForest (`n_estimators=300`, `max_depth=8`), an ExtraTrees
-(same), an XGBoost (`n_estimators=300`, `max_depth=4`,
-`learning_rate=0.1`), and a HistGBM (`max_depth=5`,
-`learning_rate=0.1`). Internal stacking uses `cv=3`. No additional
-hyperparameter grid is searched at the stacking level.
+**StackingClassifier** (`sklearn.ensemble`). The most complex of
+the seven. Stacking takes the predictions of several base models
+and feeds them into a final model that learns the best way to
+combine them. We use four base models: a Random Forest
+(`n_estimators=300`, `max_depth=8`), an Extra Trees with the same
+settings, an XGBoost (`n_estimators=300`, `max_depth=4`,
+`learning_rate=0.1`), and a Hist Gradient Boosting (`max_depth=5`,
+`learning_rate=0.1`). The final combiner is a Logistic Regression
+with balanced class weights. Internal three-fold stacking is used.
+No additional grid search is run at the stacking level because the
+base models inside it are already tuned.
 
 ### 10.4 SMOTE oversampling
 
-SMOTE (Synthetic Minority Over-sampling Technique) generates
-synthetic training examples for minority classes by linearly
-interpolating between an existing minority sample and one of its
-k nearest minority neighbours. For a minority sample `x_i` and one
-of its k nearest minority neighbours `x_nn` chosen at random, the
-synthetic sample is
+Several of the risk factors have a small class. Repetition has only
+26 Low riders, Posture has only 29 Medium observations. A model
+trained on this kind of skewed data tends to play it safe by
+predicting the majority class for everyone, which gives high raw
+accuracy but is useless as a screening tool.
+
+SMOTE (Synthetic Minority Over-sampling Technique) fixes this by
+generating extra minority-class examples during training. It picks
+a minority rider, finds one of their nearest minority neighbours,
+and creates a new synthetic rider somewhere on the line between the
+two. Formally, for a minority sample `x_i` and one of its k nearest
+minority neighbours `x_nn` chosen at random:
 
 ```
 x_new = x_i + lambda * (x_nn - x_i)        with lambda ~ Uniform(0, 1)
 ```
 
-The k nearest neighbours are computed in the original (un-rescaled)
-feature space using Euclidean distance. We use
-`imblearn.over_sampling.SMOTE` inside an `imblearn.Pipeline` so
-the resampling happens inside every CV fold, never on the held-out
-validation data.
+The nearest neighbours are found using straight-line (Euclidean)
+distance in the original feature space. Crucially we run SMOTE
+inside an `imblearn.Pipeline` so the oversampling happens only on
+the training data within each cross-validation fold; the held-out
+validation rows are never touched by synthetic data.
 
-The `k_neighbors` parameter is set per target so it never exceeds
-the smallest training-class size minus one:
+The number of neighbours SMOTE looks at (`k_neighbors`) cannot be
+larger than the number of real minority examples available in the
+training fold. We set it per target with this rule:
 
 ```python
 min_class = min(Counter(y).values())
 k = max(1, min(5, int(min_class * 0.8) - 1))
 ```
 
-The `* 0.8` factor accounts for the 4/5 training fraction inside a
-5-fold cross-validation. The `max(1, ...)` floor prevents
-`k_neighbors=0` in degenerate cases.
+The `* 0.8` accounts for the fact that in 5-fold cross-validation
+only 4/5 of the data goes into training. The `max(1, ...)` floor
+keeps `k_neighbors` at least 1 even when the minority class is
+tiny.
 
 ### 10.5 Pipeline composition
 
-Each candidate algorithm is wrapped in:
+Every candidate algorithm gets wrapped in a two-step pipeline:
+first SMOTE, then the classifier itself. Wrapping like this means
+both steps are applied together every time cross-validation runs:
 
 ```python
 pipe = ImbPipeline([
@@ -703,14 +805,18 @@ pipe = ImbPipeline([
 ])
 ```
 
-This pipeline is then handed to `GridSearchCV` so the parameter
-grid prefixes (`clf__C`, `clf__max_depth`, etc.) target the
-classifier step inside the pipeline.
+This pipeline is then handed to the grid search. The `clf__C` and
+`clf__max_depth` style prefixes tell the search to apply each
+hyperparameter to the `clf` step, not the SMOTE step.
 
 ### 10.6 Cross-validation strategy
 
-`StratifiedKFold(n_splits=5, shuffle=True, random_state=42)`
-preserves class proportions in every fold. For each fold:
+Cross-validation is how we test the model honestly. We split the
+182 riders into 5 groups, then repeat the same training-and-testing
+procedure 5 times, so that each group serves once as the test set.
+The split (`StratifiedKFold(n_splits=5, shuffle=True,
+random_state=42)`) keeps the Low/Medium/High proportions roughly
+the same in every fold. For each fold:
 
 1. SMOTE oversamples the training fold to balance classes.
 2. The classifier is fit on the oversampled training fold.
@@ -720,27 +826,29 @@ preserves class proportions in every fold. For each fold:
 
 ### 10.7 Hyperparameter tuning
 
-`GridSearchCV` is run with:
+Each algorithm has knobs (hyperparameters) that affect how it
+learns. `GridSearchCV` tries every combination in the small grids
+defined above and reports the best. It is run with these settings:
 
 - `scoring='f1_macro'`
 - `cv=StratifiedKFold(5, shuffle=True, random_state=42)`
 - `n_jobs=-1`
 - `refit=False`
 
-We use `refit=False` so the grid search returns the best parameter
-set without retraining on the full dataset. We then explicitly
-refit the pipeline with the chosen parameters in a separate
-`cross_validate` call that records the full metric set
-(`accuracy`, `f1_macro`, `precision_macro`, `recall_macro`,
-`train_accuracy`).
+We use `refit=False` so the grid search just reports the best
+parameters without immediately retraining. We then explicitly refit
+the pipeline with those parameters inside a separate
+`cross_validate` run that records the full set of metrics we want
+to report (`accuracy`, `f1_macro`, `precision_macro`,
+`recall_macro`, `train_accuracy`).
 
 ### 10.8 Model selection and persistence
 
-For each target, the algorithm with the highest `cv_f1_macro` is
-selected. The selected pipeline is refit on the full sample with
-the tuned hyperparameters and a SMOTE `k_neighbors` recomputed
-against the full class distribution. The fitted pipeline is saved
-to `outputs/models/best_<factor>.pkl` as a dict:
+For each risk factor we pick the algorithm with the highest
+`cv_f1_macro`. We then refit the chosen pipeline on the entire
+182-row sample (with SMOTE `k_neighbors` recomputed against the
+full class distribution) and save it to disk so the web app can
+load it later. The saved file is a dict with three keys:
 
 ```python
 joblib.dump({
@@ -750,14 +858,17 @@ joblib.dump({
 }, out_path)
 ```
 
-The `features` list is what `src/predict.py` uses to index the
-input dict. The `classes` list maps the LabelEncoded model output
-back to the original 0/1/2 codes (this matters specifically for
-the Posture model, where the present codes are `[1, 2]` only).
+The `features` list is what the predict-time code uses to assemble
+the input vector in the correct order. The `classes` list maps the
+model's internal class index back to the original 0/1/2
+Low/Medium/High codes. This matters specifically for the Posture
+model because its `classes` list is `[1, 2]` only (no Low class
+exists in the data).
 
 ### 10.9 Output tables
 
-Phase 6 writes:
+Phase 6 also saves three CSV tables so we can look at the numbers
+behind the model selection later:
 
 - `outputs/tables/cv_results.csv`: every target x model combination
   with mean and std of `cv_accuracy`, `cv_f1_macro`,
@@ -777,8 +888,11 @@ out-of-fold values.
 
 ### 11.1 Metric definitions
 
-For each class `c` in a target with the multi-class confusion matrix
-counts (TP, FP, FN, TN computed in a one-vs-rest sense):
+Several different numbers are used to judge how well a model works
+because no single number tells the whole story. For each class `c`
+in a target, treating class `c` as positive and all others as
+negative, we count true positives, false positives, and false
+negatives:
 
 ```
 precision_c = TP_c / (TP_c + FP_c)
@@ -786,7 +900,13 @@ recall_c    = TP_c / (TP_c + FN_c)
 F1_c        = 2 * precision_c * recall_c / (precision_c + recall_c)
 ```
 
-Macro-averaged scores treat each class equally:
+Precision asks "of the riders the model said were in class c, what
+fraction actually were". Recall asks "of the riders who actually
+were in class c, what fraction did the model catch". F1 combines
+both into a single number.
+
+Macro-averaged scores treat each class equally, so a model that
+ignores the Medium or High band cannot hide behind raw accuracy:
 
 ```
 precision_macro = mean over c of precision_c
@@ -794,70 +914,85 @@ recall_macro    = mean over c of recall_c
 F1_macro        = mean over c of F1_c
 ```
 
-Macro-averaged scoring is what `GridSearchCV` optimises here so a
-model that ignores the minority classes is penalised even if its
-raw accuracy is high.
+F1 macro is what `GridSearchCV` optimises during model selection
+for exactly this reason: it punishes a model that gets the majority
+right while ignoring the minorities.
 
-Raw accuracy is
+Raw accuracy is the simplest measure, the share of predictions that
+match the true label:
 
 ```
 accuracy = correct_predictions / total_predictions
 ```
 
-`overfit_gap = train_accuracy - cv_accuracy` flags models that
-generalise poorly; we mark any factor with `overfit_gap > 0.15`
-in `phase6_summary.csv`.
+We also track the gap between training accuracy and cross-
+validation accuracy. If a model fits training data well but tests
+poorly, it has overfit. The `overfit_gap = train_accuracy -
+cv_accuracy` column flags this; we mark any factor with
+`overfit_gap > 0.15` in `phase6_summary.csv`.
 
 ROC-AUC (Area Under the Receiver Operating Characteristic Curve)
-for a single class is the probability that a randomly chosen
-positive instance is ranked higher by the model's predicted score
-than a randomly chosen negative instance. The Mann-Whitney U
-statistic provides a closed-form equivalent. Per-class AUC is
-computed one-vs-rest; macro AUC is the unweighted mean across
-classes.
+measures how well a model ranks classes rather than how often it
+gets the exact threshold right. AUC is the probability that a
+randomly chosen positive case gets a higher predicted score than a
+randomly chosen negative case. A perfect ranker scores 1.0, a coin
+flip scores 0.5. The Mann-Whitney U statistic gives a closed-form
+equivalent. We compute per-class AUC in a one-vs-rest setup and
+report the macro AUC as the unweighted mean across classes.
 
 ### 11.2 Confusion matrices
 
-`sklearn.metrics.confusion_matrix(y_true, y_pred,
-labels=present_codes)` produces a square matrix. Rows are true
-classes, columns are predicted classes. The figure
+A confusion matrix is the simplest way to see where a model gets
+things right and where it gets things wrong. Each row is a true
+class, each column is a predicted class, and each cell counts the
+riders. The diagonal counts the correct predictions; everything
+off-diagonal is a mistake.
+
+We build one with `sklearn.metrics.confusion_matrix(y_true, y_pred,
+labels=present_codes)` per target. The figure
 `outputs/figures/confusion_matrices.png` arranges the six matrices
-in a 2x3 grid with one matrix per target. The long-form data is
+in a 2x3 grid (one per target). The same numbers in long form are
 saved to `outputs/tables/confusion_matrices.csv`.
 
 ### 11.3 Classification reports
 
+The classification report sums up precision, recall, F1, and
+support (the number of true cases) for each class, along with
+macro and weighted averages. We generate it with
 `sklearn.metrics.classification_report(y_true, y_pred,
-target_names=label_names, output_dict=True, zero_division=0)`
-returns precision, recall, F1, and support per class plus macro
-and weighted averages. The full long-form output is saved to
+target_names=label_names, output_dict=True, zero_division=0)` and
+save the long-form table to
 `outputs/tables/classification_reports.csv`.
 
-### 11.3 ROC curves and macro AUC
+### 11.4 ROC curves and macro AUC
 
 For each target, the best model is wrapped in a one-vs-rest setup
-and `predict_proba` outputs are computed via `cross_val_predict`
-with `method='predict_proba'`. For each class:
+so each class gets its own ROC curve. We compute the predicted
+probabilities with `cross_val_predict` and
+`method='predict_proba'`, then build the curve and area for each
+class:
 
 ```python
 fpr, tpr, _ = roc_curve(y_true == class_code, y_proba[:, class_idx])
 auc = auc(fpr, tpr)
 ```
 
-Per-class AUC is saved to `outputs/tables/roc_auc.csv`. Macro AUC
-is the simple mean across classes and is reported in
+The per-class AUC is saved to `outputs/tables/roc_auc.csv`. The
+macro AUC is the simple mean across classes and is reported in
 `outputs/tables/phase7_summary.csv`. The figure
-`outputs/figures/roc_curves.png` plots all classes for all six
-targets in a 2x3 grid.
+`outputs/figures/roc_curves.png` plots every class for every target
+in a 2x3 grid; the closer a curve hugs the top-left corner, the
+better that class is being ranked.
 
-### 11.4 Feature importance
+### 11.5 Feature importance
 
-For tree-based models (`RandomForest`, `ExtraTrees`, `HistGBM`,
-`XGBoost`), feature importance is read directly from
-`clf.feature_importances_`. For Logistic Regression it is read
-from `abs(clf.coef_)`. For Stacking the importance comes from the
+Feature importance tells us which inputs each model leans on most.
+For tree-based models (Random Forest, Extra Trees, Hist Gradient
+Boosting, XGBoost) we read it from `clf.feature_importances_`. For
+Logistic Regression we use the absolute value of the coefficients
+(`abs(clf.coef_)`). For Stacking the importance is taken from the
 final-estimator coefficients applied to the base-learner outputs.
-The figure `outputs/figures/feature_importance.png` plots the top
+The figure `outputs/figures/feature_importance.png` shows the top
 10 features per target.
 
 ## 12. Sample and findings
