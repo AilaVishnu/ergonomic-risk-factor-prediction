@@ -108,6 +108,10 @@ def main():
     add_section_header(prs, "Results & Findings",
                        "Phase 4-7 outputs from the 182-rider sample")
 
+    add_image_slide(prs, "Pipeline overview",
+                    "methodology_flowchart.png",
+                    caption="Raw inputs -> cleaning -> feature engineering -> Stage 1 labels -> Stage 2 ML -> web app")
+
     add_image_slide(prs, "Sample demographics (n = 182)",
                     "demographics.png")
 
@@ -142,6 +146,21 @@ def main():
         "",
         "5 survey-derived factors land at 58-62% accuracy with macro AUC 71-76%.",
         "Posture uses real RULA + QEC observation inputs and reaches 97% / AUC 98%.",
+    ])
+
+    add_text_slide(prs, "Winning hyperparameters (GridSearchCV)", [
+        "The values each target's grid search settled on:",
+        "",
+        "Force           HistGradientBoosting    max_depth=None,  learning_rate=0.05",
+        "Repetition      Random Forest           n_estimators=300, max_depth=None",
+        "Duration        Random Forest           n_estimators=500, max_depth=5",
+        "Vibration       Extra Trees             n_estimators=300, max_depth=None",
+        "Contact Stress  Random Forest           n_estimators=500, max_depth=None",
+        "Posture         HistGradientBoosting    max_depth=5,     learning_rate=0.05",
+        "",
+        "SMOTE k_neighbors = 5 for every target.",
+        "All pipelines: imblearn.Pipeline([SMOTE, classifier]).",
+        "All CV folds: StratifiedKFold(5, shuffle=True, random_state=42).",
     ])
 
     add_image_slide(prs, "Confusion matrices (best model per factor)",
@@ -199,6 +218,52 @@ def main():
         "Age and job duration (strongest individual-level discomfort predictors):",
         "   workload tapering for riders over 12 months tenure or over 35 years old",
     ])
+
+    add_section_header(prs, "Live web demo",
+                       "Streamlit screening tool: full questionnaire to per-factor risk levels")
+
+    # Screenshots are taken from outputs/app_screenshots/, so we need
+    # the slide-builder to look there instead of the figures folder.
+    def add_screenshot_slide(title, filename, caption=None):
+        s = prs.slides.add_slide(prs.slide_layouts[5])
+        if s.shapes.title is not None:
+            s.shapes.title.text = title
+        img_path = ROOT / "outputs" / "app_screenshots" / filename
+        if not img_path.exists():
+            raise FileNotFoundError(img_path)
+        pic = s.shapes.add_picture(str(img_path), Inches(1), Inches(1.5),
+                                   width=Inches(11))
+        pic.left = int((prs.slide_width - pic.width) / 2)
+        max_h = Inches(5.0)
+        if pic.height > max_h:
+            ratio = max_h / pic.height
+            pic.height = int(pic.height * ratio)
+            pic.width = int(pic.width * ratio)
+            pic.left = int((prs.slide_width - pic.width) / 2)
+        if caption:
+            tb = s.shapes.add_textbox(Inches(0.5), Inches(6.7),
+                                      prs.slide_width - Inches(1), Inches(0.7))
+            p = tb.text_frame.paragraphs[0]
+            r = p.add_run()
+            r.text = caption
+            r.font.size = Pt(14)
+            r.font.italic = True
+        return s
+
+    add_screenshot_slide("Web app: header and demographic (Q1-17)",
+                         "web_01_header_demographic.png",
+                         caption="Sample-profile shortcuts let the mentor try Low / Average / High risk presets in one click")
+    add_screenshot_slide("Web app: Nordic + 7-day + outcomes (Q18-24)",
+                         "web_02_nmq.png")
+    add_screenshot_slide("Web app: NASA-TLX + Borg CR10 (Q25-36)",
+                         "web_03_nasa_borg.png",
+                         caption="All six NASA-TLX sliders point in load-direction (Q28 reworded as 'dissatisfied')")
+    add_screenshot_slide("Web app: RULA + QEC + Predict button",
+                         "web_04_rula_qec.png",
+                         caption="11 RULA components and 8 QEC scores drive the Posture model directly")
+    add_screenshot_slide("Web app: predicted risk profile",
+                         "web_05_prediction_output.png",
+                         caption="Colour-coded bars, summary banner, and per-factor recommendations")
 
     # Move "Thank You" to the very end so the results sit before it
     if thank_you_idx is not None:
