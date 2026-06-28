@@ -37,16 +37,14 @@ hours a day on a scooter is in a very different situation from a
 45-year-old who works 10 hours a day on a motorbike with a handheld
 bag.
 
-Ergonomists have standard ways of measuring this kind of strain. RULA
-(Rapid Upper Limb Assessment) scores the posture of a worker's upper
-body. QEC (Quick Exposure Check) gives a composite of body-region and
-exposure scores. The Nordic Musculoskeletal Questionnaire (NMQ)
-records pain across 9 body areas. NASA-TLX rates mental workload.
-Borg CR10 records perceived physical effort on a 0 to 10 scale. Each
-of these gives useful information on its own. The project takes all
-of them together and produces a single per-rider risk profile across
-six ergonomic dimensions: Force, Repetition, Posture, Duration,
-Contact Stress, Vibration.
+Standard ergonomic methods cover different facets of this problem.
+RULA and QEC handle the observational side (posture, body-region
+exposure), while NMQ, NASA-TLX, and Borg CR10 cover what the rider
+reports about pain, mental load, and perceived exertion. None of
+them on its own gives a complete picture. The project pulls all of
+them together into one per-rider profile across six ergonomic
+dimensions: Force, Repetition, Posture, Duration, Contact Stress,
+Vibration.
 
 ## 2. What the project does
 
@@ -1287,17 +1285,18 @@ rider-to-observation noise would re-enter.
 
 **Repetition binning fix.** The earlier Phase 3 used
 `pandas.qcut(q=3)` on `deliveries_per_hour`. The 75th percentile
-fell exactly on 3.889 dph (= 35 deliveries / 9 hours), which is
-the worst real combination in the sample. 55 of 182 riders tied at
-that value and were all binned into Medium because qcut is
-right-inclusive at the upper edge. The Stage-2 model could never
-predict High for the worst real rider, no matter what features it
-was given. The fix replaces qcut with fixed cuts at 2.5 and 3.75
-so the worst case ends up in High where it should. Stage-1 High
-count went from 19 to 74. Stage-2 accuracy went from 74 percent to
-62 percent. The drop is the honest trade: the model is now
-learning a real High class of 74 examples instead of memorising a
-19-example minority.
+landed exactly on 3.889 dph (= 35 deliveries / 9 hours, which is
+the worst real combination in the sample), and 55 of 182 riders
+were tied at that value. qcut is right-inclusive at the upper
+edge, so all 55 fell into Medium. That left the Stage-2 model
+with no High example matching the busiest schedule and so it
+could not predict High for that rider whatever the features.
+Replacing qcut with fixed cuts at 2.5 and 3.75 puts the worst
+case in High where it belongs. The accompanying cost is a drop
+in Stage-2 accuracy from 74 to 62 percent (Stage-1 High grew
+from 19 to 74 examples). The lower number is the more meaningful
+one because the model is now solving a real 3-class problem
+instead of memorising a 19-row minority.
 
 **Duration leakage fix.** An earlier Phase 6 run reported 100
 percent CV accuracy on Duration. After investigating we found that
