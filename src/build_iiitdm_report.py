@@ -37,7 +37,9 @@ STUDENT_NAME  = "AILA VISHNU VARDHAN"
 MENTOR_NAME   = "Dr. Arunachalam Muthiah"
 COLLEGE_NAME  = "Vidya Jyothi Institute of Technology"
 DEPARTMENT    = "School of Interdisciplinary Design and Innovation (SIDI)"
-PROJECT_TITLE = "AIML Prediction of Ergonomic Risk Factors in Food-Delivery Riders"
+PROJECT_TITLE = ("A Predictive Machine Learning Framework for Ergonomic Risk "
+                 "and Physical Exhaustion Assessment in Last-Mile "
+                 "Quick-Commerce Delivery Operations")
 
 
 # ============================================================================
@@ -268,8 +270,9 @@ def add_page_number_footer(section, roman=False):
 # ============================================================================
 
 def add_title_page(doc):
+    # Longer academic title - size 18 keeps it to 3-4 lines cleanly
     add_line(doc, PROJECT_TITLE,
-             size=22, bold=True,
+             size=18, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=30)
 

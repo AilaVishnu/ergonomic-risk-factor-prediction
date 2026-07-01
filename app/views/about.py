@@ -19,6 +19,18 @@ def render():
 
     st.markdown("""
         <div class='card'>
+            <span class='icon'>📖</span>
+            <h3>Project title</h3>
+            <p style='font-size: 1.05rem; font-style: italic;'>
+                A Predictive Machine Learning Framework for Ergonomic Risk
+                and Physical Exhaustion Assessment in Last-Mile
+                Quick-Commerce Delivery Operations
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <div class='card'>
             <span class='icon'>🎓</span>
             <h3>Internship report</h3>
             <p>
