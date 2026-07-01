@@ -23,8 +23,7 @@ def render():
             <h3>Project title</h3>
             <p style='font-size: 1.05rem; font-style: italic;'>
                 A Predictive Machine Learning Framework for Ergonomic Risk
-                and Physical Exhaustion Assessment in Last-Mile
-                Quick-Commerce Delivery Operations
+                in Last-Mile Quick-Commerce Delivery Operations
             </p>
         </div>
         """, unsafe_allow_html=True)

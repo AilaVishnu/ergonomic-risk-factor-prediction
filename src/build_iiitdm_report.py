@@ -38,8 +38,7 @@ MENTOR_NAME   = "Dr. Arunachalam Muthiah"
 COLLEGE_NAME  = "Vidya Jyothi Institute of Technology"
 DEPARTMENT    = "School of Interdisciplinary Design and Innovation (SIDI)"
 PROJECT_TITLE = ("A Predictive Machine Learning Framework for Ergonomic Risk "
-                 "and Physical Exhaustion Assessment in Last-Mile "
-                 "Quick-Commerce Delivery Operations")
+                 "in Last-Mile Quick-Commerce Delivery Operations")
 
 
 # ============================================================================
