@@ -32,11 +32,12 @@ BODY_FONT  = "Times New Roman"
 CODE_FONT  = "Consolas"
 BLACK      = RGBColor(0x00, 0x00, 0x00)
 
-# Personal details - replace via Find+Replace in Word if needed
-STUDENT_NAME  = "[Student Name]"
-MENTOR_NAME   = "[Mentor's Name]"
-COLLEGE_NAME  = "[College Name]"
-PROJECT_TITLE = "Ergonomic Risk Factor Prediction for Food-Delivery Riders"
+# Personal details
+STUDENT_NAME  = "AILA VISHNU VARDHAN"
+MENTOR_NAME   = "Dr. Arunachalam Muthiah"
+COLLEGE_NAME  = "Vidya Jyothi Institute of Technology"
+DEPARTMENT    = "School of Interdisciplinary Design and Innovation (SIDI)"
+PROJECT_TITLE = "AIML Prediction of Ergonomic Risk Factors in Food-Delivery Riders"
 
 
 # ============================================================================
@@ -72,19 +73,25 @@ def add_line(doc, text="", size=12, bold=False, italic=False, align=None,
 
 
 def add_chapter_heading(doc, chapter_num, title):
-    """Chapter N (small) then Title (big) - matches template."""
+    """Chapter N (small) then Title (big). If chapter_num is empty
+    (Bibliography, front matter) only the title is rendered."""
     doc.add_page_break()
-    p1 = doc.add_paragraph()
-    p1.paragraph_format.space_before = Pt(60)
-    p1.paragraph_format.space_after  = Pt(0)
-    r1 = p1.add_run(f"Chapter {chapter_num}")
-    r1.font.size = Pt(20)
-    r1.bold = False
-    set_font(r1, BODY_FONT)
+
+    if chapter_num != "":
+        p1 = doc.add_paragraph()
+        p1.paragraph_format.space_before = Pt(24)
+        p1.paragraph_format.space_after  = Pt(0)
+        r1 = p1.add_run(f"Chapter {chapter_num}")
+        r1.font.size = Pt(20)
+        r1.bold = False
+        set_font(r1, BODY_FONT)
+        space_before_title = Pt(18)
+    else:
+        space_before_title = Pt(24)
 
     p2 = doc.add_paragraph()
-    p2.paragraph_format.space_before = Pt(30)
-    p2.paragraph_format.space_after  = Pt(36)
+    p2.paragraph_format.space_before = space_before_title
+    p2.paragraph_format.space_after  = Pt(24)
     r2 = p2.add_run(title)
     r2.font.size = Pt(32)
     r2.bold = True
@@ -261,50 +268,49 @@ def add_page_number_footer(section, roman=False):
 # ============================================================================
 
 def add_title_page(doc):
-    add_line(doc, space_before=48, space_after=24)
     add_line(doc, PROJECT_TITLE,
-             size=24, bold=True,
+             size=22, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=48)
+             space_before=24, space_after=30)
 
     add_line(doc, "Internship report submitted under",
-             size=13, italic=True,
+             size=12, italic=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=6)
+             space_after=4)
     add_line(doc, "IIITDM-SIES Programme",
-             size=14, bold=True,
+             size=13, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=18)
+             space_after=14)
     add_line(doc, "by",
-             size=13, italic=True,
+             size=12, italic=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=6)
+             space_after=4)
     add_line(doc, STUDENT_NAME,
              size=14, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=36)
+             space_after=24)
 
     # Logo placeholder
     add_line(doc, "[IIITDM Kancheepuram logo]",
              size=11, italic=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=48,
+             space_before=12, space_after=28,
              color=RGBColor(0x77, 0x77, 0x77))
 
-    add_line(doc, "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING",
-             size=13, bold=True,
+    add_line(doc, "SCHOOL OF INTERDISCIPLINARY DESIGN AND INNOVATION (SIDI)",
+             size=12, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=4)
+             space_after=3)
     add_line(doc, "INDIAN INSTITUTE OF INFORMATION TECHNOLOGY,",
-             size=12,
+             size=11,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=2)
+             space_after=1)
     add_line(doc, "DESIGN AND MANUFACTURING, KANCHEEPURAM",
-             size=12,
+             size=11,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=48)
+             space_after=28)
     add_line(doc, "July 2026",
-             size=13,
+             size=12,
              align=WD_ALIGN_PARAGRAPH.CENTER)
 
 
@@ -318,8 +324,8 @@ def add_certificate(doc):
     add_body(doc,
         f"I, {STUDENT_NAME}, from {COLLEGE_NAME} hereby declare that the material "
         f"presented in the Internship Report titled '{PROJECT_TITLE}' represents "
-        "original work carried out by me in the Department of Computer Science and "
-        "Engineering at the Indian Institute of Information Technology, Design and "
+        f"original work carried out by me in the {DEPARTMENT} "
+        "at the Indian Institute of Information Technology, Design and "
         "Manufacturing, Kancheepuram during the year 2026. With my signature, I certify "
         "that:")
 
@@ -421,8 +427,8 @@ def add_acknowledgements(doc):
     add_body(doc,
         "I acknowledge the 182 food-delivery riders who participated in the survey "
         "and the observation study; without their time and honesty this work would "
-        "not have been possible. I also thank the Department of Computer Science and "
-        "Engineering for providing the computing infrastructure used for the modelling "
+        f"not have been possible. I also thank the {DEPARTMENT} "
+        "for providing the computing infrastructure used for the modelling "
         "experiments and my peers who reviewed intermediate results and offered "
         "helpful suggestions.")
 
@@ -462,30 +468,41 @@ def add_list_of_figures(doc):
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24)
     figures = [
-        ("2.1", "Pipeline overview: raw inputs to interactive prediction."),
-        ("4.1", "Sample profile across gender, age band, delivery platform, "
-                "vehicle type, and carrying mode."),
-        ("4.2", "NMQ 12-month pain prevalence per body area."),
-        ("4.3", "Discomfort prevalence broken down by demographic group."),
-        ("4.4", "Stage-1 Low / Medium / High counts per risk factor."),
-        ("4.5", "Discomfort prevalence within each Low / Medium / High band."),
-        ("4.6", "Pearson correlation matrix across the numeric feature pool."),
-        ("4.7", "Confusion matrices for the best model per factor."),
-        ("4.8", "ROC curves (one-vs-rest) for the best model per factor."),
-        ("4.9", "Top 10 features by importance for the best model per factor."),
-        ("4.10", "Web app: page header and demographic section."),
-        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section."),
-        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders."),
-        ("4.13", "Web app: RULA and QEC observation sections."),
-        ("4.14", "Web app: predicted risk profile output."),
+        ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "6"),
+        ("4.1",  "Sample profile across gender, age band, delivery platform, "
+                 "vehicle type, and carrying mode.",                                           "18"),
+        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "19"),
+        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "20"),
+        ("4.4",  "Stage-1 Low / Medium / High counts per risk factor.",                        "22"),
+        ("4.5",  "Discomfort prevalence within each Low / Medium / High band.",                "23"),
+        ("4.6",  "Pearson correlation matrix across the numeric feature pool.",                "24"),
+        ("4.7",  "Confusion matrices for the best model per factor.",                          "26"),
+        ("4.8",  "ROC curves (one-vs-rest) for the best model per factor.",                    "27"),
+        ("4.9",  "Top 10 features by importance for the best model per factor.",               "28"),
+        ("4.10", "Web app: page header and demographic section.",                              "29"),
+        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "30"),
+        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "31"),
+        ("4.13", "Web app: RULA and QEC observation sections.",                                "32"),
+        ("4.14", "Web app: predicted risk profile output.",                                    "33"),
     ]
-    for num, cap in figures:
+    for num, cap, page in figures:
         p = doc.add_paragraph()
         p.paragraph_format.space_after = Pt(4)
-        p.paragraph_format.tab_stops.add_tab_stop(Cm(2.5))
-        r = p.add_run(f"Figure {num}\t{cap}")
+        # left tab for caption at 3 cm, right tab with dot leader for page at 16 cm
+        tabs = p.paragraph_format.tab_stops
+        tabs.add_tab_stop(Cm(3.0))
+        tab = tabs.add_tab_stop(Cm(16.0), WD_ALIGN_PARAGRAPH.RIGHT)
+        # Add dot leader through XML (python-docx doesn't expose it directly)
+        _ = tab
+        r = p.add_run(f"Figure {num}\t{cap}\t{page}")
         r.font.size = Pt(11)
         set_font(r, BODY_FONT)
+        # Set dot leader on the right tab via XML
+        pPr = p._p.get_or_add_pPr()
+        tabs_el = pPr.find(qn("w:tabs"))
+        if tabs_el is not None:
+            last_tab = tabs_el.findall(qn("w:tab"))[-1]
+            last_tab.set(qn("w:leader"), "dot")
 
 
 def add_list_of_tables(doc):
@@ -495,26 +512,33 @@ def add_list_of_tables(doc):
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24)
     tables = [
-        ("2.1", "Per-target feature exclusions to prevent label leakage."),
-        ("4.1", "NMQ 12-month pain prevalence per body area."),
+        ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "12"),
+        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "19"),
         ("4.2", "Chi-square test of independence between each risk factor and "
-                "self-reported discomfort."),
-        ("4.3", "Significant predictors of discomfort from multivariable logistic "
-                "regression."),
-        ("4.4", "Stage-1 risk band counts per factor."),
-        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV."),
-        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor."),
-        ("4.7", "Per-class precision, recall, F1, and support."),
-        ("4.8", "Top 5 most important features per factor."),
-        ("4.9", "Winning hyperparameters per target after GridSearchCV."),
+                "self-reported discomfort.",                                                   "20"),
+        ("4.3", "Significant predictors of discomfort from multivariable "
+                "logistic regression.",                                                        "21"),
+        ("4.4", "Stage-1 risk band counts per factor.",                                        "22"),
+        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "25"),
+        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "26"),
+        ("4.7", "Per-class precision, recall, F1, and support.",                               "27"),
+        ("4.8", "Top 5 most important features per factor.",                                   "28"),
+        ("4.9", "Winning hyperparameters per target after GridSearchCV.",                      "28"),
     ]
-    for num, cap in tables:
+    for num, cap, page in tables:
         p = doc.add_paragraph()
         p.paragraph_format.space_after = Pt(4)
-        p.paragraph_format.tab_stops.add_tab_stop(Cm(2.5))
-        r = p.add_run(f"Table {num}\t{cap}")
+        tabs = p.paragraph_format.tab_stops
+        tabs.add_tab_stop(Cm(3.0))
+        tabs.add_tab_stop(Cm(16.0), WD_ALIGN_PARAGRAPH.RIGHT)
+        r = p.add_run(f"Table {num}\t{cap}\t{page}")
         r.font.size = Pt(11)
         set_font(r, BODY_FONT)
+        pPr = p._p.get_or_add_pPr()
+        tabs_el = pPr.find(qn("w:tabs"))
+        if tabs_el is not None:
+            last_tab = tabs_el.findall(qn("w:tab"))[-1]
+            last_tab.set(qn("w:leader"), "dot")
 
 
 def add_abbreviations(doc):
