@@ -123,22 +123,28 @@ def _summary_hero(predictions):
 
 
 def _factor_cards(predictions):
-    """Six large colour-coded factor cards."""
-    cols = st.columns(3)
-    for i, factor in enumerate(FACTORS):
-        level = predictions[factor]
-        with cols[i % 3]:
-            st.markdown(
-                f"""
-                <div class='risk-card risk-{level.lower()}'>
-                    <div class='factor-name'>{FACTOR_ICON[factor]} {FACTOR_LABEL[factor]}</div>
-                    <div class='level'>{level}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        if i % 3 == 2:
-            st.markdown("<br>", unsafe_allow_html=True)
+    """Six large colour-coded factor cards, rendered in two rows."""
+    # Wrap each row in a horizontal-gap container by using st.columns(gap='large')
+    # Then add explicit vertical space between the two rows.
+    for row_start in (0, 3):
+        cols = st.columns(3, gap="large")
+        for offset in range(3):
+            factor = FACTORS[row_start + offset]
+            level  = predictions[factor]
+            with cols[offset]:
+                st.markdown(
+                    f"""
+                    <div class='risk-card risk-{level.lower()}'>
+                        <div class='factor-name'>{FACTOR_ICON[factor]} {FACTOR_LABEL[factor]}</div>
+                        <div class='level'>{level}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+        # Vertical gap between the two rows of cards
+        if row_start == 0:
+            st.markdown("<div style='height: 1.6rem;'></div>",
+                        unsafe_allow_html=True)
 
 
 def _radar_chart(predictions):
