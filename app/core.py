@@ -25,23 +25,19 @@ FACTOR_LABEL = {
     "posture":        "Posture",
 }
 FACTOR_ICON = {
-    "force":          "⚡",
-    "repetition":     "🔁",
-    "duration":       "⏱️",
-    "vibration":      "📳",
-    "contact_stress": "🤝",
-    "posture":        "🧍",
+    "force": "", "repetition": "", "duration": "",
+    "vibration": "", "contact_stress": "", "posture": "",
 }
 FACTOR_DESC = {
-    "force":          "How much lifting and carrying effort each shift demands.",
-    "repetition":     "How often the rider makes deliveries (per hour).",
-    "duration":       "Continuous riding time in one shift.",
-    "vibration":      "Vehicle-transmitted vibration exposure.",
-    "contact_stress": "Load pressing against the rider's body.",
-    "posture":        "Awkward body angles held during riding and carrying.",
+    "force":          "Lifting and carrying effort per shift, from the Borg CR10 lifting item.",
+    "repetition":     "Deliveries per hour, computed as deliveries_num / work_hours_num.",
+    "duration":       "Continuous riding time per shift, in hours.",
+    "vibration":      "Vibration exposure, approximated as vehicle_rank * work_hours_num.",
+    "contact_stress": "Load pressing against the body, weighted by carrying mode, hours, and age.",
+    "posture":        "Awkward body angles held while riding and carrying, from RULA Table C.",
 }
 LEVEL_COLOUR = {"Low": "#2ecc71", "Medium": "#f1c40f", "High": "#e74c3c"}
-LEVEL_EMOJI  = {"Low": "🟢",       "Medium": "🟡",       "High": "🔴"}
+LEVEL_EMOJI  = {"Low": "",         "Medium": "",         "High": ""}
 
 
 # ---------------------------------------------------------------------------
@@ -259,119 +255,98 @@ def preset_to_raw(name):
 
 CUSTOM_CSS = """
 <style>
-/* Hide the default Streamlit chrome that adds visual noise */
+/* Hide default Streamlit chrome */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 
-/* Page container polish */
+/* Page container - narrower for academic-report readability */
 .block-container {
     padding-top: 2rem;
     padding-bottom: 3rem;
-    max-width: 1200px;
+    max-width: 1100px;
 }
 
-/* Card component used across pages */
-.card {
-    background: linear-gradient(135deg, rgba(46, 134, 171, 0.10), rgba(31, 59, 115, 0.15));
-    border: 1px solid rgba(46, 134, 171, 0.30);
-    border-radius: 14px;
-    padding: 1.4rem 1.6rem;
-    margin: 0.6rem 0;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+/* Body typography - academic feel */
+html, body, [class*='css'] {
+    font-family: 'Source Serif Pro', 'Georgia', 'Times New Roman', serif;
 }
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+h1, h2, h3, h4 {
+    font-family: 'Source Serif Pro', 'Georgia', 'Times New Roman', serif;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+/* Data-oriented card - plain border, no gradient, no hover */
+.card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 1.2rem 1.4rem;
+    margin: 0.6rem 0;
 }
 .card h3 {
-    margin: 0 0 0.4rem 0;
-    color: #fafafa;
+    margin: 0 0 0.5rem 0;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 .card p {
     margin: 0;
     color: #cccccc;
-    line-height: 1.5;
-}
-.card .icon {
-    font-size: 2.4rem;
-    display: block;
-    margin-bottom: 0.4rem;
+    line-height: 1.55;
+    font-size: 0.95rem;
 }
 
-/* Risk-level big card (used on Results page) */
+/* Risk-level card - plain solid colour, no gradient, no shadow */
 .risk-card {
-    border-radius: 16px;
-    padding: 1.4rem 1.4rem;
+    border-radius: 4px;
+    padding: 1.2rem 1.2rem;
     text-align: center;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.10);
 }
 .risk-card .factor-name {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.90);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 .risk-card .level {
-    font-size: 2.4rem;
+    font-size: 1.9rem;
     font-weight: 700;
     color: #ffffff;
-    margin: 0.3rem 0;
+    margin: 0.3rem 0 0.1rem 0;
 }
-.risk-card .icon {
-    font-size: 1.6rem;
-    color: #ffffff;
-    opacity: 0.9;
-}
-.risk-low    {background: linear-gradient(135deg, #2ecc71, #27ae60);}
-.risk-medium {background: linear-gradient(135deg, #f1c40f, #d4a017);}
-.risk-high   {background: linear-gradient(135deg, #e74c3c, #c0392b);}
+.risk-low    {background: #2ecc71;}
+.risk-medium {background: #f1c40f;}
+.risk-high   {background: #e74c3c;}
 
-/* Hero section for the Home page */
-.hero {
-    padding: 2.5rem 2rem;
-    background: linear-gradient(135deg, rgba(31, 59, 115, 0.55), rgba(46, 134, 171, 0.35));
-    border-radius: 18px;
-    border: 1px solid rgba(46, 134, 171, 0.4);
-    margin-bottom: 2rem;
-}
-.hero h1 {
-    font-size: 2.4rem !important;
-    margin: 0 0 0.6rem 0 !important;
-    color: #ffffff !important;
-}
-.hero p {
-    font-size: 1.1rem;
-    color: #e0e0e0;
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* Metric strip callout numbers */
+/* Simple stat - no big value blob */
 .stat {
-    text-align: center;
-    padding: 1rem;
+    padding: 0.6rem 0;
+    border-left: 3px solid #2E86AB;
+    padding-left: 1rem;
 }
 .stat .value {
-    font-size: 2.2rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    color: #2E86AB;
+    color: #ffffff;
+    display: block;
 }
 .stat .label {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: #aaaaaa;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
 }
 
-/* Section headers with accent line */
+/* Section headers */
 .section-title {
     color: #ffffff;
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin: 2rem 0 1rem 0;
-    padding-bottom: 0.6rem;
-    border-bottom: 2px solid #2E86AB;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 2rem 0 0.9rem 0;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 </style>
 """
@@ -381,7 +356,7 @@ def inject_css():
     st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 
-def page_setup(title, icon="🛵"):
+def page_setup(title, icon=None):
     """Standard st.set_page_config + CSS injection. Call once per page."""
     st.set_page_config(page_title=title, page_icon=icon, layout="wide",
                        initial_sidebar_state="expanded")

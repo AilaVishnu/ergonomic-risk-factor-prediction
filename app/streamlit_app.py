@@ -13,8 +13,8 @@ APP_DIR = Path(__file__).resolve().parent
 
 
 st.set_page_config(
-    page_title="Ergonomic Risk Predictor",
-    page_icon="🛵",
+    page_title="Ergonomic Risk Screening Tool",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -23,29 +23,24 @@ st.set_page_config(
 pages = [
     st.Page(str(APP_DIR / "views" / "home.py"),
             title="Home",
-            icon="🏠",
             default=True),
     st.Page(str(APP_DIR / "views" / "assessment.py"),
-            title="Assessment",
-            icon="📋"),
+            title="Assessment"),
     st.Page(str(APP_DIR / "views" / "results.py"),
-            title="Results",
-            icon="📊"),
+            title="Results"),
     st.Page(str(APP_DIR / "views" / "methodology.py"),
-            title="Methodology",
-            icon="📚"),
+            title="Methodology"),
     st.Page(str(APP_DIR / "views" / "about.py"),
-            title="About",
-            icon="ℹ️"),
+            title="About"),
 ]
 
 nav = st.navigation(pages)
 
 
-# Persistent sidebar branding
+# Sidebar branding
 with st.sidebar:
-    st.markdown("### 🛵 Ergonomic Risk Predictor")
-    st.caption("Per-rider screening tool")
+    st.markdown("### Ergonomic Risk Screening Tool")
+    st.caption("IIITDM-SIES internship deliverable")
     st.divider()
 
 nav.run()
@@ -53,5 +48,5 @@ nav.run()
 
 with st.sidebar:
     st.divider()
-    st.caption("Built for IIITDM-SIES Internship")
-    st.caption("© AILA VISHNU VARDHAN, 2026")
+    st.caption("AILA VISHNU VARDHAN")
+    st.caption("Mentor: Dr. Arunachalam Muthiah")

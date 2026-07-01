@@ -28,10 +28,7 @@ def _run_prediction(raw):
 def render():
     inject_css()
 
-    st.markdown(
-        "<div class='section-title'>📋 Rider Assessment</div>",
-        unsafe_allow_html=True,
-    )
+    st.title("Rider Assessment")
     st.caption(
         "Answer the 36-item questionnaire below plus the RULA and QEC "
         "observation scores. Or use a sample profile to trigger a "
@@ -39,13 +36,13 @@ def render():
     )
 
     # ---------------- Sample profile shortcuts ----------------
-    st.markdown("#### Try a sample profile")
+    st.markdown("**Try a sample profile**")
     c1, c2, c3 = st.columns(3)
-    if c1.button("🟢  Low-risk rider", use_container_width=True):
+    if c1.button("Low-risk rider", use_container_width=True):
         _run_prediction(preset_to_raw("low"))
-    if c2.button("🟡  Average rider",  use_container_width=True):
+    if c2.button("Average rider", use_container_width=True):
         _run_prediction(preset_to_raw("average"))
-    if c3.button("🔴  High-risk rider", use_container_width=True):
+    if c3.button("High-risk rider", use_container_width=True):
         _run_prediction(preset_to_raw("high"))
 
     st.divider()
@@ -217,7 +214,7 @@ def render():
             qec_stress       = st.number_input("Stress (1-16)",        1,  16, 8,  1)
 
         st.divider()
-        submitted = st.form_submit_button("▶  Predict risk levels",
+        submitted = st.form_submit_button("Predict risk levels",
                                           use_container_width=True,
                                           type="primary")
 
