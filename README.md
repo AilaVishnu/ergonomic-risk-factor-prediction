@@ -1,34 +1,39 @@
-# Ergonomic Risk Factor Prediction — Delivery Riders
+# Ergonomic Risk Factor Prediction for Delivery Riders
 
-AI/ML project predicting 6 ergonomic risk factors for food-delivery riders from
-a 182-rider survey + 182-observation RULA/QEC posture dataset.
+A predictive machine learning framework for ergonomic risk in
+last-mile quick-commerce delivery operations. Trained on a 182-rider
+survey combined with 182 RULA and QEC observation records.
 
-## The 6 risk factors
-Force · Repetition · Posture · Duration · Contact Stress · Vibration
+## Six risk factors
 
-> **Project write-up:** [`docs/PROJECT_REPORT.md`](docs/PROJECT_REPORT.md) and the Word version [`docs/PROJECT_REPORT.docx`](docs/PROJECT_REPORT.docx). Single comprehensive report covering background, every phase of the pipeline (with formulae, thresholds, and hyperparameters), results, web app, limitations, and reproducibility.
+Force, Repetition, Posture, Duration, Contact Stress, Vibration.
 
-## Design (2 stages)
-- **Stage 1** — calculate each risk factor with a recognised method (Borg CR10
-  action levels, RULA, sample terciles) → Low/Medium/High labels.
-- **Stage 2** — train ML (LogReg / DT / RF / ExtraTrees / HistGBM / XGBoost /
-  Stacking) to reproduce those labels from a rider's profile = automated
-  ergonomic screening tool.
+## Two-stage design
+
+1. **Stage 1** applies standard ergonomic methods (Borg CR10 action
+   levels, RULA Table C thresholds, sample terciles or fixed cuts) to
+   compute Low, Medium, or High labels per risk factor.
+2. **Stage 2** trains one classifier per factor (LogisticRegression,
+   DecisionTree, RandomForest, ExtraTrees, HistGradientBoosting,
+   XGBoost, or Stacking) with SMOTE oversampling inside 5-fold
+   stratified cross-validation, tuned via GridSearchCV.
 
 ## Folder structure
+
 ```
 Ergonomic_Project/
   data/raw/         delivery_rider_survey.csv, posture_data.xlsx
   data/processed/   cleaned.csv, model_ready.csv, risk_profile.csv
-  notebooks/        01_data_cleaning … 07_evaluation (7 notebooks)
+  notebooks/        01_data_cleaning ... 07_evaluation (7 notebooks)
   src/              predict.py
-  app/              streamlit_app.py (web demo)
-  deck/             Final.pptx + WITH_RESULTS.pptx (+ archive backups)
+  app/              streamlit_app.py (multi-page web app)
+  deck/             Final.pptx and WITH_RESULTS.pptx
   outputs/          figures/, tables/, models/
-  docs/             PROJECT_REPORT.md / .docx
+  docs/             report.docx (IIITDM-SIES internship report)
 ```
 
-## Pipeline status
+## Pipeline
+
 | Phase | Notebook / file | Output |
 |---|---|---|
 | 1 Cleaning            | notebooks/01_data_cleaning.ipynb       | data/processed/cleaned.csv |
@@ -38,49 +43,51 @@ Ergonomic_Project/
 | 5 Statistics          | notebooks/05_stats.ipynb               | 5 tables in outputs/tables/ |
 | 6 ML modelling        | notebooks/06_modeling.ipynb            | 6 pickled models + 5 result tables |
 | 7 Evaluation          | notebooks/07_evaluation.ipynb          | 3 figures + 3 tables |
-| 8 Results write-up    | docs/PROJECT_REPORT.md                 | full mentor-facing write-up |
+| 8 Report              | docs/report.docx                       | IIITDM-SIES internship report |
 | 9 Deck                | deck/...WITH_RESULTS.pptx              | presentation slides |
-
-All 9 phases complete.
 
 ## Predict for a new rider
 
-### Web app (recommended for demos)
+### Web app
+
 ```bash
-streamlit run app/streamlit_app.py
+python -m streamlit run app/streamlit_app.py
 ```
-Opens a form in the browser. Fill in the rider's survey answers, hit
-**Predict risk levels**, see Low / Medium / High for all 6 factors with
-colour-coded badges.
+
+Opens a multi-page interface with Home, Assessment, Results,
+Methodology, and About pages.
 
 ### Command line
+
 ```bash
-# From a row already in model_ready.csv
 python src/predict.py --rider-id 0
 
-# From a JSON profile you wrote (see data/example_rider.json for the schema)
+# From a JSON profile (see data/example_rider.json for the schema)
 python src/predict.py --json data/example_rider.json
 
-# List the features each model expects
+# List features each model expects
 python src/predict.py --list-features
 ```
 
 ### Python API
+
 ```python
 from src.predict import predict_rider
-predict_rider({'workload_score': 55, 'age_ord': 1, ...})
-# -> {'force': 'Low', 'repetition': 'Medium', 'duration': 'Low',
-#     'vibration': 'Low', 'contact_stress': 'Low', 'posture': 'Medium'}
+predict_rider({"workload_score": 55, "age_ord": 1, ...})
+# -> {"force": "Low", "repetition": "Medium", "duration": "Low",
+#     "vibration": "Low", "contact_stress": "Low", "posture": "Medium"}
 ```
 
 ## Setup
+
 ```bash
 pip install pandas numpy scikit-learn scipy matplotlib seaborn xgboost \
             statsmodels imbalanced-learn python-pptx joblib streamlit \
-            openpyxl
+            openpyxl plotly altair python-docx
 ```
 
 ## Documentation
-- `docs/PROJECT_REPORT.md` / `.docx` - single comprehensive project
-  report (background, methods, results, web app, limitations,
-  reproducibility, output-file index)
+
+- `docs/report.docx` is the IIITDM-SIES internship report in the
+  required template (title page, certificate, abstract, contents,
+  five chapters, bibliography).

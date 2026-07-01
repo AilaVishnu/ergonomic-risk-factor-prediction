@@ -1,5 +1,5 @@
 """
-Build docs/PROJECT_REPORT.docx in the IIITDM-SIES internship report
+Build docs/report.docx in the IIITDM-SIES internship report
 template format:
 
   Title page -> Certificate -> Abstract -> Acknowledgements ->
