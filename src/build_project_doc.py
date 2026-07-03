@@ -205,7 +205,7 @@ def build():
     add_heading(doc, "Ergonomic Risk Factor Prediction", 1)
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(18)
-    r = p.add_run("Per-rider risk profiling for food-delivery riders. "
+    r = p.add_run("Per-rider risk profiling for last-mile quick-commerce delivery riders. "
                   "Complete project report covering background, methods, "
                   "results, web application, limitations, and reproducibility.")
     set_font(r, "Calibri")

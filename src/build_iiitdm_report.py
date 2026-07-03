@@ -378,7 +378,7 @@ def add_abstract(doc):
              space_before=24, space_after=36)
 
     add_body(doc,
-        "Food-delivery riders working for platforms such as Blinkit and Zepto face "
+        "Last-mile quick-commerce delivery riders working for platforms such as Blinkit and Zepto face "
         "significant physical demands including long working hours, awkward postures, "
         "heavy carrying loads, and exposure to vehicle vibration. Over time these "
         "exposures contribute to musculoskeletal disorders (MSDs). This project builds "
@@ -427,7 +427,7 @@ def add_acknowledgements(doc):
         "ways.")
 
     add_body(doc,
-        "I acknowledge the 182 food-delivery riders who participated in the survey "
+        "I acknowledge the 182 quick-commerce delivery riders who participated in the survey "
         "and the observation study; without their time and honesty this work would "
         f"not have been possible. I also thank the {DEPARTMENT} "
         "for providing the computing infrastructure used for the modelling "
@@ -620,7 +620,7 @@ def chapter_1(doc):
 
     add_section_heading(doc, "1.1", "Background")
     add_body(doc,
-        "Food-delivery riders for platforms like Blinkit and Zepto spend long hours "
+        "Last-mile quick-commerce delivery riders for platforms like Blinkit and Zepto spend long hours "
         "on bikes, climb stairs, carry packages, and ride in heavy traffic. Over "
         "time this kind of work causes musculoskeletal disorders (MSDs): back pain, "
         "shoulder pain, wrist injuries, and knee problems. The risk is not the same "
@@ -657,7 +657,7 @@ def chapter_1(doc):
 
     add_section_heading(doc, "1.3", "Objectives of the work")
     add_numbered(doc,
-        "Design a two-stage pipeline that combines a survey of food-delivery "
+        "Design a two-stage pipeline that combines a survey of quick-commerce delivery "
         "riders with standard ergonomic observation tools (RULA and QEC) into "
         "per-rider labels for six risk factors: Force, Repetition, Posture, "
         "Duration, Contact Stress, and Vibration.")
@@ -1224,7 +1224,7 @@ def chapter_5(doc):
 
     add_body(doc,
         "This project designed, implemented, and deployed a per-rider "
-        "ergonomic risk screening pipeline for food-delivery workers. The "
+        "ergonomic risk screening pipeline for last-mile quick-commerce delivery workers. The "
         "pipeline turns a 36-item self-report questionnaire and a 26-column "
         "RULA-plus-QEC observation record into six standardised risk levels "
         "spanning the classical ergonomic dimensions of Force, Repetition, "

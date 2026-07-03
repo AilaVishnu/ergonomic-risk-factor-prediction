@@ -28,7 +28,7 @@ where every output number lives in the repo.
 
 ## 1. Background
 
-Food-delivery riders for platforms like Blinkit and Zepto spend long
+Last-mile quick-commerce delivery riders for platforms like Blinkit and Zepto spend long
 hours on bikes, climb stairs, carry packages, and ride in heavy
 traffic. Over time this kind of work causes musculoskeletal disorders
 (MSDs): back pain, shoulder pain, wrist injuries, knee problems. The
