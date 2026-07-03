@@ -1,4 +1,4 @@
-"""Home / landing page."""
+"""Home / landing page - Vercel-style cinematic hero."""
 
 import sys
 from pathlib import Path
@@ -6,79 +6,83 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import streamlit as st
 
-from core import FACTORS, FACTOR_LABEL, FACTOR_DESC, inject_css, load_models
+from core import inject_css, hide_sidebar, load_models
 
 
 def render():
     inject_css()
+    hide_sidebar()  # Home is the entry point - sidebar appears on subsequent pages
 
-    # -- Title block --------------------------------------------------------
-    st.markdown("### An IIITDM-SIES Internship Deliverable")
-    st.title("Ergonomic Risk Screening Tool")
+    # ------------------------------------------------------------------
+    # Hero: two columns - large title on the left, meta strip on the right
+    # ------------------------------------------------------------------
     st.markdown(
-        "<p style='color:#a9b0ba; font-size:1.05rem; margin-top:-0.5rem; "
-        "max-width: 720px;'>"
-        "Per-rider screening for the six standard ergonomic risk factors, "
-        "delivered as an interactive web app on top of six trained "
-        "classifiers described in the internship report."
-        "</p>",
+        """
+        <div class='hero'>
+          <div class='hero__inner'>
+            <span class='hero__badge'>IIITDM-SIES Internship</span>
+          </div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
-    col_cta, col_link = st.columns([1, 3])
-    with col_cta:
-        if st.button("Start Assessment", type="primary",
-                     use_container_width=True):
-            st.switch_page("views/assessment.py")
-    with col_link:
+    left, right = st.columns([3, 2], gap="large")
+    with left:
         st.markdown(
-            "<p style='color:#8a919b; padding-top: 0.4rem; font-size: 0.9rem;'>"
-            "Or explore the pipeline in <i>Methodology</i>, or the author and "
-            "mentor in <i>About</i>."
-            "</p>",
+            """
+            <h1 class='hero__title'>
+              Ergonomic<br>
+              <span class='muted'>Risk Screening</span>
+            </h1>
+            <p class='hero__tagline'>
+              Per-rider screening for the six standard ergonomic risk
+              factors in last-mile quick-commerce delivery, on top of six
+              trained machine-learning classifiers.
+            </p>
+            """,
             unsafe_allow_html=True,
         )
 
-    # -- Risk factor grid ---------------------------------------------------
-    st.markdown(
-        "<div class='section-title'>The six risk factors</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        "<p style='color:#8a919b; margin-top: -0.4rem; margin-bottom: 1rem;'>"
-        "Each factor is computed from standard ergonomic methods (RULA, QEC, "
-        "NMQ, NASA-TLX, Borg CR10, and operational threshold rules)."
-        "</p>",
-        unsafe_allow_html=True,
-    )
+    with right:
+        st.markdown(
+            """
+            <div class='meta-strip'>
+              <div class='meta-line'><span class='k'>FOR</span> QUICK-COMMERCE RIDERS</div>
+              <div class='meta-line'><span class='k'>ON</span> 182-RIDER DATASET</div>
+              <div class='meta-line'><span class='k'>WITH</span> RULA / QEC / NMQ / BORG / NASA-TLX</div>
+              <div class='meta-line'><span class='k'>AND</span> SIX TRAINED CLASSIFIERS</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    # Two-column grid of factor cards
-    for i in range(0, len(FACTORS), 2):
-        cols = st.columns(2, gap="medium")
-        for j in range(2):
-            if i + j < len(FACTORS):
-                f = FACTORS[i + j]
-                with cols[j]:
-                    st.markdown(
-                        f"<div class='card'>"
-                        f"<h3>{FACTOR_LABEL[f]}</h3>"
-                        f"<p>{FACTOR_DESC[f]}</p>"
-                        f"</div>",
-                        unsafe_allow_html=True,
-                    )
+    # ------------------------------------------------------------------
+    # Pill CTAs
+    # ------------------------------------------------------------------
+    st.markdown("<div style='height: 2rem;'></div>", unsafe_allow_html=True)
+    c1, c2, _ = st.columns([1, 1, 3], gap="small")
+    with c1:
+        if st.button("Start Assessment", type="primary",
+                     use_container_width=True):
+            st.switch_page("views/assessment.py")
+    with c2:
+        if st.button("Methodology", use_container_width=True):
+            st.switch_page("views/methodology.py")
 
-    # -- Stats strip --------------------------------------------------------
-    st.markdown(
-        "<div class='section-title'>At a glance</div>",
-        unsafe_allow_html=True,
-    )
-    load_models()  # warm cache while user reads
+    # Warm the model cache while the user reads
+    load_models()
+
+    # ------------------------------------------------------------------
+    # Stats row (Vercel-style tabular)
+    # ------------------------------------------------------------------
+    st.markdown("<hr>", unsafe_allow_html=True)
 
     stats = [
         ("182",  "riders in training data"),
         ("6",    "trained classifiers"),
         ("63",   "encoded features"),
-        ("97%",  "posture model accuracy"),
+        ("97%",  "posture accuracy"),
     ]
     cols = st.columns(4)
     for (value, label), col in zip(stats, cols):
@@ -91,36 +95,23 @@ def render():
                 unsafe_allow_html=True,
             )
 
-    # -- Workflow steps -----------------------------------------------------
+    # ------------------------------------------------------------------
+    # Acronym strip at the bottom - mimics Vercel's customer-logo row
+    # ------------------------------------------------------------------
     st.markdown(
-        "<div class='section-title'>How it works</div>",
+        """
+        <div class='acronym-strip'>
+          <span class='item'>RULA</span>
+          <span class='item'>QEC</span>
+          <span class='item'>NMQ</span>
+          <span class='item'>NASA-TLX</span>
+          <span class='item'>BORG CR10</span>
+          <span class='item'>SMOTE</span>
+          <span class='item'>XGBOOST</span>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
-    workflow = [
-        ("1", "Enter a rider profile",
-              "36-item questionnaire plus optional RULA and QEC observation "
-              "scores. Sample profiles pre-fill the form in one click."),
-        ("2", "Run the trained classifiers",
-              "Six models (RandomForest, HistGradientBoosting, ExtraTrees) "
-              "return the risk level for each factor from 5-fold-CV-selected "
-              "hyperparameters."),
-        ("3", "Read the results",
-              "Colour-coded Low / Medium / High per factor, a radar summary, "
-              "and per-factor recommendations for High-risk profiles."),
-    ]
-    for step, title, desc in workflow:
-        st.markdown(
-            f"<div class='card' style='display:flex; gap:1.2rem; "
-            f"align-items:flex-start;'>"
-            f"<div style='font-size:1.6rem; font-weight:700; color:#2E86AB; "
-            f"min-width:2rem; text-align:center;'>{step}</div>"
-            f"<div style='flex:1;'>"
-            f"<h3 style='margin-top:0.2rem;'>{title}</h3>"
-            f"<p>{desc}</p>"
-            f"</div>"
-            f"</div>",
-            unsafe_allow_html=True,
-        )
 
 
 render()

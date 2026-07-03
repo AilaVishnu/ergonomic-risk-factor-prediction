@@ -250,20 +250,29 @@ def main():
             r.font.italic = True
         return s
 
-    add_screenshot_slide("Web app: header and demographic (Q1-17)",
-                         "web_01_header_demographic.png",
-                         caption="Sample-profile shortcuts let the mentor try Low / Average / High risk presets in one click")
-    add_screenshot_slide("Web app: Nordic + 7-day + outcomes (Q18-24)",
-                         "web_02_nmq.png")
+    add_screenshot_slide("Web app: Home",
+                         "web_01_home.png",
+                         caption="Vercel-style hero on the entry page; sidebar hidden until the user starts an assessment")
+    add_screenshot_slide("Web app: Assessment top (Q1-17)",
+                         "web_02_assessment_top.png",
+                         caption="Sample-profile shortcuts (Low / Average / High) pre-fill the entire form in one click")
+    add_screenshot_slide("Web app: Nordic + follow-ups (Q18-24)",
+                         "web_03_assessment_nmq.png")
     add_screenshot_slide("Web app: NASA-TLX + Borg CR10 (Q25-36)",
-                         "web_03_nasa_borg.png",
-                         caption="All six NASA-TLX sliders point in load-direction (Q28 reworded as 'dissatisfied')")
-    add_screenshot_slide("Web app: RULA + QEC + Predict button",
-                         "web_04_rula_qec.png",
+                         "web_04_assessment_nasa_borg.png",
+                         caption="Six NASA-TLX sliders point in load-direction (Q28 reworded as 'dissatisfied')")
+    add_screenshot_slide("Web app: RULA + QEC + Predict",
+                         "web_05_assessment_rula_qec.png",
                          caption="11 RULA components and 8 QEC scores drive the Posture model directly")
     add_screenshot_slide("Web app: predicted risk profile",
-                         "web_05_prediction_output.png",
-                         caption="Colour-coded bars, summary banner, and per-factor recommendations")
+                         "web_06_results.png",
+                         caption="Colour-coded factor cards, radar summary, tabular view, and per-factor recommendations")
+    add_screenshot_slide("Web app: Methodology page",
+                         "web_07_methodology.png",
+                         caption="Pipeline flowchart, two-stage design, candidate algorithms, and model performance")
+    add_screenshot_slide("Web app: About page",
+                         "web_08_about.png",
+                         caption="Author, mentor, institutional context, and tech stack")
 
     # Move "Thank You" to the very end so the results sit before it
     if thank_you_idx is not None:

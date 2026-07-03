@@ -33,7 +33,7 @@ def render():
     st.markdown(
         "<dl class='def-list'>"
         "<dt>Programme</dt><dd>IIITDM-SIES Internship</dd>"
-        "<dt>School</dt><dd>School of Interdisciplinary Design and Innovation (SIDI)</dd>"
+        "<dt>Department</dt><dd>School of Interdisciplinary Design and Innovation (SIDI)</dd>"
         "<dt>Institution</dt><dd>Indian Institute of Information Technology, Design and Manufacturing, Kancheepuram</dd>"
         "<dt>Period</dt><dd>May 2026 to July 2026</dd>"
         "</dl>",
@@ -67,22 +67,6 @@ def render():
             "</div>",
             unsafe_allow_html=True,
         )
-
-    # -------- Deliverables --------
-    st.markdown(
-        "<div class='section-title'>Deliverables</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        "<dl class='def-list'>"
-        "<dt>Internship report</dt><dd><code>docs/report.docx</code></dd>"
-        "<dt>Technical write-up</dt><dd><code>docs/PROJECT_REPORT.md / .docx</code></dd>"
-        "<dt>Pipeline notebooks</dt><dd><code>notebooks/01_data_cleaning ... 07_evaluation</code></dd>"
-        "<dt>Web app</dt><dd><code>app/streamlit_app.py</code> (this application)</dd>"
-        "<dt>Trained models</dt><dd><code>outputs/models/best_&lt;factor&gt;.pkl</code> (six models)</dd>"
-        "</dl>",
-        unsafe_allow_html=True,
-    )
 
     # -------- Tech stack --------
     st.markdown(

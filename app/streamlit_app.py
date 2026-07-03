@@ -16,7 +16,7 @@ st.set_page_config(
     page_title="Ergonomic Risk Screening Tool",
     page_icon=None,
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",  # let Streamlit collapse on narrow viewports
 )
 
 
