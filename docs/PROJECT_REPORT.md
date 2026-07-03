@@ -1165,21 +1165,47 @@ discomfort in this sample.
 
 ## 13. The web app
 
-`app/streamlit_app.py` is the interactive demo. It loads the six
-saved bundles once via `@st.cache_resource` and exposes a form with
-six sections that together cover every column in the CSV and xlsx.
+`app/streamlit_app.py` is the interactive demo. It is a multi-page
+Streamlit application (Home, Assessment, Results, Methodology, About)
+that loads the six saved model bundles once via `@st.cache_resource`
+and exposes a sidebar navigation across pages. The Assessment page
+holds a form with six sections covering every column in the CSV and
+xlsx.
 
-![Figure 11. Web interface, header and sample-profile shortcuts above the demographic section (Q1-17).](outputs/app_screenshots/web_01_header_demographic.png)
+![Figure 11. Web app Home page: project introduction, six risk factor cards, and headline stats.](outputs/app_screenshots/web_01_home.png)
 
-![Figure 12. Web interface, Nordic Musculoskeletal Questionnaire (Q18-24).](outputs/app_screenshots/web_02_nmq.png)
+![Figure 12. Web app Assessment page top: sample-profile shortcuts and demographic section (Q1-17).](outputs/app_screenshots/web_02_assessment_top.png)
 
-![Figure 13. Web interface, NASA-TLX workload (Q25-30) and Borg CR10 fatigue (Q31-36) sliders.](outputs/app_screenshots/web_03_nasa_borg.png)
+![Figure 13. Web app Assessment page: Nordic Musculoskeletal Questionnaire and discomfort follow-ups (Q18-24).](outputs/app_screenshots/web_03_assessment_nmq.png)
 
-![Figure 14. Web interface, RULA posture observation (11 inputs) and Quick Exposure Check (8 inputs) followed by the Predict button.](outputs/app_screenshots/web_04_rula_qec.png)
+![Figure 14. Web app Assessment page: NASA-TLX workload (Q25-30) and Borg CR10 fatigue (Q31-36) sliders.](outputs/app_screenshots/web_04_assessment_nasa_borg.png)
 
-![Figure 15. Web interface, predicted risk profile with colour-coded bars per factor, summary banner, and risk-band recommendations.](outputs/app_screenshots/web_05_prediction_output.png)
+![Figure 15. Web app Assessment page: RULA posture observation (11 inputs) and Quick Exposure Check (8 inputs) followed by the Predict button.](outputs/app_screenshots/web_05_assessment_rula_qec.png)
 
-### 13.1 Form layout
+![Figure 16. Web app Results page: summary banner, six colour-coded risk cards, radar profile chart, tabular result, and per-factor recommendations.](outputs/app_screenshots/web_06_results.png)
+
+![Figure 17. Web app Methodology page: pipeline flowchart, two-stage design description, candidate algorithms, and model performance table.](outputs/app_screenshots/web_07_methodology.png)
+
+![Figure 18. Web app About page: project title, internship context, author and mentor, tech stack.](outputs/app_screenshots/web_08_about.png)
+
+### 13.1 Page structure
+
+The web app has five pages accessible from the sidebar:
+
+- **Home**: project introduction, six risk-factor cards, headline
+  statistics, and a Start Assessment call-to-action.
+- **Assessment**: the six-section rider questionnaire (below), plus
+  three sample-profile shortcut buttons that pre-fill the form for
+  Low-risk, Average, and High-risk example riders.
+- **Results**: shown after a prediction. Summary banner, six large
+  colour-coded risk cards, a radar chart of the six-factor profile,
+  a tabular view, and per-factor recommendations.
+- **Methodology**: pipeline flowchart, two-stage design description,
+  candidate-algorithm list, and model performance table.
+- **About**: project title, IIITDM-SIES internship context, author
+  and mentor information, and tech-stack list.
+
+### 13.2 Form layout (Assessment page)
 
 - Section 1 (Q1-17): demographics, lifestyle, work pattern,
   vehicle, carrying. Selectboxes laid out across three Streamlit
@@ -1195,7 +1221,7 @@ six sections that together cover every column in the CSV and xlsx.
 - Section 6: 8 QEC `st.number_input` fields with min/max matched
   to the observed ranges in the training data.
 
-### 13.2 Encoding
+### 13.3 Encoding
 
 `encode_rider(raw)` returns a single dict of all engineered
 features. Demographic and lifestyle selections are looked up in
@@ -1204,7 +1230,7 @@ scores are computed from the slider values. Interaction features
 are computed inline. NMQ, 7-day, and outcome radios are converted
 to 0/1. RULA and QEC values are passed through.
 
-### 13.3 Prediction
+### 13.4 Prediction
 
 `predict_risks(features, models)` builds a single-row DataFrame,
 selects the relevant feature subset per target using the saved
@@ -1218,7 +1244,7 @@ code = int(bundle['classes'][pred_idx])
 out[factor] = LABELS[code]
 ```
 
-### 13.4 Output rendering
+### 13.5 Output rendering
 
 The result is displayed as a styled table with badge emojis per
 risk level, a summary banner that flags high-burden profiles (3 or
@@ -1227,7 +1253,7 @@ Medium-or-High triggers a warning banner; otherwise a success
 banner). An expandable JSON view shows the 55-63 feature values
 that were fed to the models.
 
-### 13.5 Starting the app
+### 13.6 Starting the app
 
 ```
 streamlit run app/streamlit_app.py

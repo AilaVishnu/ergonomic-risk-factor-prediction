@@ -1,12 +1,15 @@
 """
-Capture 5 PNGs of the running Streamlit app at localhost:8501
-and save them to outputs/app_screenshots/.
+Capture screenshots of the running multi-page Streamlit app.
 
-Streamlit must be running:
+The app must already be running:
     python -m streamlit run app/streamlit_app.py
 
 Then:
     python src/capture_app_screenshots.py
+
+Writes seven PNGs to outputs/app_screenshots/:
+  Home, Assessment (top / NMQ / NASA-Borg / RULA-QEC),
+  Results, Methodology, About.
 """
 
 import asyncio
@@ -18,90 +21,111 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT  = ROOT / "outputs" / "app_screenshots"
 URL  = "http://localhost:8501"
 
-SHOTS = [
-    ("web_01_header_demographic.png",  "Page header and Demographic Q1-17"),
-    ("web_02_nmq.png",                  "Nordic + 7-day + outcomes Q18-24"),
-    ("web_03_nasa_borg.png",            "NASA-TLX + Borg CR10 sliders Q25-36"),
-    ("web_04_rula_qec.png",             "RULA + QEC observation + Predict button"),
-    ("web_05_prediction_output.png",    "Predicted risk profile + recommendations"),
-]
+
+async def _click_sidebar(page, label):
+    await page.evaluate(f"""
+        const links = [...document.querySelectorAll('a')];
+        const target = links.find(a => a.textContent.trim() === {label!r});
+        if (target) target.click();
+    """)
+    await page.wait_for_timeout(1500)
+
+
+async def _scroll_to(page, needle):
+    """Scroll the first element whose textContent contains `needle` to
+    the top of the viewport."""
+    await page.evaluate(f"""
+        const hs = [...document.querySelectorAll('h1, h2, h3, h4, p, strong')];
+        const target = hs.find(h => h.textContent.includes({needle!r}));
+        if (target) target.scrollIntoView({{block: 'start', behavior: 'instant'}});
+    """)
+    await page.wait_for_timeout(400)
 
 
 async def capture():
     OUT.mkdir(parents=True, exist_ok=True)
     async with async_playwright() as p:
         browser = await p.chromium.launch()
-        context = await browser.new_context(viewport={"width": 1600, "height": 950})
+        context = await browser.new_context(viewport={"width": 1600, "height": 1100})
         page = await context.new_page()
 
         await page.goto(URL, wait_until="networkidle")
-        await page.wait_for_timeout(1500)
+        await page.wait_for_timeout(2000)
 
-        # Hide Streamlit chrome (top bar, deploy button)
+        # Hide Streamlit toolbar / deploy chrome
         await page.add_style_tag(content="""
             header[data-testid='stHeader'] { display: none !important; }
             .stDeployButton { display: none !important; }
             .stAppToolbar { display: none !important; }
         """)
-        await page.wait_for_timeout(500)
+        await page.wait_for_timeout(300)
 
-        # ---- Shot 1: top of page (header + demographic) ----
+        # -------------------- HOME --------------------
         await page.evaluate("window.scrollTo(0, 0)")
-        await page.wait_for_timeout(400)
-        await page.screenshot(path=str(OUT / SHOTS[0][0]), full_page=False)
-        print(f"  saved {SHOTS[0][0]}")
+        await page.wait_for_timeout(300)
+        await page.screenshot(path=str(OUT / "web_01_home.png"), full_page=True)
+        print("  saved web_01_home.png")
 
-        # ---- Shot 2: NMQ section ----
-        await page.evaluate("""
-            const headers = [...document.querySelectorAll('h2,h3')];
-            const nmq = headers.find(h => h.textContent.includes('Nordic'));
-            if (nmq) nmq.scrollIntoView({block: 'start'});
-        """)
-        await page.wait_for_timeout(400)
-        await page.screenshot(path=str(OUT / SHOTS[1][0]), full_page=False)
-        print(f"  saved {SHOTS[1][0]}")
+        # -------------------- ASSESSMENT --------------------
+        await _click_sidebar(page, "Assessment")
 
-        # ---- Shot 3: NASA-TLX + Borg ----
-        await page.evaluate("""
-            const headers = [...document.querySelectorAll('h2,h3')];
-            const nasa = headers.find(h => h.textContent.includes('NASA-TLX'));
-            if (nasa) nasa.scrollIntoView({block: 'start'});
-        """)
-        await page.wait_for_timeout(400)
-        await page.screenshot(path=str(OUT / SHOTS[2][0]), full_page=False)
-        print(f"  saved {SHOTS[2][0]}")
+        # Top with sample profile buttons + demographic section
+        await page.evaluate("window.scrollTo(0, 0)")
+        await page.wait_for_timeout(300)
+        await page.screenshot(path=str(OUT / "web_02_assessment_top.png"),
+                              full_page=False)
+        print("  saved web_02_assessment_top.png")
 
-        # ---- Shot 4: RULA + QEC + Predict ----
-        await page.evaluate("""
-            const headers = [...document.querySelectorAll('h2,h3')];
-            const rula = headers.find(h => h.textContent.includes('Posture observation'));
-            if (rula) rula.scrollIntoView({block: 'start'});
-        """)
-        await page.wait_for_timeout(400)
-        await page.screenshot(path=str(OUT / SHOTS[3][0]), full_page=False)
-        print(f"  saved {SHOTS[3][0]}")
+        # NMQ + 7-day + outcomes
+        await _scroll_to(page, "Nordic Musculoskeletal")
+        await page.screenshot(path=str(OUT / "web_03_assessment_nmq.png"),
+                              full_page=False)
+        print("  saved web_03_assessment_nmq.png")
 
-        # ---- Shot 5: click Predict, wait, capture output section ----
-        # Predict button is a form submit button with text 'Predict risk levels'
+        # NASA-TLX + Borg CR10 sliders
+        await _scroll_to(page, "NASA-TLX")
+        await page.screenshot(path=str(OUT / "web_04_assessment_nasa_borg.png"),
+                              full_page=False)
+        print("  saved web_04_assessment_nasa_borg.png")
+
+        # RULA + QEC observation
+        await _scroll_to(page, "Posture observation")
+        await page.screenshot(path=str(OUT / "web_05_assessment_rula_qec.png"),
+                              full_page=False)
+        print("  saved web_05_assessment_rula_qec.png")
+
+        # -------------------- RESULTS via High-risk preset --------------------
+        await page.evaluate("window.scrollTo(0, 0)")
+        await page.wait_for_timeout(300)
         await page.evaluate("""
             const btns = [...document.querySelectorAll('button')];
-            const predict = btns.find(b => b.textContent.includes('Predict'));
-            if (predict) predict.click();
+            const high = btns.find(b => b.textContent.trim() === 'High-risk rider');
+            if (high) high.click();
         """)
-        await page.wait_for_timeout(3500)
-        # Scroll to the "Predicted risk profile" heading
-        await page.evaluate("""
-            const headers = [...document.querySelectorAll('h2,h3')];
-            const out = headers.find(h => h.textContent.includes('Predicted risk profile'));
-            if (out) out.scrollIntoView({block: 'start'});
-        """)
-        await page.wait_for_timeout(700)
-        await page.screenshot(path=str(OUT / SHOTS[4][0]), full_page=False)
-        print(f"  saved {SHOTS[4][0]}")
+        await page.wait_for_timeout(4000)  # redirect + render
+
+        await page.evaluate("window.scrollTo(0, 0)")
+        await page.wait_for_timeout(300)
+        await page.screenshot(path=str(OUT / "web_06_results.png"), full_page=True)
+        print("  saved web_06_results.png")
+
+        # -------------------- METHODOLOGY --------------------
+        await _click_sidebar(page, "Methodology")
+        await page.evaluate("window.scrollTo(0, 0)")
+        await page.wait_for_timeout(400)
+        await page.screenshot(path=str(OUT / "web_07_methodology.png"), full_page=True)
+        print("  saved web_07_methodology.png")
+
+        # -------------------- ABOUT --------------------
+        await _click_sidebar(page, "About")
+        await page.evaluate("window.scrollTo(0, 0)")
+        await page.wait_for_timeout(400)
+        await page.screenshot(path=str(OUT / "web_08_about.png"), full_page=True)
+        print("  saved web_08_about.png")
 
         await browser.close()
 
 
 if __name__ == "__main__":
     asyncio.run(capture())
-    print(f"\nall 5 screenshots saved to {OUT.relative_to(ROOT)}")
+    print(f"\nall screenshots saved to {OUT.relative_to(ROOT)}")
