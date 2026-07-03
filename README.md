@@ -30,6 +30,7 @@ Ergonomic_Project/
   deck/             Final.pptx and WITH_RESULTS.pptx
   outputs/          figures/, tables/, models/
   docs/             report.docx (IIITDM-SIES internship report)
+                    PROJECT_REPORT.md / .docx (detailed technical write-up)
 ```
 
 ## Pipeline
@@ -91,3 +92,7 @@ pip install pandas numpy scikit-learn scipy matplotlib seaborn xgboost \
 - `docs/report.docx` is the IIITDM-SIES internship report in the
   required template (title page, certificate, abstract, contents,
   five chapters, bibliography).
+- `docs/PROJECT_REPORT.md` / `.docx` is the detailed technical
+  write-up with background, every phase of the pipeline (formulae,
+  thresholds, and hyperparameters), results, web app, limitations,
+  and reproducibility.
