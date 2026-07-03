@@ -14,58 +14,77 @@ def render():
 
     st.title("About the project")
 
+    # -------- Project title as a highlighted quote block --------
     st.markdown(
-        "<div class='section-title'>Project title</div>",
+        "<div class='card' style='border-left:4px solid #2E86AB; padding:1.3rem 1.6rem;'>"
+        "<p style='margin:0; font-size:1.06rem; color:#f5f7fa; font-style:italic;'>"
+        "A Predictive Machine Learning Framework for Ergonomic Risk in "
+        "Last-Mile Quick-Commerce Delivery Operations"
+        "</p>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+    # -------- Institutional context --------
+    st.markdown(
+        "<div class='section-title'>Institutional context</div>",
         unsafe_allow_html=True,
     )
     st.markdown(
-        "*A Predictive Machine Learning Framework for Ergonomic Risk in "
-        "Last-Mile Quick-Commerce Delivery Operations*"
+        "<dl class='def-list'>"
+        "<dt>Programme</dt><dd>IIITDM-SIES Internship</dd>"
+        "<dt>School</dt><dd>School of Interdisciplinary Design and Innovation (SIDI)</dd>"
+        "<dt>Institution</dt><dd>Indian Institute of Information Technology, Design and Manufacturing, Kancheepuram</dd>"
+        "<dt>Period</dt><dd>May 2026 to July 2026</dd>"
+        "</dl>",
+        unsafe_allow_html=True,
     )
 
+    # -------- People --------
     st.markdown(
-        "<div class='section-title'>Internship</div>",
+        "<div class='section-title'>People</div>",
+        unsafe_allow_html=True,
+    )
+    col1, col2 = st.columns(2, gap="medium")
+    with col1:
+        st.markdown(
+            "<div class='card'>"
+            "<div style='color:#8a919b; font-size:0.82rem; text-transform:uppercase; "
+            "letter-spacing:0.08em; margin-bottom:0.3rem;'>Author</div>"
+            "<h3 style='margin-bottom:0.2rem;'>AILA VISHNU VARDHAN</h3>"
+            "<p>Vidya Jyothi Institute of Technology</p>"
+            "</div>",
+            unsafe_allow_html=True,
+        )
+    with col2:
+        st.markdown(
+            "<div class='card'>"
+            "<div style='color:#8a919b; font-size:0.82rem; text-transform:uppercase; "
+            "letter-spacing:0.08em; margin-bottom:0.3rem;'>Mentor</div>"
+            "<h3 style='margin-bottom:0.2rem;'>Dr. Arunachalam Muthiah</h3>"
+            "<p>School of Interdisciplinary Design and Innovation (SIDI), "
+            "IIITDM Kancheepuram</p>"
+            "</div>",
+            unsafe_allow_html=True,
+        )
+
+    # -------- Deliverables --------
+    st.markdown(
+        "<div class='section-title'>Deliverables</div>",
         unsafe_allow_html=True,
     )
     st.markdown(
-        "This tool is a deliverable of an internship carried out under "
-        "the **IIITDM-SIES Programme** in the **School of "
-        "Interdisciplinary Design and Innovation (SIDI)** at the Indian "
-        "Institute of Information Technology, Design and Manufacturing, "
-        "Kancheepuram."
-    )
-
-    st.markdown(
-        "<div class='section-title'>Author</div>",
+        "<dl class='def-list'>"
+        "<dt>Internship report</dt><dd><code>docs/report.docx</code></dd>"
+        "<dt>Technical write-up</dt><dd><code>docs/PROJECT_REPORT.md / .docx</code></dd>"
+        "<dt>Pipeline notebooks</dt><dd><code>notebooks/01_data_cleaning ... 07_evaluation</code></dd>"
+        "<dt>Web app</dt><dd><code>app/streamlit_app.py</code> (this application)</dd>"
+        "<dt>Trained models</dt><dd><code>outputs/models/best_&lt;factor&gt;.pkl</code> (six models)</dd>"
+        "</dl>",
         unsafe_allow_html=True,
     )
-    st.markdown(
-        "**AILA VISHNU VARDHAN**  \n"
-        "Vidya Jyothi Institute of Technology"
-    )
 
-    st.markdown(
-        "<div class='section-title'>Mentor</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        "**Dr. Arunachalam Muthiah**  \n"
-        "School of Interdisciplinary Design and Innovation (SIDI), IIITDM "
-        "Kancheepuram"
-    )
-
-    st.markdown(
-        "<div class='section-title'>Report and code</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        "The full internship report (`docs/report.docx`) and the "
-        "seven-notebook analysis pipeline are versioned in the project "
-        "repository. Each phase, from data cleaning through model "
-        "evaluation, can be regenerated end-to-end with a fixed random "
-        "seed."
-    )
-
+    # -------- Tech stack --------
     st.markdown(
         "<div class='section-title'>Tech stack</div>",
         unsafe_allow_html=True,

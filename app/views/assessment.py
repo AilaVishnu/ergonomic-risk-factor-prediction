@@ -29,21 +29,45 @@ def render():
     inject_css()
 
     st.title("Rider Assessment")
-    st.caption(
+    st.markdown(
+        "<p style='color:#a9b0ba; font-size:1.02rem; margin-top:-0.4rem; "
+        "max-width: 780px;'>"
         "Answer the 36-item questionnaire below plus the RULA and QEC "
         "observation scores. Or use a sample profile to trigger a "
         "prediction in one click."
+        "</p>",
+        unsafe_allow_html=True,
     )
 
     # ---------------- Sample profile shortcuts ----------------
-    st.markdown("**Try a sample profile**")
-    c1, c2, c3 = st.columns(3)
+    st.markdown(
+        "<div style='color:#8a919b; font-size:0.85rem; text-transform:uppercase; "
+        "letter-spacing:0.08em; margin-top:1rem; margin-bottom:0.5rem;'>"
+        "Sample profiles"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    c1, c2, c3 = st.columns(3, gap="medium")
     if c1.button("Low-risk rider", use_container_width=True):
         _run_prediction(preset_to_raw("low"))
     if c2.button("Average rider", use_container_width=True):
         _run_prediction(preset_to_raw("average"))
     if c3.button("High-risk rider", use_container_width=True):
         _run_prediction(preset_to_raw("high"))
+
+    # ---------------- Section overview ----------------
+    st.markdown(
+        "<div class='section-nav'>"
+        "<span><strong>Sections:</strong></span>"
+        "<span>Demographic <span class='divider'>·</span></span>"
+        "<span>NMQ <span class='divider'>·</span></span>"
+        "<span>NASA-TLX <span class='divider'>·</span></span>"
+        "<span>Borg CR10 <span class='divider'>·</span></span>"
+        "<span>RULA <span class='divider'>·</span></span>"
+        "<span>QEC</span>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
 
     st.divider()
 

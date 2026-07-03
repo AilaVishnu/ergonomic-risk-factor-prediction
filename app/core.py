@@ -255,98 +255,229 @@ def preset_to_raw(name):
 
 CUSTOM_CSS = """
 <style>
-/* Hide default Streamlit chrome */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
+/* ---------- Reset default Streamlit chrome ---------- */
+#MainMenu, footer, header[data-testid='stHeader'], .stDeployButton {
+    visibility: hidden;
+    display: none;
+}
 
-/* Page container - narrower for academic-report readability */
+/* ---------- Base layout ---------- */
 .block-container {
-    padding-top: 2rem;
-    padding-bottom: 3rem;
-    max-width: 1100px;
+    padding-top: 3rem;
+    padding-bottom: 4rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    max-width: 1180px;
 }
 
-/* Body typography - academic feel */
-html, body, [class*='css'] {
-    font-family: 'Source Serif Pro', 'Georgia', 'Times New Roman', serif;
+/* ---------- Typography ---------- */
+html, body, [class*='st-'] {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
-h1, h2, h3, h4 {
-    font-family: 'Source Serif Pro', 'Georgia', 'Times New Roman', serif;
-    font-weight: 600;
-    letter-spacing: 0;
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: -0.01em;
+    color: #f5f7fa;
+    line-height: 1.3;
+}
+h1 { font-size: 2.1rem; font-weight: 700; margin-bottom: 0.4rem; }
+h2 { font-size: 1.55rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.2rem; font-weight: 600; }
+h4 { font-size: 1.02rem; font-weight: 600; color: #d5dae0; }
+p, li, label { line-height: 1.6; color: #cfd4d9; }
+
+/* Caption tightened */
+[data-testid='stCaptionContainer'] p {
+    color: #8a919b;
+    font-size: 0.88rem;
 }
 
-/* Data-oriented card - plain border, no gradient, no hover */
+/* ---------- Consistent card ---------- */
 .card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 4px;
-    padding: 1.2rem 1.4rem;
-    margin: 0.6rem 0;
+    background: #171b25;
+    border: 1px solid #2a3040;
+    border-radius: 6px;
+    padding: 1.3rem 1.5rem;
+    margin: 0.75rem 0;
+    transition: border-color 0.15s ease;
 }
+.card:hover { border-color: #3a4055; }
 .card h3 {
-    margin: 0 0 0.5rem 0;
-    color: #ffffff;
-    font-size: 1.1rem;
+    margin: 0 0 0.45rem 0;
+    color: #f5f7fa;
+    font-size: 1.05rem;
     font-weight: 600;
+    letter-spacing: -0.01em;
 }
 .card p {
     margin: 0;
-    color: #cccccc;
-    line-height: 1.55;
-    font-size: 0.95rem;
+    color: #a9b0ba;
+    line-height: 1.6;
+    font-size: 0.94rem;
 }
 
-/* Risk-level card - plain solid colour, no gradient, no shadow */
+/* ---------- Risk cards on Results ---------- */
 .risk-card {
-    border-radius: 4px;
-    padding: 1.2rem 1.2rem;
+    border-radius: 6px;
+    padding: 1.3rem 1.2rem;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 .risk-card .factor-name {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.90);
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.92);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.5rem;
+    letter-spacing: 0.10em;
+    margin-bottom: 0.55rem;
     font-weight: 500;
 }
 .risk-card .level {
-    font-size: 1.9rem;
+    font-size: 1.95rem;
     font-weight: 700;
     color: #ffffff;
-    margin: 0.3rem 0 0.1rem 0;
+    margin: 0.25rem 0 0.05rem 0;
+    letter-spacing: -0.01em;
 }
-.risk-low    {background: #2ecc71;}
-.risk-medium {background: #f1c40f;}
-.risk-high   {background: #e74c3c;}
+.risk-low    { background: #27ae60; }
+.risk-medium { background: #e0a800; }
+.risk-high   { background: #d13d2f; }
 
-/* Simple stat - no big value blob */
+/* ---------- Stat block ---------- */
 .stat {
-    padding: 0.6rem 0;
+    padding: 0.8rem 0 0.8rem 1.1rem;
     border-left: 3px solid #2E86AB;
-    padding-left: 1rem;
+    margin: 0.4rem 0;
 }
 .stat .value {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #ffffff;
     display: block;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
 }
 .stat .label {
-    font-size: 0.82rem;
-    color: #aaaaaa;
+    font-size: 0.83rem;
+    color: #8a919b;
+    margin-top: 0.2rem;
+    display: block;
 }
 
-/* Section headers */
+/* ---------- Section headers ---------- */
 .section-title {
-    color: #ffffff;
-    font-size: 1.4rem;
+    color: #f5f7fa;
+    font-size: 1.35rem;
     font-weight: 600;
-    margin: 2rem 0 0.9rem 0;
-    padding-bottom: 0.4rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    margin: 2.5rem 0 1rem 0;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid #2a3040;
+    letter-spacing: -0.01em;
+}
+
+/* ---------- Streamlit buttons ---------- */
+.stButton > button {
+    border-radius: 6px;
+    border: 1px solid #2a3040;
+    padding: 0.55rem 1.2rem;
+    font-weight: 500;
+    font-size: 0.94rem;
+    transition: all 0.15s ease;
+}
+.stButton > button:hover {
+    border-color: #2E86AB;
+    color: #ffffff;
+}
+.stButton > button[kind='primary'] {
+    background: #2E86AB;
+    border-color: #2E86AB;
+    color: #ffffff;
+    font-weight: 600;
+}
+.stButton > button[kind='primary']:hover {
+    background: #256d8c;
+    border-color: #256d8c;
+    color: #ffffff;
+}
+
+/* ---------- Sidebar polish ---------- */
+[data-testid='stSidebar'] {
+    background: #0b0e14;
+    border-right: 1px solid #1c2130;
+}
+[data-testid='stSidebar'] [data-testid='stMarkdown'] p {
+    color: #a9b0ba;
+    font-size: 0.87rem;
+}
+
+/* ---------- Form input polish ---------- */
+[data-testid='stSelectbox'] > div > div,
+[data-testid='stNumberInput'] > div > div > input,
+[data-testid='stTextInput'] > div > div > input {
+    background: #171b25;
+    border: 1px solid #2a3040;
+    border-radius: 5px;
+}
+
+/* Slider track colour */
+.stSlider [data-baseweb='slider'] div[role='slider'] {
+    background: #2E86AB;
+    border-color: #2E86AB;
+}
+
+/* ---------- Dataframe polish ---------- */
+[data-testid='stDataFrame'] {
+    border: 1px solid #2a3040;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* ---------- Expander polish ---------- */
+[data-testid='stExpander'] {
+    border: 1px solid #2a3040;
+    border-radius: 6px;
+    background: #171b25;
+    margin: 0.5rem 0;
+}
+[data-testid='stExpander'] summary {
+    padding: 0.7rem 1rem;
+    font-weight: 500;
+}
+
+/* ---------- Section-nav bar for Assessment ---------- */
+.section-nav {
+    background: #171b25;
+    border: 1px solid #2a3040;
+    border-radius: 6px;
+    padding: 0.8rem 1.2rem;
+    margin: 1rem 0 2rem 0;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.88rem;
+    color: #8a919b;
+}
+.section-nav strong { color: #f5f7fa; font-weight: 500; }
+.section-nav .divider { color: #2a3040; }
+
+/* ---------- Definition list for About / Methodology ---------- */
+.def-list { margin: 0.5rem 0 1.5rem 0; }
+.def-list dt {
+    color: #8a919b;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.7rem;
+    font-weight: 500;
+}
+.def-list dd {
+    color: #f5f7fa;
+    font-size: 1rem;
+    margin: 0.15rem 0 0 0;
 }
 </style>
 """

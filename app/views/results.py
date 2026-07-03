@@ -54,24 +54,49 @@ def _summary_text(predictions):
     med  = sum(1 for v in predictions.values() if v == "Medium")
     low  = sum(1 for v in predictions.values() if v == "Low")
 
-    st.markdown(
-        f"**Summary.** {high} High, {med} Medium, {low} Low across the six "
-        f"risk factors."
-    )
+    # Three-column summary strip
+    c1, c2, c3 = st.columns(3, gap="medium")
+    with c1:
+        st.markdown(
+            f"<div class='stat' style='border-left-color:#d13d2f;'>"
+            f"<span class='value'>{high}</span>"
+            f"<span class='label'>High-risk factors</span>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+    with c2:
+        st.markdown(
+            f"<div class='stat' style='border-left-color:#e0a800;'>"
+            f"<span class='value'>{med}</span>"
+            f"<span class='label'>Medium-risk factors</span>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+    with c3:
+        st.markdown(
+            f"<div class='stat' style='border-left-color:#27ae60;'>"
+            f"<span class='value'>{low}</span>"
+            f"<span class='label'>Low-risk factors</span>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("")
 
     if high >= 3:
         st.error(
-            f"{high} of 6 factors flagged HIGH. This is a high-burden "
-            "ergonomic profile."
+            f"**High-burden profile.** {high} of 6 factors flagged High. "
+            "See Recommended actions below for the priority interventions."
         )
     elif high + med >= 4:
         st.warning(
-            f"{high} High plus {med} Medium risk factors. Several "
-            "modifiable exposures."
+            f"**Moderate burden.** {high} High plus {med} Medium risk "
+            "factors — several modifiable exposures identified."
         )
     else:
         st.success(
-            "Predominantly acceptable exposures across the six factors."
+            "**Predominantly low risk.** Acceptable exposures across the "
+            "six factors."
         )
 
 
@@ -173,11 +198,22 @@ def render():
     features    = st.session_state.get("last_features")
 
     if predictions is None:
-        st.warning(
-            "No prediction yet. Head over to the Assessment page to run one."
+        st.title("Prediction Results")
+        st.markdown(
+            "<div class='card' style='text-align:center; padding: 3rem 2rem;'>"
+            "<h3>No prediction yet</h3>"
+            "<p style='margin-top: 0.6rem; margin-bottom: 1.4rem;'>"
+            "Run a rider through the Assessment page to see their six-factor "
+            "risk profile here."
+            "</p>"
+            "</div>",
+            unsafe_allow_html=True,
         )
-        if st.button("Go to Assessment", type="primary"):
-            st.switch_page("views/assessment.py")
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Go to Assessment", type="primary",
+                         use_container_width=True):
+                st.switch_page("views/assessment.py")
         return
 
     st.title("Prediction Results")
