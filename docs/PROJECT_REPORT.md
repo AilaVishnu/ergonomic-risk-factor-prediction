@@ -54,8 +54,9 @@ The pipeline runs in two stages.
 
 **Stage 1** computes Low/Medium/High labels for the six ergonomic risk
 factors using deterministic rules from standard ergonomic methods
-(Borg CR10 action levels, RULA Table C action levels, sample
-terciles, simple thresholds). Stage 1 is the ground truth that
+(operational thresholds on the Borg CR10 lifting rating, RULA action
+levels collapsed into three bands, sample terciles, and simple
+duration/deliveries-per-hour cuts). Stage 1 is the ground truth that
 Stage 2 tries to learn.
 
 **Stage 2** trains a supervised classifier per risk factor that maps
@@ -93,9 +94,13 @@ Predict, and reads six coloured risk levels.
 Each factor is computed in Phase 3 using a standard ergonomic method
 and binned into Low, Medium, or High.
 
-**Force.** How hard the rider has to lift or push. We use the Borg
-CR10 lifting item. Conventional Borg action levels: 0-3 Low
-(acceptable), 4-6 Medium (monitor), 7-10 High (intervene).
+**Force.** How hard the rider has to lift or push. We apply the
+Borg CR10 rating (used for perceived exertion) to the task-specific
+item that asks about lifting and carrying parcels, and bin the
+resulting 0-10 rating using operational thresholds: 0-3 Low, 4-6
+Medium, 7-10 High. Borg CR10 does not carry official regulatory
+action levels the way RULA does; these cutoffs are a common practical
+convention.
 
 **Repetition.** Deliveries per hour, computed as `deliveries_num /
 work_hours_num`. The earlier Phase 3 binning used `pandas.qcut(q=3)`
@@ -106,8 +111,11 @@ to fixed cuts at 2.5 and 3.75 so the worst case ends up in High.
 The trade-off is documented under Limitations.
 
 **Posture.** RULA Table C, the final score from the standard RULA
-worksheet. Conventional action levels are 1-2 Low, 3-4 Medium, 5 or
-higher High.
+worksheet. RULA defines four action levels (AL1 score 1-2 acceptable,
+AL2 score 3-4 further investigation, AL3 score 5-6 investigation and
+change soon, AL4 score 7 investigation and change immediately). We
+collapse them into three bands to align with the other five factors:
+Low = AL1 (1-2), Medium = AL2 (3-4), High = AL3+AL4 combined (5+).
 
 **Duration.** Continuous riding hours. 5 hours or less is Low, 6-7
 is Medium, more than 7 is High.
@@ -279,9 +287,14 @@ related items into one composite score makes the downstream models
 easier to interpret and reduces noise.
 
 **Workload score.** The six NASA-TLX items are averaged into one
-overall workload measure. The satisfaction item (Q28) is reversed
-first, because a higher satisfaction score actually means lower
-mental load:
+overall workload measure. This is the Raw NASA-TLX (RTLX)
+formulation: a simple unweighted mean, rather than the pairwise-
+weighted score from the original 1988 method. RTLX is widely used
+in field studies where administering the paired-comparison weighting
+step is impractical, and it correlates strongly with the weighted
+score in most work contexts. The performance item (Q28) is reversed
+before averaging because higher performance satisfaction corresponds
+to lower cognitive load:
 
 ```
 workload_score = (mental + physical + time_pressure
@@ -303,9 +316,9 @@ fatigue_score = (overall + legs + breathing
                  + lifting + traffic + exhaustion) / 6
 ```
 
-**Force exertion.** Phase 3 needs a separate force measurement (the
-Borg lifting/carrying item) to compute the Force risk level, so we
-pull that single item out as its own feature:
+**Force exertion.** Phase 3 needs a separate task-specific rating
+to compute the Force risk level, so we pull out the survey item that
+applies the Borg CR10 scale to the lifting and carrying task (Q34):
 
 ```
 force_exertion = borg_lifting
@@ -403,7 +416,10 @@ deterministic rules and writes `data/processed/risk_profile.csv`.
 
 ### 7.1 Force
 
-Borg CR10 action levels on `force_exertion`:
+Operational thresholds on the Borg CR10 rating for the lifting /
+carrying task (`force_exertion`). Borg CR10 has no officially-defined
+regulatory action levels; the 0-3 / 4-6 / 7-10 split is a common
+practical convention:
 
 - `force_exertion in [0, 3]` -> Low
 - `force_exertion in [4, 6]` -> Medium
@@ -473,11 +489,13 @@ Sample distribution: Low 68, Medium 58, High 56.
 
 ### 7.6 Posture
 
-RULA Table C action levels on `rula_table_c`:
+The four official RULA action levels (AL1 acceptable, AL2 investigate,
+AL3 investigate soon, AL4 investigate immediately) are collapsed into
+three bands to align with the other five factors:
 
-- `rula_table_c in [1, 2]` -> Low
-- `rula_table_c in [3, 4]` -> Medium
-- `rula_table_c >= 5` -> High
+- `rula_table_c in [1, 2]` -> Low   (AL1)
+- `rula_table_c in [3, 4]` -> Medium (AL2)
+- `rula_table_c >= 5`     -> High   (AL3 + AL4 combined)
 
 Sample distribution: Low 0, Medium 29, High 153. The minimum
 `rula_table_c` in the dataset is 3, which explains the empty Low
