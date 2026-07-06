@@ -36,7 +36,7 @@ FACTOR_DESC = {
     "contact_stress": "Load pressing against the body, weighted by carrying mode, hours, and age.",
     "posture":        "Awkward body angles held while riding and carrying, from RULA Table C.",
 }
-LEVEL_COLOUR = {"Low": "#2ecc71", "Medium": "#f1c40f", "High": "#e74c3c"}
+LEVEL_COLOUR = {"Low": "#22c55e", "Medium": "#f59e0b", "High": "#ef4444"}
 LEVEL_EMOJI  = {"Low": "",         "Medium": "",         "High": ""}
 
 
@@ -613,30 +613,42 @@ a:hover { color: #ffffff; }
    ----------------------------------------------------------------- */
 .risk-card {
     border-radius: 12px;
-    padding: 1.5rem 1.3rem;
+    padding: 1.5rem 1.5rem;
     text-align: center;
     background: #0a0a0a;
     border: 1px solid #1f1f1f;
+    min-height: 128px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.55rem;
 }
 .risk-card .factor-name {
     font-size: 0.72rem;
-    color: #737373;
+    color: #8a919b;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 0.8rem;
+    letter-spacing: 0.14em;
     font-family: 'Geist Mono', ui-monospace, monospace;
     font-weight: 500;
 }
 .risk-card .level {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #ffffff;
-    letter-spacing: -0.03em;
+    font-size: 2.75rem;
+    font-weight: 700;
+    letter-spacing: -0.045em;
     line-height: 1;
+    text-shadow: 0 0 24px currentColor;
+    filter: drop-shadow(0 0 0 currentColor);
 }
+/* Level word takes its colour from the severity class so High / Medium /
+   Low read as red / amber / green at a glance instead of a wall of white
+   text.  The soft text-shadow adds a subtle glow that survives on the
+   pure-black canvas without looking cartoonish. */
 .risk-low    { border-left: 3px solid #22c55e; }
+.risk-low    .level { color: #22c55e; text-shadow: 0 0 22px rgba(34, 197, 94, 0.35); }
 .risk-medium { border-left: 3px solid #f59e0b; }
+.risk-medium .level { color: #f59e0b; text-shadow: 0 0 22px rgba(245, 158, 11, 0.35); }
 .risk-high   { border-left: 3px solid #ef4444; }
+.risk-high   .level { color: #ef4444; text-shadow: 0 0 22px rgba(239, 68, 68, 0.40); }
 
 /* -----------------------------------------------------------------
    Sidebar - #0a0a0a so it is visually distinct from the pure-black
