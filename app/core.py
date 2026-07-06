@@ -389,12 +389,16 @@ a:hover { color: #ffffff; }
 }
 
 /* -----------------------------------------------------------------
-   Buttons - pill shape (Vercel "Deploy Now" / "Talk to Sales")
+   Buttons - pill shape (Vercel "Deploy Now" / "Talk to Sales").
+   Covers both st.button (.stButton) AND st.form_submit_button
+   (.stFormSubmitButton / [data-testid='stFormSubmitButton']).
    ----------------------------------------------------------------- */
-.stButton > button {
+.stButton > button,
+.stFormSubmitButton > button,
+[data-testid='stFormSubmitButton'] > button {
     border-radius: 999px !important;
-    padding: 0.65rem 1.5rem !important;
-    font-size: 0.9rem !important;
+    padding: 0.75rem 1.75rem !important;
+    font-size: 0.95rem !important;
     font-weight: 500 !important;
     border: 1px solid #333333 !important;
     background: #171717 !important;
@@ -403,26 +407,51 @@ a:hover { color: #ffffff; }
     transition: all 0.15s ease !important;
     box-shadow: none !important;
 }
-.stButton > button:hover {
+.stButton > button:hover,
+.stFormSubmitButton > button:hover,
+[data-testid='stFormSubmitButton'] > button:hover {
     background: #262626 !important;
     border-color: #525252 !important;
     color: #ffffff !important;
 }
-.stButton > button[kind='primary'] {
+
+/* Primary variants: white pill with high-contrast black text.
+   Includes the form-submit button which Streamlit does NOT tag with
+   kind='primary' in the DOM even when passed type='primary' -- that's
+   why the label was rendering faint on white before.  Use the parent
+   testid to catch it regardless. */
+.stButton > button[kind='primary'],
+.stFormSubmitButton > button,
+[data-testid='stFormSubmitButton'] > button {
     background: #ffffff !important;
     border-color: #ffffff !important;
     color: #000000 !important;
     font-weight: 600 !important;
+    font-size: 1rem !important;
+    padding: 0.85rem 2rem !important;
 }
-.stButton > button[kind='primary']:hover {
+.stButton > button[kind='primary']:hover,
+.stFormSubmitButton > button:hover,
+[data-testid='stFormSubmitButton'] > button:hover {
     background: #ededed !important;
     border-color: #ededed !important;
     color: #000000 !important;
     transform: translateY(-1px);
 }
+
+/* Force text colour to inherit from the button element for every
+   descendant Streamlit wraps the label in (<p>, <span>, <div>).
+   Without this, Streamlit's own paragraph styling overrides the
+   button's colour and the label goes faint. */
 .stButton > button[kind='primary'] p,
 .stButton > button[kind='primary'] span,
-.stButton > button[kind='primary'] div {
+.stButton > button[kind='primary'] div,
+.stFormSubmitButton > button p,
+.stFormSubmitButton > button span,
+.stFormSubmitButton > button div,
+[data-testid='stFormSubmitButton'] > button p,
+[data-testid='stFormSubmitButton'] > button span,
+[data-testid='stFormSubmitButton'] > button div {
     color: #000000 !important;
 }
 .stButton > button p,
