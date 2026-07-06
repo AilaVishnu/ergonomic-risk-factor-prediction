@@ -40,7 +40,7 @@ nav = st.navigation(pages)
 # Sidebar branding
 with st.sidebar:
     st.markdown("### Ergonomic Risk Screening Tool")
-    st.caption("IIITDM-SIES internship deliverable")
+    st.caption("IIITDM-SIES  |  SIDI research deliverable")
     st.divider()
 
 nav.run()

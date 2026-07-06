@@ -18,7 +18,7 @@ def render():
     st.title("Methodology")
     st.caption(
         "How the pipeline turns a rider profile into six colour-coded risk "
-        "levels. The full write-up is in the internship report."
+        "levels. The full write-up is in the accompanying project report."
     )
 
     flowchart = ROOT / "outputs" / "figures" / "methodology_flowchart.png"

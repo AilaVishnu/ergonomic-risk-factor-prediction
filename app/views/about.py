@@ -32,7 +32,6 @@ def render():
     )
     st.markdown(
         "<dl class='def-list'>"
-        "<dt>Programme</dt><dd>IIITDM-SIES Internship</dd>"
         "<dt>Department</dt><dd>School of Interdisciplinary Design and Innovation (SIDI)</dd>"
         "<dt>Institution</dt><dd>Indian Institute of Information Technology, Design and Manufacturing, Kancheepuram</dd>"
         "<dt>Period</dt><dd>May 2026 to July 2026</dd>"
