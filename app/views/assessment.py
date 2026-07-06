@@ -25,6 +25,66 @@ def _run_prediction(raw):
     st.switch_page("views/results.py")
 
 
+def _apply_preset(name):
+    """Copy a preset's values into st.session_state under widget keys so
+    the form re-renders pre-filled.  Does NOT run the prediction — the
+    rider still clicks 'Predict risk levels' to submit."""
+    raw = preset_to_raw(name)
+    ss = st.session_state
+
+    # -- Demographic
+    ss["gender"]        = raw["gender"]
+    ss["age"]           = raw["age"]
+    ss["education"]     = raw["education"]
+    ss["region"]        = raw["region"]
+    ss["marital"]       = raw["marital_status"]
+    ss["platform"]      = raw["delivery_platform"]
+    ss["job_duration"]  = raw["job_duration"]
+    ss["income"]        = raw["income"]
+    ss["vehicle"]       = raw["vehicle"]
+    ss["carrying"]      = raw["carrying"]
+    ss["work_hours"]    = raw["work_hours"]
+    ss["work_days"]     = raw["work_days"]
+    ss["deliveries"]    = raw["deliveries"]
+    ss["rest_break"]    = raw["rest_break"]
+    ss["break_type"]    = raw["type_of_break"]
+    ss["tobacco"]       = raw["tobacco"]
+    ss["alcohol"]       = raw["alcohol"]
+
+    # -- NMQ + 7-day discomfort
+    for i, v in enumerate(raw["nmq"]):
+        ss[f"nmq_{i}"] = v
+    for i, v in enumerate(raw["d7"]):
+        ss[f"d7_{i}"] = v
+
+    # -- Q20-24 follow-ups
+    for k in ("out_reduced_perf", "out_taken_leave", "out_consulted_doctor",
+              "out_riding_worsens", "out_carrying_worsens"):
+        ss[k] = raw[k]
+
+    # -- NASA-TLX
+    ss["nasa_mental"]       = raw["nasa"]["mental"]
+    ss["nasa_physical"]     = raw["nasa"]["physical"]
+    ss["nasa_time"]         = raw["nasa"]["time_pressure"]
+    ss["nasa_dissatisfied"] = raw["nasa"]["dissatisfied"]
+    ss["nasa_effort"]       = raw["nasa"]["effort"]
+    ss["nasa_frustration"]  = raw["nasa"]["frustration"]
+
+    # -- Borg CR10
+    for k in ("overall", "legs", "breathing", "lifting", "traffic", "exhaustion"):
+        ss[f"borg_{k}"] = raw["borg"][k]
+
+    # -- RULA
+    for k, v in raw["rula"].items():
+        ss[f"rula_{k}"] = v
+
+    # -- QEC (keys already prefixed 'qec_' in raw dict)
+    for k, v in raw["qec"].items():
+        ss[k] = v
+
+    ss["_preset_toast"] = name
+
+
 def render():
     inject_css()
 
@@ -33,8 +93,8 @@ def render():
         "<p style='color:#a9b0ba; font-size:1.02rem; margin-top:-0.4rem; "
         "max-width: 780px;'>"
         "Answer the 36-item questionnaire below plus the RULA and QEC "
-        "observation scores. Or use a sample profile to trigger a "
-        "prediction in one click."
+        "observation scores. Or load a sample profile to autofill every "
+        "field, then click Predict."
         "</p>",
         unsafe_allow_html=True,
     )
@@ -49,11 +109,18 @@ def render():
     )
     c1, c2, c3 = st.columns(3, gap="medium")
     if c1.button("Low-risk rider", use_container_width=True):
-        _run_prediction(preset_to_raw("low"))
+        _apply_preset("low")
     if c2.button("Average rider", use_container_width=True):
-        _run_prediction(preset_to_raw("average"))
+        _apply_preset("average")
     if c3.button("High-risk rider", use_container_width=True):
-        _run_prediction(preset_to_raw("high"))
+        _apply_preset("high")
+
+    # Flash a small confirmation the first time the form re-renders after
+    # a preset is loaded, so the rider knows to click 'Predict' next.
+    if st.session_state.pop("_preset_toast", None):
+        st.info("Form filled with the sample profile. "
+                "Review the values, then click Predict risk levels.",
+                icon=":material/check_circle:")
 
     # ---------------- Section overview ----------------
     st.markdown(
@@ -78,32 +145,51 @@ def render():
         st.markdown("#### Demographic")
         col1, col2, col3 = st.columns(3)
         with col1:
-            gender       = st.selectbox("1. Gender", list(GENDER_MAP.keys()))
-            age          = st.selectbox("2. Age", list(AGE_MAP.keys()), index=1)
-            education    = st.selectbox("3. Education", list(EDUCATION_MAP.keys()), index=2)
-            region       = st.selectbox("4. Region", list(REGION_MAP.keys()))
-            marital      = st.selectbox("5. Marital status", list(MARITAL_MAP.keys()))
-            platform     = st.selectbox("6. Delivery platform", list(PLATFORM_MAP.keys()))
+            gender       = st.selectbox("1. Gender", list(GENDER_MAP.keys()),
+                                        key="gender")
+            age          = st.selectbox("2. Age", list(AGE_MAP.keys()), index=1,
+                                        key="age")
+            education    = st.selectbox("3. Education", list(EDUCATION_MAP.keys()),
+                                        index=2, key="education")
+            region       = st.selectbox("4. Region", list(REGION_MAP.keys()),
+                                        key="region")
+            marital      = st.selectbox("5. Marital status", list(MARITAL_MAP.keys()),
+                                        key="marital")
+            platform     = st.selectbox("6. Delivery platform",
+                                        list(PLATFORM_MAP.keys()), key="platform")
         with col2:
             job_duration = st.selectbox("7. Job duration (experience)",
-                                        list(JOB_DURATION_MAP.keys()), index=2)
+                                        list(JOB_DURATION_MAP.keys()), index=2,
+                                        key="job_duration")
             income       = st.selectbox("8. Monthly income (INR)",
-                                        list(INCOME_MAP.keys()), index=2)
-            vehicle      = st.selectbox("9. Type of vehicle", list(VEHICLE_MAP.keys()), index=1)
+                                        list(INCOME_MAP.keys()), index=2,
+                                        key="income")
+            vehicle      = st.selectbox("9. Type of vehicle",
+                                        list(VEHICLE_MAP.keys()), index=1,
+                                        key="vehicle")
             carrying     = st.selectbox("10. Mode of carrying deliveries",
-                                        list(CARRYING_MAP.keys()), index=1)
+                                        list(CARRYING_MAP.keys()), index=1,
+                                        key="carrying")
             work_hours   = st.selectbox("11. Working hours per day",
-                                        list(WORK_HOURS_MAP.keys()), index=2)
+                                        list(WORK_HOURS_MAP.keys()), index=2,
+                                        key="work_hours")
             work_days    = st.selectbox("12. Working days per week",
-                                        list(WORK_DAYS_MAP.keys()), index=2)
+                                        list(WORK_DAYS_MAP.keys()), index=2,
+                                        key="work_days")
         with col3:
             deliveries   = st.selectbox("13. Number of deliveries per day",
-                                        list(DELIVERIES_MAP.keys()), index=2)
+                                        list(DELIVERIES_MAP.keys()), index=2,
+                                        key="deliveries")
             rest_break   = st.selectbox("14. Duration of rest break",
-                                        list(REST_BREAK_MAP.keys()), index=1)
-            break_type   = st.selectbox("15. Type of break", list(BREAK_TYPE_MAP.keys()))
-            tobacco      = st.selectbox("16. Tobacco consumption", list(SUBSTANCE_MAP.keys()))
-            alcohol      = st.selectbox("17. Alcohol consumption", list(SUBSTANCE_MAP.keys()))
+                                        list(REST_BREAK_MAP.keys()), index=1,
+                                        key="rest_break")
+            break_type   = st.selectbox("15. Type of break",
+                                        list(BREAK_TYPE_MAP.keys()),
+                                        key="break_type")
+            tobacco      = st.selectbox("16. Tobacco consumption",
+                                        list(SUBSTANCE_MAP.keys()), key="tobacco")
+            alcohol      = st.selectbox("17. Alcohol consumption",
+                                        list(SUBSTANCE_MAP.keys()), key="alcohol")
 
         st.divider()
 
@@ -133,16 +219,21 @@ def render():
         cols = st.columns(2)
         with cols[0]:
             out_reduced_perf     = st.radio("20. Has discomfort reduced your delivery performance?",
-                                            YES_NO, index=0, horizontal=True)
+                                            YES_NO, index=0, horizontal=True,
+                                            key="out_reduced_perf")
             out_taken_leave      = st.radio("21. Have you ever taken leave due to body pain caused by delivery work?",
-                                            YES_NO, index=0, horizontal=True)
+                                            YES_NO, index=0, horizontal=True,
+                                            key="out_taken_leave")
             out_consulted_doctor = st.radio("22. Have you consulted a doctor or physiotherapist for work-related pain?",
-                                            YES_NO, index=0, horizontal=True)
+                                            YES_NO, index=0, horizontal=True,
+                                            key="out_consulted_doctor")
         with cols[1]:
             out_riding_worsens   = st.radio("23. Does riding/driving for long hours increase your discomfort?",
-                                            YES_NO, index=0, horizontal=True)
+                                            YES_NO, index=0, horizontal=True,
+                                            key="out_riding_worsens")
             out_carrying_worsens = st.radio("24. Does carrying heavy packages worsen your discomfort?",
-                                            YES_NO, index=0, horizontal=True)
+                                            YES_NO, index=0, horizontal=True,
+                                            key="out_carrying_worsens")
 
         st.divider()
 
@@ -151,22 +242,23 @@ def render():
         cols = st.columns(2)
         with cols[0]:
             nasa_mental       = st.slider("25. How mentally demanding was your delivery shift?",
-                                          0, 100, 50, 25)
+                                          0, 100, 50, 25, key="nasa_mental")
             nasa_physical     = st.slider("26. How physically demanding was your delivery shift?",
-                                          0, 100, 50, 25)
+                                          0, 100, 50, 25, key="nasa_physical")
             nasa_time         = st.slider("27. How rushed or time-pressured did you feel?",
-                                          0, 100, 50, 25)
+                                          0, 100, 50, 25, key="nasa_time")
         with cols[1]:
             nasa_dissatisfied = st.slider(
                 "28. How DISSATISFIED were you with your ability to "
                 "complete deliveries accurately and on time?",
                 0, 100, 25, 25,
                 help="0 = very satisfied, 100 = very dissatisfied. "
-                     "All 6 NASA sliders now point the same way.")
+                     "All 6 NASA sliders now point the same way.",
+                key="nasa_dissatisfied")
             nasa_effort       = st.slider("29. How much effort did you put in to maintain performance?",
-                                          0, 100, 75, 25)
+                                          0, 100, 75, 25, key="nasa_effort")
             nasa_frustration  = st.slider("30. How stressed, frustrated, or emotionally strained did you feel?",
-                                          0, 100, 50, 25)
+                                          0, 100, 50, 25, key="nasa_frustration")
 
         st.divider()
 
@@ -175,18 +267,18 @@ def render():
         cols = st.columns(2)
         with cols[0]:
             borg_overall    = st.slider("31. Overall, how hard did your delivery work feel today?",
-                                        0, 10, 4)
+                                        0, 10, 4, key="borg_overall")
             borg_legs       = st.slider("32. How tired did your legs feel while walking/riding?",
-                                        0, 10, 4)
+                                        0, 10, 4, key="borg_legs")
             borg_breathing  = st.slider("33. How hard was it to breathe during deliveries?",
-                                        0, 10, 3)
+                                        0, 10, 3, key="borg_breathing")
         with cols[1]:
             borg_lifting    = st.slider("34. How hard did lifting or carrying parcels feel?",
-                                        0, 10, 4)
+                                        0, 10, 4, key="borg_lifting")
             borg_traffic    = st.slider("35. How physically stressful was working in traffic/weather conditions?",
-                                        0, 10, 5)
+                                        0, 10, 5, key="borg_traffic")
             borg_exhaustion = st.slider("36. At the end of your shift, how exhausted did your body feel?",
-                                        0, 10, 5)
+                                        0, 10, 5, key="borg_exhaustion")
 
         st.divider()
 
@@ -199,21 +291,32 @@ def render():
         cols = st.columns(3)
         with cols[0]:
             st.markdown("**Group A - Arm & wrist**")
-            upper_arm   = st.selectbox("Upper arm (1-4)",   [1, 2, 3, 4], index=1)
-            lower_arm   = st.selectbox("Lower arm (1-3)",   [1, 2, 3],    index=0)
-            wrist       = st.selectbox("Wrist (1-3)",       [1, 2, 3],    index=0)
-            wrist_twist = st.selectbox("Wrist twist (1-2)", [1, 2],       index=0)
+            upper_arm   = st.selectbox("Upper arm (1-4)",   [1, 2, 3, 4], index=1,
+                                       key="rula_upper_arm")
+            lower_arm   = st.selectbox("Lower arm (1-3)",   [1, 2, 3],    index=0,
+                                       key="rula_lower_arm")
+            wrist       = st.selectbox("Wrist (1-3)",       [1, 2, 3],    index=0,
+                                       key="rula_wrist")
+            wrist_twist = st.selectbox("Wrist twist (1-2)", [1, 2],       index=0,
+                                       key="rula_wrist_twist")
         with cols[1]:
             st.markdown("**Group B - Neck, trunk, legs**")
-            neck_position  = st.selectbox("Neck position (1-4)",  [1, 2, 3, 4], index=1)
-            trunk_position = st.selectbox("Trunk position (1-4)", [1, 2, 3, 4], index=1)
-            legs           = st.selectbox("Legs (1-2)",           [1, 2],       index=0)
+            neck_position  = st.selectbox("Neck position (1-4)",  [1, 2, 3, 4], index=1,
+                                          key="rula_neck_position")
+            trunk_position = st.selectbox("Trunk position (1-4)", [1, 2, 3, 4], index=1,
+                                          key="rula_trunk_position")
+            legs           = st.selectbox("Legs (1-2)",           [1, 2],       index=0,
+                                          key="rula_legs")
         with cols[2]:
             st.markdown("**Muscle & force adjustments**")
-            muscle_a = st.selectbox("Muscle A (0-1)", [0, 1], index=0)
-            force_a  = st.selectbox("Force A (0-3)",  [0, 1, 2, 3], index=0)
-            muscle_b = st.selectbox("Muscle B (0-1)", [0, 1], index=0)
-            force_b  = st.selectbox("Force B (0-3)",  [0, 1, 2, 3], index=0)
+            muscle_a = st.selectbox("Muscle A (0-1)", [0, 1], index=0,
+                                    key="rula_muscle_a")
+            force_a  = st.selectbox("Force A (0-3)",  [0, 1, 2, 3], index=0,
+                                    key="rula_force_a")
+            muscle_b = st.selectbox("Muscle B (0-1)", [0, 1], index=0,
+                                    key="rula_muscle_b")
+            force_b  = st.selectbox("Force B (0-3)",  [0, 1, 2, 3], index=0,
+                                    key="rula_force_b")
 
         st.divider()
 
@@ -225,17 +328,25 @@ def render():
         )
         cols = st.columns(4)
         with cols[0]:
-            qec_back         = st.number_input("Back (14-46)",         14, 46, 28, 2)
-            qec_shoulder_arm = st.number_input("Shoulder/Arm (14-56)", 14, 56, 28, 2)
+            qec_back         = st.number_input("Back (14-46)",         14, 46, 28, 2,
+                                               key="qec_back")
+            qec_shoulder_arm = st.number_input("Shoulder/Arm (14-56)", 14, 56, 28, 2,
+                                               key="qec_shoulder_arm")
         with cols[1]:
-            qec_wrist_hand   = st.number_input("Wrist/Hand (14-46)",   14, 46, 26, 2)
-            qec_neck         = st.number_input("Neck (10-36)",         10, 36, 18, 2)
+            qec_wrist_hand   = st.number_input("Wrist/Hand (14-46)",   14, 46, 26, 2,
+                                               key="qec_wrist_hand")
+            qec_neck         = st.number_input("Neck (10-36)",         10, 36, 18, 2,
+                                               key="qec_neck")
         with cols[2]:
-            qec_driving      = st.number_input("Driving (4-16)",       4,  16, 8,  1)
-            qec_vibration    = st.number_input("Vibration (4-9)",      4,  9,  6,  1)
+            qec_driving      = st.number_input("Driving (4-16)",       4,  16, 8,  1,
+                                               key="qec_driving")
+            qec_vibration    = st.number_input("Vibration (4-9)",      4,  9,  6,  1,
+                                               key="qec_vibration")
         with cols[3]:
-            qec_work_pace    = st.number_input("Work pace (1-10)",     1,  10, 6,  1)
-            qec_stress       = st.number_input("Stress (1-16)",        1,  16, 8,  1)
+            qec_work_pace    = st.number_input("Work pace (1-10)",     1,  10, 6,  1,
+                                               key="qec_work_pace")
+            qec_stress       = st.number_input("Stress (1-16)",        1,  16, 8,  1,
+                                               key="qec_stress")
 
         st.divider()
         submitted = st.form_submit_button("Predict risk levels",
