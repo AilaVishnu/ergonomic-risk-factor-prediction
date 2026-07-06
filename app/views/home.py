@@ -20,7 +20,7 @@ def render():
         """
         <div class='hero'>
           <div class='hero__inner'>
-            <span class='hero__badge'>IIITDM-SIES Internship</span>
+            <span class='hero__badge'>IIITDM-SIES</span>
           </div>
         </div>
         """,
