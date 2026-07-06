@@ -111,13 +111,18 @@ async def capture():
         print("  saved web_05_assessment_rula_qec.png")
 
         # -------------------- RESULTS (High-risk preset) --------------------
+        # 1. 'High-risk rider' -- autofills the form (no navigation).
+        # 2. 'Predict risk levels' -- submits and jumps to Results.
         await page.evaluate("window.scrollTo(0, 0)")
         await page.wait_for_timeout(300)
         await _click_button(page, "High-risk rider")
-        await page.wait_for_timeout(3500)  # prediction runs + auto-navigate
+        await page.wait_for_timeout(1500)               # let re-render land
+
+        await _click_button(page, "Predict risk levels")
+        await page.wait_for_timeout(3500)               # predict + switch_page
 
         await page.evaluate("window.scrollTo(0, 0)")
-        await page.wait_for_timeout(400)
+        await page.wait_for_timeout(500)
         await page.screenshot(path=str(OUT / "web_06_results.png"),
                               full_page=True)
         print("  saved web_06_results.png")
