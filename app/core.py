@@ -268,6 +268,23 @@ CUSTOM_CSS = """
     visibility: hidden !important;
     display: none !important;
 }
+
+/* Hide Streamlit Community Cloud's Fork button + "View source on GitHub"
+   icon that get injected on the top-right of deployed apps.  These are
+   unhideable via config on public-repo free-tier deploys, so we nuke
+   them via CSS.  Selectors cover multiple versions of the injected DOM.
+   NB: keep the "Made with Streamlit" bottom-right badge intact — the
+   free-tier terms require it. */
+#GithubIcon,
+[data-testid='stToolbar'] a[href*='github.com'],
+[data-testid='stActionButtonIcon'],
+[data-testid='stAppDeployButton'],
+button[title='Fork this app'],
+a[title='View app source'],
+a[href*='/streamlit/streamlit'] {
+    display: none !important;
+    visibility: hidden !important;
+}
 header[data-testid='stHeader'] {
     background: transparent !important;
     height: auto !important;
