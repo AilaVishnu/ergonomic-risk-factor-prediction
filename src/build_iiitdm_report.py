@@ -706,11 +706,11 @@ def add_list_of_figures(doc):
         ("4.7",  "Confusion matrices for the best model per factor.",                          "26"),
         ("4.8",  "ROC curves (one-vs-rest) for the best model per factor.",                    "27"),
         ("4.9",  "Top 10 features by importance for the best model per factor.",               "28"),
-        ("4.10", "Web app: page header and demographic section.",                              "29"),
-        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "30"),
-        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "31"),
-        ("4.13", "Web app: RULA and QEC observation sections.",                                "32"),
-        ("4.14", "Web app: predicted risk profile output.",                                    "33"),
+        ("4.10", "Web app: sample-profile shortcuts and demographic section.",                 "34"),
+        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "35"),
+        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "36"),
+        ("4.13", "Web app: RULA and QEC observation sections.",                                "37"),
+        ("4.14", "Web app: predicted risk profile output.",                                    "38"),
     ]
     for num, cap, page in figures:
         p = doc.add_paragraph()
@@ -1617,25 +1617,25 @@ def chapter_4(doc):
         "sample-profile shortcuts (Low, Average, High risk) that pre-fill the "
         "entire form so the mentor can trigger a prediction in one click.")
     add_figure(doc,
-        ROOT / "outputs" / "app_screenshots" / "web_01_header_demographic.png",
-        "Figure 4.10: Web app: page header, sample-profile shortcuts, and "
-        "demographic section (Q1 to Q17).", width_cm=15)
+        ROOT / "outputs" / "app_screenshots" / "web_02_assessment_top.png",
+        "Figure 4.10: Web app: sample-profile shortcuts and demographic "
+        "section (Q1 to Q17).", width_cm=15)
     add_figure(doc,
-        ROOT / "outputs" / "app_screenshots" / "web_02_nmq.png",
+        ROOT / "outputs" / "app_screenshots" / "web_03_assessment_nmq.png",
         "Figure 4.11: Web app: Nordic Musculoskeletal Questionnaire section "
         "(Q18 to Q24).", width_cm=15)
     add_figure(doc,
-        ROOT / "outputs" / "app_screenshots" / "web_03_nasa_borg.png",
+        ROOT / "outputs" / "app_screenshots" / "web_04_assessment_nasa_borg.png",
         "Figure 4.12: Web app: NASA-TLX and Borg CR10 sliders (Q25 to Q36).",
         width_cm=15)
     add_figure(doc,
-        ROOT / "outputs" / "app_screenshots" / "web_04_rula_qec.png",
+        ROOT / "outputs" / "app_screenshots" / "web_05_assessment_rula_qec.png",
         "Figure 4.13: Web app: RULA (11 items) and QEC (8 scores) observation "
         "sections above the Predict button.", width_cm=15)
     add_figure(doc,
-        ROOT / "outputs" / "app_screenshots" / "web_05_prediction_output.png",
+        ROOT / "outputs" / "app_screenshots" / "web_06_results.png",
         "Figure 4.14: Web app: predicted risk profile output with colour-coded "
-        "metric strip, horizontal bar chart, summary banner, and per-factor "
+        "level cards, radar chart, tabular result, and per-factor "
         "recommendations.", width_cm=15)
 
 
