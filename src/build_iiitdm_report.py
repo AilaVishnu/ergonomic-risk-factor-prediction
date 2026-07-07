@@ -57,8 +57,17 @@ def set_font(run, name=BODY_FONT):
 
 
 def add_line(doc, text="", size=12, bold=False, italic=False, align=None,
-             space_before=0, space_after=6, font=BODY_FONT, color=BLACK):
+             space_before=0, space_after=6, font=BODY_FONT, color=BLACK,
+             style=None):
+    """Add a single paragraph.  When `style` is set to a Word heading style
+    name ("Heading 1" / "Heading 2" / ...), the paragraph is tagged with
+    that style so Word's Navigation Pane, auto-TOC, and PDF outline pick
+    it up.  The visual formatting (size / bold / colour) still comes from
+    the run so we keep the design consistent regardless of the heading
+    style's defaults."""
     p = doc.add_paragraph()
+    if style is not None:
+        p.style = doc.styles[style]
     p.paragraph_format.space_before = Pt(space_before)
     p.paragraph_format.space_after  = Pt(space_after)
     if align is not None:
@@ -74,17 +83,20 @@ def add_line(doc, text="", size=12, bold=False, italic=False, align=None,
 
 
 def add_chapter_heading(doc, chapter_num, title):
-    """Chapter N (small) then Title (big). If chapter_num is empty
-    (Bibliography, front matter) only the title is rendered."""
+    """Chapter N (small, Heading 2) then Title (big, Normal).  Matches
+    the IIITDM reference template where the H2 tag sits on the 'Chapter N'
+    label line and the title itself is a visually-prominent Normal
+    paragraph."""
     doc.add_page_break()
 
     if chapter_num != "":
-        p1 = doc.add_paragraph()
+        p1 = doc.add_paragraph(style=doc.styles["Heading 2"])
         p1.paragraph_format.space_before = Pt(24)
         p1.paragraph_format.space_after  = Pt(0)
         r1 = p1.add_run(f"Chapter {chapter_num}")
         r1.font.size = Pt(20)
         r1.bold = False
+        r1.font.color.rgb = BLACK
         set_font(r1, BODY_FONT)
         space_before_title = Pt(18)
     else:
@@ -96,36 +108,43 @@ def add_chapter_heading(doc, chapter_num, title):
     r2 = p2.add_run(title)
     r2.font.size = Pt(32)
     r2.bold = True
+    r2.font.color.rgb = BLACK
     set_font(r2, BODY_FONT)
 
 
 def add_section_heading(doc, num, title):
-    p = doc.add_paragraph()
+    """Main section like '2.1 Two-stage pipeline' -- Heading 4 in Word."""
+    p = doc.add_paragraph(style=doc.styles["Heading 4"])
     p.paragraph_format.space_before = Pt(18)
     p.paragraph_format.space_after  = Pt(6)
     p.paragraph_format.keep_with_next = True
     r_num = p.add_run(f"{num}   ")
     r_num.font.size = Pt(16)
     r_num.bold = True
+    r_num.font.color.rgb = BLACK
     set_font(r_num, BODY_FONT)
     r_title = p.add_run(title)
     r_title.font.size = Pt(16)
     r_title.bold = True
+    r_title.font.color.rgb = BLACK
     set_font(r_title, BODY_FONT)
 
 
 def add_subsection_heading(doc, num, title):
-    p = doc.add_paragraph()
+    """Subsection like '2.1.1 ...' -- Heading 5 in Word."""
+    p = doc.add_paragraph(style=doc.styles["Heading 5"])
     p.paragraph_format.space_before = Pt(12)
     p.paragraph_format.space_after  = Pt(4)
     p.paragraph_format.keep_with_next = True
     r_num = p.add_run(f"{num}   ")
     r_num.font.size = Pt(13)
     r_num.bold = True
+    r_num.font.color.rgb = BLACK
     set_font(r_num, BODY_FONT)
     r_title = p.add_run(title)
     r_title.font.size = Pt(13)
     r_title.bold = True
+    r_title.font.color.rgb = BLACK
     set_font(r_title, BODY_FONT)
 
 
@@ -292,12 +311,21 @@ def add_title_page(doc):
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_after=24)
 
-    # Logo placeholder
-    add_line(doc, "[IIITDM Kancheepuram logo]",
-             size=11, italic=True,
-             align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=12, space_after=28,
-             color=RGBColor(0x77, 0x77, 0x77))
+    # Institute logo
+    logo_path = ROOT / "assets" / "logos" / "iiitdm_logo.png"
+    if logo_path.exists():
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.space_before = Pt(12)
+        p.paragraph_format.space_after  = Pt(28)
+        r = p.add_run()
+        r.add_picture(str(logo_path), width=Cm(6.5))
+    else:
+        add_line(doc, "[IIITDM Kancheepuram logo]",
+                 size=11, italic=True,
+                 align=WD_ALIGN_PARAGRAPH.CENTER,
+                 space_before=12, space_after=28,
+                 color=RGBColor(0x77, 0x77, 0x77))
 
     add_line(doc, "SCHOOL OF INTERDISCIPLINARY DESIGN AND INNOVATION (SIDI)",
              size=12, bold=True,
@@ -321,7 +349,8 @@ def add_certificate(doc):
     add_line(doc, "Certificate",
              size=28, bold=True, italic=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=36)
+             space_before=24, space_after=36,
+             style="Heading 2")
 
     add_body(doc,
         f"I, {STUDENT_NAME}, from {COLLEGE_NAME} hereby declare that the material "
@@ -375,16 +404,15 @@ def add_abstract(doc):
     add_line(doc, "Abstract",
              size=28, bold=True, italic=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=36)
+             space_before=24, space_after=36,
+             style="Heading 3")
 
     add_body(doc,
-        "Last-mile quick-commerce delivery riders working for platforms such as Blinkit and Zepto face "
-        "significant physical demands including long working hours, awkward postures, "
-        "heavy carrying loads, and exposure to vehicle vibration. Over time these "
-        "exposures contribute to musculoskeletal disorders (MSDs). This project builds "
-        "an automated, per-rider screening tool that predicts risk levels across six "
-        "ergonomic dimensions: Force, Repetition, Posture, Duration, Contact Stress, "
-        "and Vibration.")
+        "Last-mile quick-commerce delivery riders (Blinkit, Zepto) face prolonged "
+        "awkward postures, high delivery rates, heavy carrying loads and vehicle "
+        "vibration, leading to musculoskeletal disorders (MSDs). No single tool "
+        "combines the six standard ergonomic risk factors into an automated "
+        "per-rider screening.")
 
     add_body(doc,
         "The pipeline runs in two stages. Stage 1 applies standard ergonomic methods "
@@ -414,7 +442,8 @@ def add_acknowledgements(doc):
     add_line(doc, "Acknowledgements",
              size=28, bold=True, italic=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=36)
+             space_before=24, space_after=36,
+             style="Heading 3")
 
     add_body(doc,
         "I would extend my sincerest gratitude to the Indian Institute of Information "
@@ -436,31 +465,65 @@ def add_acknowledgements(doc):
 
 
 def add_toc_placeholder(doc):
+    """Hand-populated table of contents in the same visual style as List
+    of Figures / List of Tables (tab stops + dot leader).  Page numbers
+    are anchored to the LoF entries so they stay in sync with the actual
+    layout, and are still refreshable via Word's "Update Field" if the
+    user ever inserts an auto-TOC."""
     doc.add_page_break()
     add_line(doc, "Contents",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=24)
-    # Word-native TOC field
-    p = doc.add_paragraph()
-    run = p.add_run()
-    fld1 = OxmlElement("w:fldChar")
-    fld1.set(qn("w:fldCharType"), "begin")
-    instr = OxmlElement("w:instrText")
-    instr.text = 'TOC \\o "1-3" \\h \\z \\u'
-    fld2 = OxmlElement("w:fldChar")
-    fld2.set(qn("w:fldCharType"), "separate")
-    hint = OxmlElement("w:t")
-    hint.text = "Right-click and 'Update Field' in Word to populate the table of contents."
-    fld3 = OxmlElement("w:fldChar")
-    fld3.set(qn("w:fldCharType"), "end")
-    run._element.append(fld1)
-    run._element.append(instr)
-    run._element.append(fld2)
-    run._element.append(hint)
-    run._element.append(fld3)
-    run.font.size = Pt(11)
-    set_font(run, BODY_FONT)
+             space_before=24, space_after=24,
+             style="Heading 1")
+
+    # (label, page)  --  indent level implied by leading spaces in label
+    contents = [
+        ("Certificate",                                    "ii"),
+        ("Abstract",                                       "iii"),
+        ("Acknowledgements",                               "iv"),
+        ("List of Figures",                                "vi"),
+        ("List of Tables",                                 "vii"),
+        ("Abbreviations",                                  "viii"),
+        ("Chapter 1  Introduction",                        "1"),
+        ("Chapter 2  Methodology",                         "3"),
+        ("    2.1  Two-stage pipeline",                    "3"),
+        ("    2.2  Data sources",                          "5"),
+        ("    2.3  Feature engineering",                   "9"),
+        ("    2.4  Machine-learning models",               "11"),
+        ("Chapter 3  Work Done",                           "13"),
+        ("    3.1  Data collection and cleaning",          "13"),
+        ("    3.2  Statistical analysis",                  "14"),
+        ("    3.3  Model training and evaluation",         "15"),
+        ("    3.4  Interactive web application",           "16"),
+        ("Chapter 4  Results and Discussion",              "17"),
+        ("    4.1  Sample profile",                        "17"),
+        ("    4.2  Discomfort prevalence",                 "19"),
+        ("    4.3  Risk factor distributions",             "22"),
+        ("    4.4  Correlation structure",                 "24"),
+        ("    4.5  Model performance",                     "25"),
+        ("    4.6  Feature importance",                    "28"),
+        ("    4.7  Web application walkthrough",           "29"),
+        ("Chapter 5  Conclusions and Extensions",          "34"),
+        ("Bibliography",                                   "35"),
+    ]
+    for label, page in contents:
+        p = doc.add_paragraph()
+        p.paragraph_format.space_after = Pt(4)
+        tabs = p.paragraph_format.tab_stops
+        tabs.add_tab_stop(Cm(16.0), WD_ALIGN_PARAGRAPH.RIGHT)
+        r = p.add_run(f"{label}\t{page}")
+        r.font.size = Pt(11)
+        set_font(r, BODY_FONT)
+        # Bold the chapter-level rows to give the TOC visual hierarchy
+        if label.startswith("Chapter"):
+            r.font.bold = True
+        # Add dot leader on the right-aligned tab
+        pPr = p._p.get_or_add_pPr()
+        tabs_el = pPr.find(qn("w:tabs"))
+        if tabs_el is not None:
+            last_tab = tabs_el.findall(qn("w:tab"))[-1]
+            last_tab.set(qn("w:leader"), "dot")
 
 
 def add_list_of_figures(doc):
@@ -468,7 +531,8 @@ def add_list_of_figures(doc):
     add_line(doc, "List of Figures",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=24)
+             space_before=24, space_after=24,
+             style="Heading 1")
     figures = [
         ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "6"),
         ("4.1",  "Sample profile across gender, age band, delivery platform, "
@@ -512,7 +576,8 @@ def add_list_of_tables(doc):
     add_line(doc, "List of Tables",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=24)
+             space_before=24, space_after=24,
+             style="Heading 1")
     tables = [
         ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "12"),
         ("4.1", "NMQ 12-month pain prevalence per body area.",                                "19"),
@@ -548,7 +613,8 @@ def add_abbreviations(doc):
     add_line(doc, "Abbreviations",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=24)
+             space_before=24, space_after=24,
+             style="Heading 1")
     abbrevs = [
         ("MSD",       "Musculoskeletal Disorder"),
         ("NMQ",       "Nordic Musculoskeletal Questionnaire"),
@@ -587,7 +653,8 @@ def add_symbols(doc):
     add_line(doc, "Symbols",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=24)
+             space_before=24, space_after=24,
+             style="Heading 1")
     symbols = [
         ("n",   "sample size (n = 182 riders)"),
         ("k",   "number of nearest minority neighbours used by SMOTE"),
@@ -623,7 +690,7 @@ def chapter_1(doc):
         "Last-mile quick-commerce delivery riders for platforms like Blinkit and Zepto spend long hours "
         "on bikes, climb stairs, carry packages, and ride in heavy traffic. Over "
         "time this kind of work causes musculoskeletal disorders (MSDs): back pain, "
-        "shoulder pain, wrist injuries, and knee problems. The risk is not the same "
+        "shoulder pain, wrist injuries, knee problems. The risk is not the same "
         "for every rider. Someone who is 22 and works 4 hours a day on a scooter is "
         "in a very different situation from a 45-year-old who works 10 hours a day "
         "on a motorbike with a handheld bag.")
@@ -632,9 +699,9 @@ def chapter_1(doc):
         "and QEC handle the observational side (posture, body-region exposure), "
         "while NMQ, NASA-TLX, and Borg CR10 cover what the rider reports about pain, "
         "mental load, and perceived exertion. None of them on its own gives a "
-        "complete picture. This project pulls all of them together into one "
+        "complete picture. The project pulls all of them together into one "
         "per-rider profile across six ergonomic dimensions: Force, Repetition, "
-        "Posture, Duration, Contact Stress, and Vibration.")
+        "Posture, Duration, Contact Stress, Vibration.")
 
     add_section_heading(doc, "1.2", "Motivation")
     add_body(doc,
@@ -1283,7 +1350,12 @@ def chapter_5(doc):
 
 
 def add_bibliography(doc):
-    add_chapter_heading(doc, "", "Bibliography")
+    doc.add_page_break()
+    add_line(doc, "Bibliography",
+             size=32, bold=True,
+             align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_before=24, space_after=24,
+             style="Heading 1")
     refs = [
         "McAtamney L, Corlett EN (1993). RULA: a survey method for the "
         "investigation of work-related upper limb disorders. Applied "
