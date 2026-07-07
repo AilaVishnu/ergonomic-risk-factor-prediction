@@ -694,8 +694,7 @@ def add_list_of_figures(doc):
              style="Heading 1")
     figures = [
         ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "6"),
-        ("4.1",  "Sample profile across gender, age band, delivery platform, "
-                 "vehicle type, and carrying mode.",                                           "18"),
+        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "18"),
         ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "19"),
         ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "20"),
         ("4.4",  "Stage-1 Low / Medium / High counts per risk factor.",                        "22"),
@@ -1274,8 +1273,8 @@ def chapter_4(doc):
         "motorbikes. The platform split is 97 Blinkit, 80 Zepto, and 5 who "
         "work both platforms.")
     add_figure(doc, ROOT / "outputs" / "figures" / "demographics.png",
-               "Figure 4.1: Sample profile across gender, age band, delivery "
-               "platform, vehicle type, and carrying mode.")
+               "Figure 4.1: Sample profile: age, platform, vehicle, "
+               "and carrying mode.")
 
     add_section_heading(doc, "4.2", "NMQ pain prevalence and statistical predictors")
     add_body(doc,
