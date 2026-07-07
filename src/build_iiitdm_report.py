@@ -634,27 +634,26 @@ def add_toc_placeholder(doc):
         ("        2.6.9   Per-target feature exclusions",          "13"),
         ("    2.7   Evaluation",                                   "14"),
 
-        ("3   WORK DONE",                                          "16"),
-        ("    3.1   Pipeline implementation",                      "16"),
-        ("    3.2   Feature engineering details",                  "17"),
-        ("    3.3   Model training",                               "17"),
-        ("    3.4   Web application development",                  "18"),
-        ("    3.5   Iterations and fixes",                         "19"),
-        ("        3.5.1   Repetition binning correction",          "19"),
-        ("        3.5.2   Duration leakage correction",            "19"),
-        ("        3.5.3   Posture model with RULA and QEC inputs", "20"),
+        ("3   WORK DONE",                                          "15"),
+        ("    3.1   Notebook pipeline",                            "15"),
+        ("    3.2   Data collection execution",                    "16"),
+        ("    3.3   Web application development",                  "17"),
+        ("    3.4   Iterations and fixes",                         "18"),
+        ("        3.4.1   Repetition binning correction",          "18"),
+        ("        3.4.2   Duration leakage correction",            "18"),
+        ("        3.4.3   Posture model with RULA and QEC inputs", "19"),
 
-        ("4   RESULTS AND DISCUSSION",                             "21"),
-        ("    4.1   Sample profile",                               "21"),
-        ("    4.2   NMQ pain prevalence and statistical predictors","23"),
-        ("    4.3   Stage-1 risk distribution",                    "26"),
-        ("    4.4   Stage-2 model performance",                    "29"),
-        ("    4.5   Per-class metrics and feature importance",     "31"),
-        ("    4.6   Web application demonstration",                "33"),
+        ("4   RESULTS AND DISCUSSION",                             "20"),
+        ("    4.1   Sample profile",                               "20"),
+        ("    4.2   NMQ pain prevalence and statistical predictors","22"),
+        ("    4.3   Stage-1 risk distribution",                    "25"),
+        ("    4.4   Stage-2 model performance",                    "28"),
+        ("    4.5   Per-class metrics and feature importance",     "30"),
+        ("    4.6   Web application demonstration",                "32"),
 
-        ("5   CONCLUSIONS AND EXTENSIONS",                         "37"),
+        ("5   CONCLUSIONS AND EXTENSIONS",                         "36"),
 
-        ("BIBLIOGRAPHY",                                           "38"),
+        ("BIBLIOGRAPHY",                                           "37"),
     ]
 
     # A row is a "chapter row" (bold) if the label starts at column 0
@@ -1166,7 +1165,7 @@ def chapter_2(doc):
 def chapter_3(doc):
     add_chapter_heading(doc, 3, "Work Done")
 
-    add_section_heading(doc, "3.1", "Pipeline implementation")
+    add_section_heading(doc, "3.1", "Notebook pipeline")
     add_body(doc,
         "The full pipeline is implemented across seven Jupyter notebooks "
         "(01 through 07) plus a Streamlit application. Every notebook is "
@@ -1189,43 +1188,26 @@ def chapter_3(doc):
     add_bullet(doc, "07_evaluation produces confusion matrices, ROC curves, "
                     "classification reports, and feature importance plots.")
 
-    add_section_heading(doc, "3.2", "Feature engineering details")
+    add_section_heading(doc, "3.2", "Data collection execution")
     add_body(doc,
-        "The final model_ready.csv contains 182 rows and 121 columns. The "
-        "engineered feature families are:")
-    add_bullet(doc, "Ordinal encodings for age band, education, income, job "
-                    "duration, hours, days, deliveries, and rest break, each "
-                    "mapped to consecutive integers preserving order.")
-    add_bullet(doc, "Numeric midpoints for bin ranges that will feed formulae "
-                    "(work_hours_num, deliveries_num, work_days_num, "
-                    "rest_break_num).")
-    add_bullet(doc, "Vehicle and carrying mode ranks (motorbike higher than "
-                    "scooter for vibration; handheld higher than storage box "
-                    "for contact).")
-    add_bullet(doc, "Short-named binary aliases for the 18 NMQ, 7-day, and "
-                    "outcome items (nmq_*, d7_*, out_*).")
-    add_bullet(doc, "Composite scores: workload_score (NASA-TLX mean with "
-                    "satisfaction reversed), fatigue_score (Borg CR10 mean), "
-                    "force_exertion (Borg lifting), vibration_index "
-                    "(vehicle_rank times work_hours_num).")
-    add_bullet(doc, "Five product-form interactions: workload_x_fatigue, "
-                    "workload_x_age, force_x_age, fatigue_x_jobdur, deliv_x_days.")
-    add_bullet(doc, "Severity-rank merge with the posture xlsx: 11 RULA "
-                    "components, 3 RULA derived scores, and 8 QEC scores added "
-                    "per rider based on rank-to-rank pairing.")
-
-    add_section_heading(doc, "3.3", "Model training")
+        "Fieldwork ran across the Chengalpattu and Chennai regions between "
+        "March and April 2026, following the eligibility criteria and "
+        "instruments described in Section 2.2. Recruitment used convenience "
+        "sampling at platform handover points where delivery partners "
+        "regularly cluster between shifts.")
     add_body(doc,
-        "Every one of the seven candidate algorithms is wrapped in an "
-        "imblearn.Pipeline([SMOTE, classifier]) and hyperparameter-tuned via "
-        "GridSearchCV with scoring='f1_macro' and cv=StratifiedKFold(5, "
-        "shuffle=True, random_state=42). The best-by-F1 algorithm per target is "
-        "refit on the full sample. The refit pipeline is persisted with "
-        "joblib.dump into outputs/models/best_<factor>.pkl as a dict containing "
-        "the fitted model, the ordered feature list, and the original class "
-        "codes for label mapping at prediction time.")
+        "Each participant gave verbal consent before either instrument "
+        "was administered. The 36-item Google Form was completed on a "
+        "researcher-provided phone in about 15 to 20 minutes. Posture was "
+        "recorded on paper by a trained observer during a natural delivery "
+        "task, capturing the 11 RULA elements and 8 QEC region / exposure "
+        "scores in one pass. Riders whose demographic or NMQ responses "
+        "were incomplete after follow-up were excluded and are not part "
+        "of the final 182. Data was anonymised at the point of collection; "
+        "no rider identifiers appear in the released model_ready.csv or "
+        "posture_data.xlsx files.")
 
-    add_section_heading(doc, "3.4", "Web application development")
+    add_section_heading(doc, "3.3", "Web application development")
     add_body(doc,
         "The Streamlit web application (app/streamlit_app.py) exposes a "
         "six-section form that mirrors the entire 36-item questionnaire plus "
@@ -1245,8 +1227,8 @@ def chapter_3(doc):
         "high-burden profiles, per-factor recommendation cards, and an "
         "expandable JSON view of the exact 63 feature values fed to the models.")
 
-    add_section_heading(doc, "3.5", "Iterations and fixes")
-    add_subsection_heading(doc, "3.5.1", "Repetition binning correction")
+    add_section_heading(doc, "3.4", "Iterations and fixes")
+    add_subsection_heading(doc, "3.4.1", "Repetition binning correction")
     add_body(doc,
         "The initial Phase 3 binning used pandas.qcut(q=3) on "
         "deliveries_per_hour. The 66.7th percentile fell exactly on 3.889 dph "
@@ -1259,7 +1241,7 @@ def chapter_3(doc):
         "accuracy dropped from 74 percent to 62 percent because the model now "
         "solves a real 3-class problem instead of memorising a 19-row minority.")
 
-    add_subsection_heading(doc, "3.5.2", "Duration leakage correction")
+    add_subsection_heading(doc, "3.4.2", "Duration leakage correction")
     add_body(doc,
         "An earlier Phase 6 run reported 100 percent cross-validation accuracy "
         "on Duration. Investigation showed the trees were reconstructing "
@@ -1268,7 +1250,7 @@ def chapter_3(doc):
         "exclusion list and capping max_depth returned Duration to a "
         "realistic 61 percent accuracy with 76 percent macro AUC.")
 
-    add_subsection_heading(doc, "3.5.3", "Posture model with RULA and QEC inputs")
+    add_subsection_heading(doc, "3.4.3", "Posture model with RULA and QEC inputs")
     add_body(doc,
         "The Posture target was initially trained only on the survey feature "
         "pool, which meant it could only infer posture indirectly from pain, "
