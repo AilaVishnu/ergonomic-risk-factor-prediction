@@ -637,24 +637,27 @@ def add_toc_placeholder(doc):
 
         ("3   WORK DONE",                                          "15"),
         ("    3.1   Notebook pipeline",                            "15"),
-        ("    3.2   Data collection execution",                    "16"),
-        ("    3.3   Web application development",                  "17"),
-        ("    3.4   Iterations and fixes",                         "18"),
-        ("        3.4.1   Repetition binning correction",          "18"),
-        ("        3.4.2   Duration leakage correction",            "18"),
-        ("        3.4.3   Posture model with RULA and QEC inputs", "19"),
+        ("    3.2   Instrument design and preparation",            "16"),
+        ("    3.3   Data collection execution",                    "17"),
+        ("    3.4   Data cleaning, encoding, and integration",     "18"),
+        ("    3.5   Statistical analysis and model training runs", "19"),
+        ("    3.6   Web application development and deployment",   "21"),
+        ("    3.7   Iterations and fixes",                         "23"),
+        ("        3.7.1   Repetition binning correction",          "23"),
+        ("        3.7.2   Duration leakage correction",            "23"),
+        ("        3.7.3   Posture model with RULA and QEC inputs", "24"),
 
-        ("4   RESULTS AND DISCUSSION",                             "20"),
-        ("    4.1   Sample profile",                               "20"),
-        ("    4.2   NMQ pain prevalence and statistical predictors","22"),
-        ("    4.3   Stage-1 risk distribution",                    "25"),
-        ("    4.4   Stage-2 model performance",                    "28"),
-        ("    4.5   Per-class metrics and feature importance",     "30"),
-        ("    4.6   Web application demonstration",                "32"),
+        ("4   RESULTS AND DISCUSSION",                             "25"),
+        ("    4.1   Sample profile",                               "25"),
+        ("    4.2   NMQ pain prevalence and statistical predictors","27"),
+        ("    4.3   Stage-1 risk distribution",                    "30"),
+        ("    4.4   Stage-2 model performance",                    "33"),
+        ("    4.5   Per-class metrics and feature importance",     "35"),
+        ("    4.6   Web application demonstration",                "37"),
 
-        ("5   CONCLUSIONS AND EXTENSIONS",                         "36"),
+        ("5   CONCLUSIONS AND EXTENSIONS",                         "41"),
 
-        ("BIBLIOGRAPHY",                                           "37"),
+        ("BIBLIOGRAPHY",                                           "42"),
     ]
 
     # A row is a "chapter row" (bold) if the label starts at column 0
@@ -1187,7 +1190,33 @@ def chapter_3(doc):
     add_bullet(doc, "07_evaluation produces confusion matrices, ROC curves, "
                     "classification reports, and feature importance plots.")
 
-    add_section_heading(doc, "3.2", "Data collection execution")
+    add_section_heading(doc, "3.2", "Instrument design and preparation")
+    add_body(doc,
+        "Two data-collection instruments were prepared before fieldwork "
+        "began. The self-report instrument was a 36-item Google Form "
+        "structured in five modules: demographics and work pattern "
+        "(seventeen items), the Nordic Musculoskeletal Questionnaire "
+        "covering 12-month pain across nine body areas (Q18) and 7-day "
+        "discomfort across four areas (Q19), five discomfort-related "
+        "follow-up items on performance impact, leave taken, medical "
+        "consultation, and worsening triggers (Q20 to Q24), six NASA-TLX "
+        "workload items on 0 to 100 sliders (Q25 to Q30), and six Borg "
+        "CR10 perceived-exertion items on 0 to 10 sliders (Q31 to Q36). "
+        "The 'dissatisfied with own performance' NASA-TLX item was written "
+        "as a positive-polarity slider so all six workload items point the "
+        "same direction; the polarity is reversed at analysis time.")
+    add_body(doc,
+        "The observation instrument was a paper form carrying the eleven "
+        "standard RULA elements (upper arm, lower arm, wrist, wrist twist, "
+        "neck position, trunk position, legs, muscle A, force A, muscle B, "
+        "force B), the three RULA Table lookup scores (A, B, C), and the "
+        "eight QEC region and exposure scores (back, shoulder / arm, "
+        "wrist / hand, neck, driving, vibration, work pace, stress). Both "
+        "instruments were piloted with three delivery partners outside the "
+        "study region so the item wording, response options, and observer "
+        "worksheet layout could be revised before real fieldwork began.")
+
+    add_section_heading(doc, "3.3", "Data collection execution")
     add_body(doc,
         "Fieldwork ran across the Chengalpattu and Chennai regions between "
         "March and April 2026, following the eligibility criteria and "
@@ -1206,28 +1235,120 @@ def chapter_3(doc):
         "no rider identifiers appear in the released model_ready.csv or "
         "posture_data.xlsx files.")
 
-    add_section_heading(doc, "3.3", "Web application development")
+    add_section_heading(doc, "3.4",
+                        "Data cleaning, encoding, and integration")
+    add_body(doc,
+        "Data preparation ran in two notebooks. 01_data_cleaning loaded "
+        "the raw Google Form CSV, standardised text answers to canonical "
+        "Yes / No values, corrected a handful of column-name typos, and "
+        "dropped rows that were incomplete after follow-up. The cleaned "
+        "CSV was 182 rows and 48 columns.")
+    add_body(doc,
+        "02_feature_engineering converted the cleaned CSV into the "
+        "model-ready feature set. Ordered categorical bands (age, "
+        "education, income, job duration, working hours, working days, "
+        "deliveries per day, rest break) were encoded to consecutive "
+        "integers preserving order. Vehicle type and carrying mode were "
+        "converted to ranks so motorbike ranks higher than scooter for "
+        "vibration exposure and handheld ranks higher than backpack and "
+        "bike storage for contact stress. Composite scores were computed: "
+        "workload_score as the mean of the six NASA-TLX items (with the "
+        "dissatisfied item reversed), fatigue_score as the mean of the "
+        "six Borg items, force_exertion as the Borg lifting item, and "
+        "vibration_index as vehicle_rank times work_hours_num. Five "
+        "product-form interactions were added (workload times fatigue, "
+        "workload times age, force times age, fatigue times job duration, "
+        "deliveries times days). The eighteen NMQ and 7-day items and the "
+        "five outcome follow-ups were converted to short-named binary "
+        "aliases (nmq_neck, d7_lower_back, out_reduced_perf, and so on).")
+    add_body(doc,
+        "The posture xlsx did not carry rider identifiers, so it had to "
+        "be paired with the survey without a natural join key. A "
+        "severity-rank merge was used: riders were ranked by an aggregate "
+        "discomfort score (NMQ pain count plus fatigue score plus daily "
+        "hours), observations were ranked by RULA Table C, and the two "
+        "ranked lists were matched one-to-one by position. The merged "
+        "model_ready.csv contains 182 rows and 121 columns.")
+
+    add_section_heading(doc, "3.5",
+                        "Statistical analysis and model training runs")
+    add_body(doc,
+        "Two independent statistical analyses were run in 05_stats on the "
+        "model-ready CSV. First, six chi-square tests of independence "
+        "checked whether each Stage-1 risk-factor band was associated "
+        "with a binary discomfort outcome; the tests reported chi2, "
+        "degrees of freedom, and a Bonferroni-adjusted p-value. Second, "
+        "a multivariable logistic regression fitted with statsmodels "
+        "estimated odds ratios for eleven predictors (age, income, "
+        "education, job duration, workload score, fatigue score, force "
+        "exertion, vibration index, contact rank, hours, days) with "
+        "self-reported discomfort as the outcome. Results were reported "
+        "as OR with 95 percent confidence intervals.")
+    add_body(doc,
+        "Model training ran in 06_modeling. Every one of the seven "
+        "candidate algorithms was wrapped in an imblearn.Pipeline of "
+        "SMOTE followed by the classifier and hyperparameter-tuned via "
+        "GridSearchCV. For each of the six risk-factor targets, this "
+        "expanded to a full five-fold stratified cross-validation over "
+        "the algorithm's hyperparameter grid. Across the six targets and "
+        "seven algorithms, forty-two target-algorithm training runs were "
+        "carried out. Best-by-macro-F1 was selected per target and the "
+        "winning pipeline was refit on the full sample and persisted with "
+        "joblib.dump to outputs/models/best_<factor>.pkl. The per-target "
+        "feature exclusions listed in Section 2.6.9 were applied before "
+        "each training run so no model could memorise its Stage-1 rule.")
+    add_body(doc,
+        "07_evaluation produced the reporting artefacts. cross_val_predict "
+        "was used to generate out-of-fold predictions on the training "
+        "set, and the following outputs were written: per-class precision, "
+        "recall, F1, and support numbers via classification_report; "
+        "confusion matrices per target; one-vs-rest ROC curves with "
+        "per-class AUC (macro AUC is the unweighted mean of per-class "
+        "AUCs); and feature importance plots (feature_importances_ for "
+        "the tree-based winners, absolute value of coef_ for the Logistic "
+        "Regression floor).")
+
+    add_section_heading(doc, "3.6",
+                        "Web application development and deployment")
     add_body(doc,
         "The Streamlit web application (app/streamlit_app.py) exposes a "
-        "six-section form that mirrors the entire 36-item questionnaire plus "
-        "the 11 RULA components and 8 QEC scores. Selectboxes cover demographics "
-        "and work pattern; radios cover NMQ, 7-day, and outcome items; sliders "
-        "cover NASA-TLX (0-100) and Borg CR10 (0-10); selectboxes cover RULA "
-        "components; number inputs cover the QEC scores with min/max ranges "
-        "matched to the observed training data. Three sample-profile buttons "
-        "(Low, Average, High risk) pre-fill the entire form so the mentor can "
-        "trigger a prediction in a single click.")
+        "six-section form that mirrors the entire 36-item questionnaire "
+        "plus the 11 RULA components and 8 QEC scores. Selectboxes cover "
+        "demographics and work pattern; radios cover NMQ, 7-day, and "
+        "outcome items; sliders cover NASA-TLX (0 to 100) and Borg CR10 "
+        "(0 to 10); selectboxes cover RULA components; and number inputs "
+        "cover the QEC scores with min / max ranges matched to the "
+        "observed training data. Three sample-profile buttons (Low, "
+        "Average, and High risk) fill the entire form on click so the "
+        "reviewer can trigger a prediction in one step.")
     add_body(doc,
         "On form submission, encode_rider assembles the 63-feature input "
-        "vector, and predict_risks runs each of the six saved models. The "
-        "output is a coloured metric strip (green for Low, amber for Medium, "
-        "red for High), a horizontal Altair bar chart of the same six factors "
-        "sorted to match the metric strip, a summary banner that flags "
-        "high-burden profiles, per-factor recommendation cards, and an "
-        "expandable JSON view of the exact 63 feature values fed to the models.")
+        "vector, and predict_risks runs each of the six saved models. "
+        "The Results page renders a coloured metric strip (green for "
+        "Low, amber for Medium, red for High), a horizontal Altair bar "
+        "chart of the same six factors sorted to match the metric strip, "
+        "a summary banner that flags high-burden profiles, per-factor "
+        "recommendation cards, and an expandable JSON view of the exact "
+        "63 feature values that were fed to the models. The app also has "
+        "a Methodology page that summarises the pipeline and an About "
+        "page carrying the institutional context.")
+    add_body(doc,
+        "The app was deployed to Streamlit Community Cloud from the "
+        "public GitHub repository. Deployment required pinning every "
+        "runtime dependency in requirements.txt to the exact versions "
+        "the models were trained with (streamlit 1.58, pandas 2.3, "
+        "scikit-learn 1.7, xgboost 3.2, imbalanced-learn 0.14, plotly "
+        "6.8), because sklearn and xgboost pickles are not portable "
+        "across minor versions. runtime.txt pins Python 3.13 to match "
+        "the training environment. A .streamlit/config.toml carries the "
+        "dark theme and a client.toolbarMode = viewer flag; CSS in the "
+        "app suppresses the Fork button and 'View source on GitHub' "
+        "icon that Streamlit Community Cloud injects on public-repo "
+        "deploys. Every git push to the main branch auto-rebuilds and "
+        "redeploys the app in about 30 seconds.")
 
-    add_section_heading(doc, "3.4", "Iterations and fixes")
-    add_subsection_heading(doc, "3.4.1", "Repetition binning correction")
+    add_section_heading(doc, "3.7", "Iterations and fixes")
+    add_subsection_heading(doc, "3.7.1", "Repetition binning correction")
     add_body(doc,
         "The initial Phase 3 binning used pandas.qcut(q=3) on "
         "deliveries_per_hour. The 66.7th percentile fell exactly on 3.889 dph "
@@ -1240,7 +1361,7 @@ def chapter_3(doc):
         "accuracy dropped from 74 percent to 62 percent because the model now "
         "solves a real 3-class problem instead of memorising a 19-row minority.")
 
-    add_subsection_heading(doc, "3.4.2", "Duration leakage correction")
+    add_subsection_heading(doc, "3.7.2", "Duration leakage correction")
     add_body(doc,
         "An earlier Phase 6 run reported 100 percent cross-validation accuracy "
         "on Duration. Investigation showed the trees were reconstructing "
@@ -1249,7 +1370,7 @@ def chapter_3(doc):
         "exclusion list and capping max_depth returned Duration to a "
         "realistic 61 percent accuracy with 76 percent macro AUC.")
 
-    add_subsection_heading(doc, "3.4.3", "Posture model with RULA and QEC inputs")
+    add_subsection_heading(doc, "3.7.3", "Posture model with RULA and QEC inputs")
     add_body(doc,
         "The Posture target was initially trained only on the survey feature "
         "pool, which meant it could only infer posture indirectly from pain, "
