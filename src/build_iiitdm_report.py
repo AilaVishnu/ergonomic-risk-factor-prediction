@@ -488,7 +488,7 @@ def add_toc_placeholder(doc):
         ("Chapter 1  Introduction",                        "1"),
         ("Chapter 2  Methodology",                         "3"),
         ("    2.1  Two-stage pipeline",                    "3"),
-        ("    2.2  Data sources",                          "5"),
+        ("    2.2  Study design and data sources",         "5"),
         ("    2.3  Feature engineering",                   "9"),
         ("    2.4  Machine-learning models",               "11"),
         ("Chapter 3  Work Done",                           "13"),
@@ -777,7 +777,42 @@ def chapter_2(doc):
                "engineered, then labelled by the Stage-1 rules; Stage 2 learns "
                "the labels from the profile.")
 
-    add_section_heading(doc, "2.2", "Data sources")
+    add_section_heading(doc, "2.2", "Study design and data sources")
+
+    add_body(doc,
+        "This is a cross-sectional study conducted in the Chengalpattu and Chennai "
+        "regions to evaluate the work conditions and posture among the quick "
+        "delivery services which are Blinkit and Zepto. The data was collected "
+        "in March and April of 2026. A convenience sampling method was used to "
+        "approach delivery partners and collect the data.")
+
+    add_body(doc,
+        "The same 182 participants supplied both data streams described below. "
+        "Rider self-report was captured through a Google Form questionnaire; "
+        "posture was recorded on the same rider during a delivery task by a "
+        "trained observer. Study eligibility was applied at the person level "
+        "before either instrument was administered.")
+
+    add_line(doc, "Inclusion criteria",
+             size=12, bold=True, space_before=6, space_after=4)
+    add_bullet(doc,
+        "Full-time delivery partners working on either the Blinkit or the "
+        "Zepto platform.")
+    add_bullet(doc,
+        "Minimum three months of continuous delivery experience.")
+    add_bullet(doc,
+        "Using a two-wheeler (scooter or motorbike) for delivery.")
+    add_bullet(doc,
+        "Both men and women, aged between 18 and 55 years.")
+
+    add_line(doc, "Exclusion criteria",
+             size=12, bold=True, space_before=6, space_after=4)
+    add_bullet(doc,
+        "Chronic musculoskeletal disorders that developed before the start "
+        "of delivery work.")
+    add_bullet(doc,
+        "Accidental surgery within the past three months.")
+
     add_subsection_heading(doc, "2.2.1", "Rider survey")
     add_body(doc,
         "The file delivery_rider_survey.csv contains 182 self-administered "
