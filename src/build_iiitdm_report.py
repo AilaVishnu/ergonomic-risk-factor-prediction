@@ -597,36 +597,77 @@ def add_toc_placeholder(doc):
              space_before=24, space_after=24,
              style="Heading 1")
 
-    # (label, page)  --  indent level implied by leading spaces in label
+    # AIML-thesis-style TOC: uppercase chapter titles, no word 'Chapter',
+    # subsections indented, tri-level entries (X.Y.Z) indented further.
+    # (label, page).  Front-matter page numbers are Roman; main body is
+    # decimal starting fresh at 1 from Chapter 1.
     contents = [
-        ("Certificate",                                    "ii"),
-        ("Abstract",                                       "iii"),
-        ("Acknowledgements",                               "iv"),
-        ("List of Figures",                                "vi"),
-        ("List of Tables",                                 "vii"),
-        ("Abbreviations",                                  "viii"),
-        ("Chapter 1  Introduction",                        "1"),
-        ("Chapter 2  Methodology",                         "3"),
-        ("    2.1  Two-stage pipeline",                    "3"),
-        ("    2.2  Study design and data sources",         "5"),
-        ("    2.3  Feature engineering",                   "9"),
-        ("    2.4  Machine-learning models",               "11"),
-        ("Chapter 3  Work Done",                           "13"),
-        ("    3.1  Data collection and cleaning",          "13"),
-        ("    3.2  Statistical analysis",                  "14"),
-        ("    3.3  Model training and evaluation",         "15"),
-        ("    3.4  Interactive web application",           "16"),
-        ("Chapter 4  Results and Discussion",              "17"),
-        ("    4.1  Sample profile",                        "17"),
-        ("    4.2  Discomfort prevalence",                 "19"),
-        ("    4.3  Risk factor distributions",             "22"),
-        ("    4.4  Correlation structure",                 "24"),
-        ("    4.5  Model performance",                     "25"),
-        ("    4.6  Feature importance",                    "28"),
-        ("    4.7  Web application walkthrough",           "29"),
-        ("Chapter 5  Conclusions and Extensions",          "34"),
-        ("Bibliography",                                   "35"),
+        ("Certificate",                                            "i"),
+        ("Abstract",                                               "ii"),
+        ("Acknowledgements",                                       "iii"),
+        ("List of Figures",                                        "v"),
+        ("List of Tables",                                         "vi"),
+        ("Abbreviations",                                          "vii"),
+
+        ("1   INTRODUCTION",                                       "1"),
+        ("    1.1   Background",                                   "1"),
+        ("    1.2   Motivation",                                   "2"),
+        ("    1.3   Objectives of the work",                       "2"),
+
+        ("2   METHODOLOGY",                                        "3"),
+        ("    2.1   Two-stage design",                             "3"),
+        ("    2.2   Study design and data sources",                "4"),
+        ("        2.2.1   Rider survey",                           "5"),
+        ("        2.2.2   Posture observations",                   "6"),
+        ("    2.3   Data cleaning and feature engineering",        "7"),
+        ("    2.4   Stage 1: Deterministic risk scoring",          "8"),
+        ("    2.5   Statistical analysis",                         "9"),
+        ("    2.6   Stage 2: Machine learning pipeline",           "10"),
+        ("        2.6.1   Logistic Regression",                    "10"),
+        ("        2.6.2   Decision Tree",                          "10"),
+        ("        2.6.3   Random Forest",                          "11"),
+        ("        2.6.4   Extra Trees",                            "11"),
+        ("        2.6.5   Histogram Gradient Boosting",            "11"),
+        ("        2.6.6   XGBoost",                                "12"),
+        ("        2.6.7   Stacking Classifier",                    "12"),
+        ("        2.6.8   SMOTE and cross-validation",             "12"),
+        ("        2.6.9   Per-target feature exclusions",          "13"),
+        ("    2.7   Evaluation",                                   "14"),
+
+        ("3   WORK DONE",                                          "16"),
+        ("    3.1   Pipeline implementation",                      "16"),
+        ("    3.2   Feature engineering details",                  "17"),
+        ("    3.3   Model training",                               "17"),
+        ("    3.4   Web application development",                  "18"),
+        ("    3.5   Iterations and fixes",                         "19"),
+        ("        3.5.1   Repetition binning correction",          "19"),
+        ("        3.5.2   Duration leakage correction",            "19"),
+        ("        3.5.3   Posture model with RULA and QEC inputs", "20"),
+
+        ("4   RESULTS AND DISCUSSION",                             "21"),
+        ("    4.1   Sample profile",                               "21"),
+        ("    4.2   NMQ pain prevalence and statistical predictors","23"),
+        ("    4.3   Stage-1 risk distribution",                    "26"),
+        ("    4.4   Stage-2 model performance",                    "29"),
+        ("    4.5   Per-class metrics and feature importance",     "31"),
+        ("    4.6   Web application demonstration",                "33"),
+
+        ("5   CONCLUSIONS AND EXTENSIONS",                         "37"),
+
+        ("BIBLIOGRAPHY",                                           "38"),
     ]
+
+    # A row is a "chapter row" (bold) if the label starts at column 0
+    # and the leading token is either a bare digit (main-body chapter)
+    # or the literal word BIBLIOGRAPHY.
+    def _is_chapter_row(lbl):
+        stripped = lbl.lstrip()
+        if stripped != lbl:            # subsection / section row
+            return False
+        return (stripped == "BIBLIOGRAPHY"
+                or (stripped[:1].isdigit() and stripped[:2].isupper()
+                    is False and " " in stripped))
+
     for label, page in contents:
         p = doc.add_paragraph()
         p.paragraph_format.space_after = Pt(4)
@@ -635,10 +676,8 @@ def add_toc_placeholder(doc):
         r = p.add_run(f"{label}\t{page}")
         r.font.size = Pt(11)
         set_font(r, BODY_FONT)
-        # Bold the chapter-level rows to give the TOC visual hierarchy
-        if label.startswith("Chapter"):
+        if _is_chapter_row(label):
             r.font.bold = True
-        # Add dot leader on the right-aligned tab
         pPr = p._p.get_or_add_pPr()
         tabs_el = pPr.find(qn("w:tabs"))
         if tabs_el is not None:
@@ -1012,30 +1051,86 @@ def chapter_2(doc):
 
     add_section_heading(doc, "2.6", "Stage 2: Machine learning pipeline")
     add_body(doc,
-        "Phase 6 (06_modeling.ipynb) trains a classifier per target using seven "
-        "candidate algorithms:")
-    add_bullet(doc, "LogisticRegression with L2 regularisation and balanced "
-                    "class weights.")
-    add_bullet(doc, "DecisionTreeClassifier with tuned max_depth and "
-                    "min_samples_leaf.")
-    add_bullet(doc, "RandomForestClassifier with 300 or 500 trees.")
-    add_bullet(doc, "ExtraTreesClassifier (extremely randomised trees).")
-    add_bullet(doc, "HistGradientBoostingClassifier with histogram-binned "
-                    "gradient boosting.")
-    add_bullet(doc, "XGBClassifier with the multi-class log-loss objective.")
-    add_bullet(doc, "StackingClassifier that combines RF, ExtraTrees, XGBoost, "
-                    "and HistGBM with a Logistic Regression meta-learner.")
-    add_body(doc,
-        "Every candidate runs inside an imblearn.Pipeline of SMOTE followed by "
-        "the classifier so oversampling happens on training folds only. "
-        "Hyperparameters are tuned with GridSearchCV on macro-F1 using "
-        "StratifiedKFold(5, shuffle=True, random_state=42). SMOTE's k_neighbors "
-        "is set per target so it never exceeds the minority training-fold count. "
-        "The best-by-F1 model per target is refit on the full sample and saved "
-        "to outputs/models/best_<factor>.pkl. Section 2.6.1 lists the per-target "
-        "exclusion rule.")
+        "Phase 6 (06_modeling.ipynb) trains a classifier per target using "
+        "seven candidate algorithms. Each algorithm sits inside an "
+        "imblearn.Pipeline with SMOTE oversampling upstream so the "
+        "resampling only affects training folds. Hyperparameters are tuned "
+        "with GridSearchCV on the macro-F1 score inside 5-fold stratified "
+        "cross-validation, and the best model per target is refit on the "
+        "full sample and saved as outputs/models/best_<factor>.pkl.")
 
-    add_subsection_heading(doc, "2.6.1", "Per-target feature exclusions")
+    add_subsection_heading(doc, "2.6.1", "Logistic Regression")
+    add_body(doc,
+        "Regularised linear classifier used as the baseline. Runs with L2 "
+        "penalty and class_weight='balanced' so the minority Low / Medium "
+        "class does not get ignored on imbalanced targets. Serves as a "
+        "floor: any tree-based method that fails to beat Logistic "
+        "Regression on a factor is either overfitting or getting nothing "
+        "from feature interactions.")
+
+    add_subsection_heading(doc, "2.6.2", "Decision Tree")
+    add_body(doc,
+        "Single CART decision tree with tuned max_depth (grid 3 to 10) "
+        "and min_samples_leaf (grid 2 to 10). Included to establish the "
+        "value added by ensembling; not competitive on its own for any "
+        "of the six targets.")
+
+    add_subsection_heading(doc, "2.6.3", "Random Forest")
+    add_body(doc,
+        "Bagged ensemble of 300 to 500 trees with bootstrap sampling and "
+        "sqrt(p) features per split. Its low-variance predictions and "
+        "graceful handling of mixed feature types (encoded categoricals "
+        "plus continuous scores) made it the winning model on three of "
+        "the six targets: Repetition, Duration, and Contact Stress.")
+
+    add_subsection_heading(doc, "2.6.4", "Extra Trees")
+    add_body(doc,
+        "Extremely randomised trees: like Random Forest but with fully "
+        "random splits at every node (no split-quality optimisation on "
+        "features). The extra randomisation trades a small drop in "
+        "individual-tree accuracy for lower between-tree correlation, "
+        "which helped it win on Vibration.")
+
+    add_subsection_heading(doc, "2.6.5", "Histogram Gradient Boosting")
+    add_body(doc,
+        "Sequential ensemble that fits new trees to the residuals of "
+        "the current model, using histogram binning of the input features "
+        "for training speed. Won on Force and Posture, the two targets "
+        "where the training signal is either strongest (Posture, thanks "
+        "to the RULA and QEC observation features) or most nonlinear "
+        "(Force, with the Borg CR10 cutoffs).")
+
+    add_subsection_heading(doc, "2.6.6", "XGBoost")
+    add_body(doc,
+        "Gradient-boosted trees with L1 and L2 regularisation on the "
+        "leaf weights and column subsampling per tree. Placed second on "
+        "several factors but did not win any; the tuned Random Forest "
+        "and HistGBM absorbed the same signal at the default search "
+        "budget.")
+
+    add_subsection_heading(doc, "2.6.7", "Stacking Classifier")
+    add_body(doc,
+        "Meta-learner that takes the out-of-fold predictions of the "
+        "Random Forest, Extra Trees, HistGBM, and XGBoost base learners "
+        "as inputs and fits a Logistic Regression on top. Failed to "
+        "beat the strongest base learner on any factor because the four "
+        "base learners largely agreed with each other; stacking helps "
+        "when base learners disagree, and here they did not.")
+
+    add_subsection_heading(doc, "2.6.8", "SMOTE and cross-validation")
+    add_body(doc,
+        "SMOTE (Synthetic Minority Over-sampling Technique) synthesises "
+        "new minority-class samples along the segments joining a "
+        "minority point to its k nearest minority neighbours. Placing it "
+        "inside imblearn.Pipeline ensures the synthesis runs only on "
+        "training folds during cross-validation, so validation-fold "
+        "accuracy is never inflated by peeking at test-fold neighbours. "
+        "k_neighbors is set per target so it never exceeds the minority "
+        "training-fold count. GridSearchCV picks the best hyperparameters "
+        "per algorithm-target pair on macro-F1 (StratifiedKFold with "
+        "shuffle=True, random_state=42).")
+
+    add_subsection_heading(doc, "2.6.9", "Per-target feature exclusions")
     add_body(doc,
         "Each target excludes the survey inputs that directly define its "
         "Stage-1 label; otherwise the model would just memorise the rule "
