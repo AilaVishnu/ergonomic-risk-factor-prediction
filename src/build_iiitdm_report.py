@@ -315,13 +315,14 @@ def _paragraph_border(paragraph, side="bottom", sz=6):
     pBdr.append(border)
 
 
-def configure_front_matter_section(section):
-    """Configure the front-matter section (title through Abbreviations):
-    lowercase Roman page numbers (i, ii, iii...) restarting at i, shown
-    only on right-side of the footer.  The title page itself is
-    conventionally unnumbered, so 'different first page' is turned on
-    with an empty first-page footer."""
-    section.different_first_page_header_footer = True
+def start_front_matter_section(doc):
+    """Insert a section break after the title page and configure the new
+    section as the front matter with lowercase Roman page numbers
+    (i, ii, iii...) restarting at i, right-aligned in the footer.  The
+    title page (section 0 above this break) stays clean with no page
+    numeral because we never attach a footer field to it."""
+    from docx.enum.section import WD_SECTION
+    section = doc.add_section(WD_SECTION.NEW_PAGE)
 
     footer = section.footer
     footer.is_linked_to_previous = False
@@ -333,11 +334,8 @@ def configure_front_matter_section(section):
     r_page.font.size = Pt(10)
     set_font(r_page, BODY_FONT)
 
-    # First-page footer left explicitly empty so page 1 (title page) has
-    # no numeral.  The default section footer applies to pages 2+.
-    _ = section.first_page_footer  # instantiate to override linkage
-
     set_page_number_format(section, fmt="lowerRoman", start=1)
+    return section
 
 
 def start_main_body_section(doc):
@@ -597,10 +595,12 @@ def add_toc_placeholder(doc):
              space_before=24, space_after=24,
              style="Heading 1")
 
-    # AIML-thesis-style TOC: uppercase chapter titles, no word 'Chapter',
-    # subsections indented, tri-level entries (X.Y.Z) indented further.
-    # (label, page).  Front-matter page numbers are Roman; main body is
-    # decimal starting fresh at 1 from Chapter 1.
+    # Page anchors below match what Word actually renders (verified by
+    # driving Word COM to convert the built docx to PDF and reading the
+    # PAGE field on every physical page).  Front-matter Roman numerals
+    # start at ii because the title page is unnumbered per the
+    # different-first-page footer flag.  Main-body decimals restart at
+    # 1 from Chapter 1.
     contents = [
         ("Certificate",                                            "i"),
         ("Abstract",                                               "ii"),
@@ -609,55 +609,56 @@ def add_toc_placeholder(doc):
         ("List of Figures",                                        "v"),
         ("List of Tables",                                         "vi"),
         ("Abbreviations",                                          "vii"),
+        ("Symbols",                                                "viii"),
 
         ("1   INTRODUCTION",                                       "1"),
         ("    1.1   Background",                                   "1"),
-        ("    1.2   Motivation",                                   "2"),
+        ("    1.2   Motivation",                                   "1"),
         ("    1.3   Objectives of the work",                       "2"),
 
         ("2   METHODOLOGY",                                        "3"),
         ("    2.1   Two-stage design",                             "3"),
-        ("    2.2   Study design and data sources",                "4"),
-        ("        2.2.1   Rider survey",                           "5"),
-        ("        2.2.2   Posture observations",                   "6"),
-        ("    2.3   Data cleaning and feature engineering",        "7"),
-        ("    2.4   Stage 1: Deterministic risk scoring",          "8"),
-        ("    2.5   Statistical analysis",                         "9"),
-        ("    2.6   Stage 2: Machine learning pipeline",           "10"),
-        ("        2.6.1   Logistic Regression",                    "10"),
-        ("        2.6.2   Decision Tree",                          "10"),
-        ("        2.6.3   Random Forest",                          "11"),
-        ("        2.6.4   Extra Trees",                            "11"),
-        ("        2.6.5   Histogram Gradient Boosting",            "11"),
-        ("        2.6.6   XGBoost",                                "12"),
-        ("        2.6.7   Stacking Classifier",                    "12"),
-        ("        2.6.8   SMOTE and cross-validation",             "12"),
-        ("        2.6.9   Per-target feature exclusions",          "13"),
-        ("    2.7   Evaluation",                                   "14"),
+        ("    2.2   Study design and data sources",                "3"),
+        ("        2.2.1   Rider survey",                           "4"),
+        ("        2.2.2   Posture observations",                   "4"),
+        ("    2.3   Data cleaning and feature engineering",        "4"),
+        ("    2.4   Stage 1: Deterministic risk scoring",          "5"),
+        ("    2.5   Statistical analysis",                         "5"),
+        ("    2.6   Stage 2: Machine learning pipeline",           "6"),
+        ("        2.6.1   Logistic Regression",                    "6"),
+        ("        2.6.2   Decision Tree",                          "6"),
+        ("        2.6.3   Random Forest",                          "6"),
+        ("        2.6.4   Extra Trees",                            "6"),
+        ("        2.6.5   Histogram Gradient Boosting",            "7"),
+        ("        2.6.6   XGBoost",                                "7"),
+        ("        2.6.7   Stacking Classifier",                    "7"),
+        ("        2.6.8   SMOTE and cross-validation",             "7"),
+        ("        2.6.9   Per-target feature exclusions",          "7"),
+        ("    2.7   Evaluation",                                   "7"),
 
-        ("3   WORK DONE",                                          "15"),
-        ("    3.1   Notebook pipeline",                            "15"),
-        ("    3.2   Instrument design and preparation",            "16"),
-        ("    3.3   Data collection execution",                    "17"),
-        ("    3.4   Data cleaning, encoding, and integration",     "18"),
-        ("    3.5   Statistical analysis and model training runs", "19"),
-        ("    3.6   Web application development and deployment",   "21"),
-        ("    3.7   Iterations and fixes",                         "23"),
-        ("        3.7.1   Repetition binning correction",          "23"),
-        ("        3.7.2   Duration leakage correction",            "23"),
-        ("        3.7.3   Posture model with RULA and QEC inputs", "24"),
+        ("3   WORK DONE",                                          "8"),
+        ("    3.1   Notebook pipeline",                            "8"),
+        ("    3.2   Instrument design and preparation",            "9"),
+        ("    3.3   Data collection execution",                    "9"),
+        ("    3.4   Data cleaning, encoding, and integration",     "10"),
+        ("    3.5   Statistical analysis and model training runs", "11"),
+        ("    3.6   Web application development and deployment",   "11"),
+        ("    3.7   Iterations and fixes",                         "12"),
+        ("        3.7.1   Repetition binning correction",          "12"),
+        ("        3.7.2   Duration leakage correction",            "12"),
+        ("        3.7.3   Posture model with RULA and QEC inputs", "12"),
 
-        ("4   RESULTS AND DISCUSSION",                             "25"),
-        ("    4.1   Sample profile",                               "25"),
-        ("    4.2   NMQ pain prevalence and statistical predictors","27"),
-        ("    4.3   Stage-1 risk distribution",                    "30"),
-        ("    4.4   Stage-2 model performance",                    "33"),
-        ("    4.5   Per-class metrics and feature importance",     "35"),
-        ("    4.6   Web application demonstration",                "37"),
+        ("4   RESULTS AND DISCUSSION",                             "13"),
+        ("    4.1   Sample profile",                               "13"),
+        ("    4.2   NMQ pain prevalence and statistical predictors","15"),
+        ("    4.3   Stage-1 risk distribution",                    "17"),
+        ("    4.4   Stage-2 model performance",                    "19"),
+        ("    4.5   Per-class metrics and feature importance",     "21"),
+        ("    4.6   Web application demonstration",                "22"),
 
-        ("5   CONCLUSIONS AND EXTENSIONS",                         "41"),
+        ("5   CONCLUSIONS AND EXTENSIONS",                         "25"),
 
-        ("BIBLIOGRAPHY",                                           "42"),
+        ("BIBLIOGRAPHY",                                           "27"),
     ]
 
     # A row is a "chapter row" (bold) if the label starts at column 0
@@ -695,24 +696,24 @@ def add_list_of_figures(doc):
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24,
              style="Heading 1")
-    # Page-number anchors line up with the section pages the figures live in
-    # (see the TOC estimates for Chapter 4 sections 4.1 through 4.6).
+    # Page anchors are aligned to Chapter 4 sections' actual pages
+    # in the rendered Word output (Chapter 4 spans main-body 13-24).
     figures = [
-        ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "6"),
-        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "25"),
-        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "27"),
-        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "28"),
-        ("4.4",  "Stage-1 Low / Medium / High counts per risk factor.",                        "30"),
-        ("4.5",  "Discomfort prevalence within each Low / Medium / High band.",                "31"),
-        ("4.6",  "Pearson correlation matrix across the numeric feature pool.",                "32"),
-        ("4.7",  "Confusion matrices for the best model per factor.",                          "33"),
-        ("4.8",  "ROC curves (one-vs-rest) for the best model per factor.",                    "34"),
-        ("4.9",  "Top 10 features by importance for the best model per factor.",               "35"),
-        ("4.10", "Web app: sample-profile shortcuts and demographic section.",                 "37"),
-        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "38"),
-        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "39"),
-        ("4.13", "Web app: RULA and QEC observation sections.",                                "40"),
-        ("4.14", "Web app: predicted risk profile output.",                                    "40"),
+        ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "3"),
+        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "14"),
+        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "15"),
+        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "16"),
+        ("4.4",  "Stage-1 Low / Medium / High counts per risk factor.",                        "17"),
+        ("4.5",  "Discomfort prevalence within each Low / Medium / High band.",                "18"),
+        ("4.6",  "Pearson correlation matrix across the numeric feature pool.",                "18"),
+        ("4.7",  "Confusion matrices for the best model per factor.",                          "19"),
+        ("4.8",  "ROC curves (one-vs-rest) for the best model per factor.",                    "20"),
+        ("4.9",  "Top 10 features by importance for the best model per factor.",               "21"),
+        ("4.10", "Web app: sample-profile shortcuts and demographic section.",                 "22"),
+        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "23"),
+        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "23"),
+        ("4.13", "Web app: RULA and QEC observation sections.",                                "24"),
+        ("4.14", "Web app: predicted risk profile output.",                                    "24"),
     ]
     for num, cap, page in figures:
         p = doc.add_paragraph()
@@ -742,17 +743,17 @@ def add_list_of_tables(doc):
              space_before=24, space_after=24,
              style="Heading 1")
     tables = [
-        ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "13"),
-        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "27"),
-        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "28"),
+        ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "7"),
+        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "15"),
+        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "15"),
         ("4.3", "Significant predictors of discomfort from multivariable "
-                "logistic regression.",                                                        "29"),
-        ("4.4", "Stage-1 risk band counts per factor.",                                        "30"),
-        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "33"),
-        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "34"),
-        ("4.7", "Per-class precision, recall, F1, and support.",                               "34"),
-        ("4.8", "Top 5 most important features per factor.",                                   "35"),
-        ("4.9", "Winning hyperparameters per target after GridSearchCV.",                      "35"),
+                "logistic regression.",                                                        "16"),
+        ("4.4", "Stage-1 risk band counts per factor.",                                        "17"),
+        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "19"),
+        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "20"),
+        ("4.7", "Per-class precision, recall, F1, and support.",                               "20"),
+        ("4.8", "Top 5 most important features per factor.",                                   "21"),
+        ("4.9", "Winning hyperparameters per target after GridSearchCV.",                      "21"),
     ]
     for num, cap, page in tables:
         p = doc.add_paragraph()
@@ -1812,10 +1813,13 @@ def build():
     cp.title = PROJECT_TITLE
     cp.comments = ""
 
-    # Front matter uses lowercase Roman page numbers, title page unnumbered
-    configure_front_matter_section(doc.sections[0])
-
     add_title_page(doc)
+
+    # Section break after title page: front matter restarts at Roman 'i'
+    # here so Certificate is 'i' (not 'ii').  Title page itself carries
+    # no page number because section 0's footer is left empty.
+    start_front_matter_section(doc)
+
     add_certificate(doc)
     add_abstract(doc)
     add_acknowledgements(doc)
