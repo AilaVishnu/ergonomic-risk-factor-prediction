@@ -605,6 +605,7 @@ def add_toc_placeholder(doc):
         ("Certificate",                                            "i"),
         ("Abstract",                                               "ii"),
         ("Acknowledgements",                                       "iii"),
+        ("Contents",                                               "iv"),
         ("List of Figures",                                        "v"),
         ("List of Tables",                                         "vi"),
         ("Abbreviations",                                          "vii"),
