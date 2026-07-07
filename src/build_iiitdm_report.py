@@ -453,22 +453,27 @@ def add_acknowledgements(doc):
              style="Heading 3")
 
     add_body(doc,
-        "I would extend my sincerest gratitude to the Indian Institute of Information "
-        "Technology, Design and Manufacturing, Kancheepuram and to the IIITDM-SIES "
-        "programme for the opportunity to carry out this internship. I am deeply "
-        "grateful to my mentor, " + MENTOR_NAME + ", for the continuous guidance, "
-        "constructive feedback, and technical direction throughout the project. Their "
-        "expertise in ergonomics and their willingness to engage with the "
-        "methodological choices at every stage shaped the final outcome in important "
-        "ways.")
+        "I would like to express my gratitude to my mentor, " + MENTOR_NAME +
+        ", who guided me throughout this project. I show deep appreciation "
+        "for his support, patience, and technical direction, from the "
+        "study design through the modelling and the final web application.")
 
     add_body(doc,
-        "I acknowledge the 182 quick-commerce delivery riders who participated in the survey "
-        "and the observation study; without their time and honesty this work would "
-        f"not have been possible. I also thank the {DEPARTMENT} "
-        "for providing the computing infrastructure used for the modelling "
-        "experiments and my peers who reviewed intermediate results and offered "
-        "helpful suggestions.")
+        f"I would also like to extend my gratitude to the {DEPARTMENT}, "
+        "IIITDM Kancheepuram, for hosting the internship and providing the "
+        "resources that made this work possible. I would like to thank "
+        "Vidya Jyothi Institute of Technology, my home institution, for "
+        "the academic foundation that let me take on this project.")
+
+    add_body(doc,
+        "I acknowledge the 182 quick-commerce delivery riders in the "
+        "Chengalpattu and Chennai regions who participated in the survey "
+        "and the observation study. Without their time and honesty this "
+        "work would not have been possible.")
+
+    add_body(doc,
+        "Finally, I would like to thank my friends and family for keeping "
+        "me motivated throughout the internship.")
 
 
 def add_toc_placeholder(doc):
