@@ -410,9 +410,16 @@ def add_abstract(doc):
     add_body(doc,
         "Last-mile quick-commerce delivery riders (Blinkit, Zepto) face prolonged "
         "awkward postures, high delivery rates, heavy carrying loads and vehicle "
-        "vibration, leading to musculoskeletal disorders (MSDs). No single tool "
-        "combines the six standard ergonomic risk factors into an automated "
-        "per-rider screening.")
+        "vibration, leading to musculoskeletal disorders (MSDs). Risk is not "
+        "uniform across the workforce: age, tenure, daily hours, vehicle type, "
+        "and carrying mode all shape the exposure profile, but this variation "
+        "stays invisible to the platform. Standard ergonomic methods each cover "
+        "part of the picture (RULA and QEC on the observation side, NMQ, "
+        "NASA-TLX and Borg CR10 on self-report), and no single tool combines "
+        "the six standard ergonomic risk factors into an automated per-rider "
+        "screening. This work builds that screening on a cross-sectional sample "
+        "of 182 riders from the Chengalpattu and Chennai regions collected in "
+        "March and April 2026.")
 
     add_body(doc,
         "The pipeline runs in two stages. Stage 1 applies standard ergonomic methods "
