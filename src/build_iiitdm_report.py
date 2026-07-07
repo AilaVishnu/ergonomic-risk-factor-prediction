@@ -315,13 +315,12 @@ def _paragraph_border(paragraph, side="bottom", sz=6):
     pBdr.append(border)
 
 
-def start_main_body_section(doc, author_name, dept_line):
+def start_main_body_section(doc):
     """Insert a section break at the current position and configure the
     new section as the main-body running-header layout:
-      - header top-left: STYLEREF Heading 2 (chapter name, uppercase)
-      - header top-right: author name  (both underlined by a 1px border)
-      - footer bottom-left: department + institution + date
-      - footer bottom-right: PAGE field
+      - header: STYLEREF Heading 2 (chapter name, uppercase), left,
+                underlined by a 1px border
+      - footer: PAGE field, right, with a 1px top border
       - decimal page numbers restarting at 1
     """
     from docx.enum.section import WD_SECTION
@@ -335,12 +334,10 @@ def start_main_body_section(doc, author_name, dept_line):
     section.footer_distance = Cm(1.2)
     section.different_first_page_header_footer = False
 
-    # -- Header --
+    # -- Header --  chapter name only, left-aligned with a thin underline.
     header = section.header
     header.is_linked_to_previous = False
     h_p = header.paragraphs[0]
-    h_p.paragraph_format.tab_stops.add_tab_stop(
-        Cm(15.5), WD_ALIGN_PARAGRAPH.RIGHT)
 
     r_left = h_p.add_run()
     _add_styleref_field(r_left, "Heading 2", uppercase=True,
@@ -348,31 +345,19 @@ def start_main_body_section(doc, author_name, dept_line):
     r_left.font.size = Pt(10)
     r_left.bold = True
     set_font(r_left, BODY_FONT)
-
-    h_p.add_run("\t")
-    r_right = h_p.add_run(author_name)
-    r_right.font.size = Pt(10)
-    r_right.bold = True
-    set_font(r_right, BODY_FONT)
     _paragraph_border(h_p, side="bottom")
 
-    # -- Footer --
+    # -- Footer --  page number only, right-aligned with a thin overline.
     footer = section.footer
     footer.is_linked_to_previous = False
     f_p = footer.paragraphs[0]
-    f_p.paragraph_format.tab_stops.add_tab_stop(
-        Cm(15.5), WD_ALIGN_PARAGRAPH.RIGHT)
+    f_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
-    r_left = f_p.add_run(dept_line)
-    r_left.font.size = Pt(10)
-    set_font(r_left, BODY_FONT)
-
-    f_p.add_run("\t")
-    r_right = f_p.add_run()
-    _add_page_field(r_right)
-    r_right.font.size = Pt(10)
-    r_right.bold = True
-    set_font(r_right, BODY_FONT)
+    r_page = f_p.add_run()
+    _add_page_field(r_page)
+    r_page.font.size = Pt(10)
+    r_page.bold = True
+    set_font(r_page, BODY_FONT)
     _paragraph_border(f_p, side="top")
 
     # Restart page numbering at 1 in decimal
@@ -1614,13 +1599,9 @@ def build():
     add_symbols(doc)
 
     # ---- Front matter ends here.  Section break: main body starts with
-    #      its own running header (chapter STYLEREF + author), running
-    #      footer (department line + PAGE), and page numbers restart at 1.
-    dept_line = ("School of Interdisciplinary Design and Innovation "
-                 "(SIDI), IIITDM Kancheepuram, July 2026")
-    start_main_body_section(doc,
-                            author_name=STUDENT_NAME,
-                            dept_line=dept_line)
+    #      its own running header (chapter STYLEREF only) and footer
+    #      (PAGE only).  Page numbers restart at 1.
+    start_main_body_section(doc)
 
     # Chapter 1 skips its internal page break -- the section break above
     # already puts us on a fresh page.
