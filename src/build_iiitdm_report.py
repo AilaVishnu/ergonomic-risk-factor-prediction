@@ -695,22 +695,24 @@ def add_list_of_figures(doc):
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24,
              style="Heading 1")
+    # Page-number anchors line up with the section pages the figures live in
+    # (see the TOC estimates for Chapter 4 sections 4.1 through 4.6).
     figures = [
         ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "6"),
-        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "18"),
-        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "19"),
-        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "20"),
-        ("4.4",  "Stage-1 Low / Medium / High counts per risk factor.",                        "22"),
-        ("4.5",  "Discomfort prevalence within each Low / Medium / High band.",                "23"),
-        ("4.6",  "Pearson correlation matrix across the numeric feature pool.",                "24"),
-        ("4.7",  "Confusion matrices for the best model per factor.",                          "26"),
-        ("4.8",  "ROC curves (one-vs-rest) for the best model per factor.",                    "27"),
-        ("4.9",  "Top 10 features by importance for the best model per factor.",               "28"),
-        ("4.10", "Web app: sample-profile shortcuts and demographic section.",                 "34"),
-        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "35"),
-        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "36"),
-        ("4.13", "Web app: RULA and QEC observation sections.",                                "37"),
-        ("4.14", "Web app: predicted risk profile output.",                                    "38"),
+        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "25"),
+        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "27"),
+        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "28"),
+        ("4.4",  "Stage-1 Low / Medium / High counts per risk factor.",                        "30"),
+        ("4.5",  "Discomfort prevalence within each Low / Medium / High band.",                "31"),
+        ("4.6",  "Pearson correlation matrix across the numeric feature pool.",                "32"),
+        ("4.7",  "Confusion matrices for the best model per factor.",                          "33"),
+        ("4.8",  "ROC curves (one-vs-rest) for the best model per factor.",                    "34"),
+        ("4.9",  "Top 10 features by importance for the best model per factor.",               "35"),
+        ("4.10", "Web app: sample-profile shortcuts and demographic section.",                 "37"),
+        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "38"),
+        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "39"),
+        ("4.13", "Web app: RULA and QEC observation sections.",                                "40"),
+        ("4.14", "Web app: predicted risk profile output.",                                    "40"),
     ]
     for num, cap, page in figures:
         p = doc.add_paragraph()
@@ -740,17 +742,17 @@ def add_list_of_tables(doc):
              space_before=24, space_after=24,
              style="Heading 1")
     tables = [
-        ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "12"),
-        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "19"),
-        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "20"),
+        ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "13"),
+        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "27"),
+        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "28"),
         ("4.3", "Significant predictors of discomfort from multivariable "
-                "logistic regression.",                                                        "21"),
-        ("4.4", "Stage-1 risk band counts per factor.",                                        "22"),
-        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "25"),
-        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "26"),
-        ("4.7", "Per-class precision, recall, F1, and support.",                               "27"),
-        ("4.8", "Top 5 most important features per factor.",                                   "28"),
-        ("4.9", "Winning hyperparameters per target after GridSearchCV.",                      "28"),
+                "logistic regression.",                                                        "29"),
+        ("4.4", "Stage-1 risk band counts per factor.",                                        "30"),
+        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "33"),
+        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "34"),
+        ("4.7", "Per-class precision, recall, F1, and support.",                               "34"),
+        ("4.8", "Top 5 most important features per factor.",                                   "35"),
+        ("4.9", "Winning hyperparameters per target after GridSearchCV.",                      "35"),
     ]
     for num, cap, page in tables:
         p = doc.add_paragraph()
