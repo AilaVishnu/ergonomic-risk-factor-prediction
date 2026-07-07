@@ -82,34 +82,25 @@ def add_line(doc, text="", size=12, bold=False, italic=False, align=None,
     return p
 
 
-def add_chapter_heading(doc, chapter_num, title):
-    """Chapter N (small, Heading 2) then Title (big, Normal).  Matches
-    the IIITDM reference template where the H2 tag sits on the 'Chapter N'
-    label line and the title itself is a visually-prominent Normal
-    paragraph."""
-    doc.add_page_break()
+def add_chapter_heading(doc, chapter_num, title, skip_page_break=False):
+    """Chapter heading as a single Heading 2 paragraph 'Chapter N. Title'
+    so a STYLEREF field in the running header can pick it up whole.
+    Set skip_page_break=True when a section break has just been added
+    (which already starts a new page) to avoid an extra blank page."""
+    if not skip_page_break:
+        doc.add_page_break()
 
-    if chapter_num != "":
-        p1 = doc.add_paragraph(style=doc.styles["Heading 2"])
-        p1.paragraph_format.space_before = Pt(24)
-        p1.paragraph_format.space_after  = Pt(0)
-        r1 = p1.add_run(f"Chapter {chapter_num}")
-        r1.font.size = Pt(20)
-        r1.bold = False
-        r1.font.color.rgb = BLACK
-        set_font(r1, BODY_FONT)
-        space_before_title = Pt(18)
-    else:
-        space_before_title = Pt(24)
+    heading_text = (f"Chapter {chapter_num}. {title}"
+                    if chapter_num != "" else title)
 
-    p2 = doc.add_paragraph()
-    p2.paragraph_format.space_before = space_before_title
-    p2.paragraph_format.space_after  = Pt(24)
-    r2 = p2.add_run(title)
-    r2.font.size = Pt(32)
-    r2.bold = True
-    r2.font.color.rgb = BLACK
-    set_font(r2, BODY_FONT)
+    p = doc.add_paragraph(style=doc.styles["Heading 2"])
+    p.paragraph_format.space_before = Pt(36)
+    p.paragraph_format.space_after  = Pt(28)
+    r = p.add_run(heading_text)
+    r.font.size = Pt(28)
+    r.bold = True
+    r.font.color.rgb = BLACK
+    set_font(r, BODY_FONT)
 
 
 def add_section_heading(doc, num, title):
@@ -263,24 +254,131 @@ def set_page_number_format(section, fmt="decimal", start=None):
         pgNumType.set(qn("w:start"), str(start))
 
 
-def add_page_number_footer(section, roman=False):
+def _enable_field_auto_update(doc):
+    """Tell Word to refresh all fields (PAGE, STYLEREF, TOC) when the
+    document is opened so the running-header chapter name renders
+    correctly without the user right-clicking 'Update Field'."""
+    settings = doc.settings.element
+    update = OxmlElement("w:updateFields")
+    update.set(qn("w:val"), "true")
+    settings.append(update)
+
+
+def _add_page_field(run):
+    for tag, extras in [("begin", {}), ("instrText", {"text": "PAGE"}),
+                        ("separate", {}), ("t", {"text": "1"}),
+                        ("end", {})]:
+        e = OxmlElement("w:" + ("fldChar" if tag in ("begin", "separate", "end")
+                                else tag))
+        if tag in ("begin", "separate", "end"):
+            e.set(qn("w:fldCharType"), tag)
+        if "text" in extras:
+            e.text = extras["text"]
+        run._element.append(e)
+
+
+def _add_styleref_field(run, style_name, uppercase=False, placeholder=" "):
+    """STYLEREF field: Word auto-fills the run with the most recent
+    paragraph text carrying the given style.  Used for chapter names in
+    the running header."""
+    switches = ' \\* Upper' if uppercase else ''
+    parts = [
+        ("fldChar", {"type": "begin"}),
+        ("instrText", {"text": f'STYLEREF "{style_name}"{switches} \\* MERGEFORMAT'}),
+        ("fldChar", {"type": "separate"}),
+        ("t", {"text": placeholder}),
+        ("fldChar", {"type": "end"}),
+    ]
+    for tag, attrs in parts:
+        e = OxmlElement("w:" + tag)
+        if tag == "fldChar":
+            e.set(qn("w:fldCharType"), attrs["type"])
+        elif "text" in attrs:
+            e.text = attrs["text"]
+        run._element.append(e)
+
+
+def _paragraph_border(paragraph, side="bottom", sz=6):
+    """Add a hairline border on one side of the paragraph (used to draw
+    the thin underline separating running-header from body and the top
+    line above the footer)."""
+    pPr = paragraph._p.get_or_add_pPr()
+    pBdr = pPr.find(qn("w:pBdr"))
+    if pBdr is None:
+        pBdr = OxmlElement("w:pBdr")
+        pPr.append(pBdr)
+    border = OxmlElement(f"w:{side}")
+    border.set(qn("w:val"), "single")
+    border.set(qn("w:sz"), str(sz))
+    border.set(qn("w:space"), "1")
+    border.set(qn("w:color"), "000000")
+    pBdr.append(border)
+
+
+def start_main_body_section(doc, author_name, dept_line):
+    """Insert a section break at the current position and configure the
+    new section as the main-body running-header layout:
+      - header top-left: STYLEREF Heading 2 (chapter name, uppercase)
+      - header top-right: author name  (both underlined by a 1px border)
+      - footer bottom-left: department + institution + date
+      - footer bottom-right: PAGE field
+      - decimal page numbers restarting at 1
+    """
+    from docx.enum.section import WD_SECTION
+    section = doc.add_section(WD_SECTION.NEW_PAGE)
+    # Match the front-matter margins so the text block does not jump width.
+    section.top_margin    = Cm(2.5)
+    section.bottom_margin = Cm(2.5)
+    section.left_margin   = Cm(3.0)
+    section.right_margin  = Cm(2.5)
+    section.header_distance = Cm(1.2)
+    section.footer_distance = Cm(1.2)
+    section.different_first_page_header_footer = False
+
+    # -- Header --
+    header = section.header
+    header.is_linked_to_previous = False
+    h_p = header.paragraphs[0]
+    h_p.paragraph_format.tab_stops.add_tab_stop(
+        Cm(15.5), WD_ALIGN_PARAGRAPH.RIGHT)
+
+    r_left = h_p.add_run()
+    _add_styleref_field(r_left, "Heading 2", uppercase=True,
+                        placeholder="CHAPTER")
+    r_left.font.size = Pt(10)
+    r_left.bold = True
+    set_font(r_left, BODY_FONT)
+
+    h_p.add_run("\t")
+    r_right = h_p.add_run(author_name)
+    r_right.font.size = Pt(10)
+    r_right.bold = True
+    set_font(r_right, BODY_FONT)
+    _paragraph_border(h_p, side="bottom")
+
+    # -- Footer --
     footer = section.footer
     footer.is_linked_to_previous = False
-    p = footer.paragraphs[0]
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    # Insert PAGE field
-    fld_char1 = OxmlElement("w:fldChar")
-    fld_char1.set(qn("w:fldCharType"), "begin")
-    instr = OxmlElement("w:instrText")
-    instr.text = "PAGE"
-    fld_char2 = OxmlElement("w:fldChar")
-    fld_char2.set(qn("w:fldCharType"), "end")
-    r = p.add_run()
-    r._element.append(fld_char1)
-    r._element.append(instr)
-    r._element.append(fld_char2)
-    r.font.size = Pt(11)
-    set_font(r, BODY_FONT)
+    f_p = footer.paragraphs[0]
+    f_p.paragraph_format.tab_stops.add_tab_stop(
+        Cm(15.5), WD_ALIGN_PARAGRAPH.RIGHT)
+
+    r_left = f_p.add_run(dept_line)
+    r_left.font.size = Pt(10)
+    set_font(r_left, BODY_FONT)
+
+    f_p.add_run("\t")
+    r_right = f_p.add_run()
+    _add_page_field(r_right)
+    r_right.font.size = Pt(10)
+    r_right.bold = True
+    set_font(r_right, BODY_FONT)
+    _paragraph_border(f_p, side="top")
+
+    # Restart page numbering at 1 in decimal
+    set_page_number_format(section, fmt="decimal", start=1)
+
+    return section
 
 
 # ============================================================================
@@ -694,8 +792,9 @@ def add_symbols(doc):
 # Chapters
 # ============================================================================
 
-def chapter_1(doc):
-    add_chapter_heading(doc, 1, "Introduction")
+def chapter_1(doc, skip_page_break=False):
+    add_chapter_heading(doc, 1, "Introduction",
+                        skip_page_break=skip_page_break)
 
     add_section_heading(doc, "1.1", "Background")
     add_body(doc,
@@ -1397,12 +1496,19 @@ def chapter_5(doc):
 
 
 def add_bibliography(doc):
+    # Bibliography ALSO carries a Heading 2 marker at the top of the
+    # first paragraph so the STYLEREF running header switches from the
+    # last chapter's name to 'BIBLIOGRAPHY'.
     doc.add_page_break()
-    add_line(doc, "Bibliography",
-             size=32, bold=True,
-             align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=24, space_after=24,
-             style="Heading 1")
+    p = doc.add_paragraph(style=doc.styles["Heading 2"])
+    p.paragraph_format.space_before = Pt(36)
+    p.paragraph_format.space_after  = Pt(28)
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = p.add_run("Bibliography")
+    r.font.size = Pt(28)
+    r.bold = True
+    r.font.color.rgb = BLACK
+    set_font(r, BODY_FONT)
     refs = [
         "McAtamney L, Corlett EN (1993). RULA: a survey method for the "
         "investigation of work-related upper limb disorders. Applied "
@@ -1507,12 +1613,28 @@ def build():
     add_abbreviations(doc)
     add_symbols(doc)
 
-    chapter_1(doc)
+    # ---- Front matter ends here.  Section break: main body starts with
+    #      its own running header (chapter STYLEREF + author), running
+    #      footer (department line + PAGE), and page numbers restart at 1.
+    dept_line = ("School of Interdisciplinary Design and Innovation "
+                 "(SIDI), IIITDM Kancheepuram, July 2026")
+    start_main_body_section(doc,
+                            author_name=STUDENT_NAME,
+                            dept_line=dept_line)
+
+    # Chapter 1 skips its internal page break -- the section break above
+    # already puts us on a fresh page.
+    chapter_1(doc, skip_page_break=True)
     chapter_2(doc)
     chapter_3(doc)
     chapter_4(doc)
     chapter_5(doc)
     add_bibliography(doc)
+
+    # Make Word refresh PAGE / STYLEREF / TOC fields on open so the
+    # running header shows the actual chapter name without the reader
+    # having to right-click 'Update Field'.
+    _enable_field_auto_update(doc)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     doc.save(OUT)
