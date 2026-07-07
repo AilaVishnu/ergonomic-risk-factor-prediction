@@ -315,6 +315,31 @@ def _paragraph_border(paragraph, side="bottom", sz=6):
     pBdr.append(border)
 
 
+def configure_front_matter_section(section):
+    """Configure the front-matter section (title through Abbreviations):
+    lowercase Roman page numbers (i, ii, iii...) restarting at i, shown
+    only on right-side of the footer.  The title page itself is
+    conventionally unnumbered, so 'different first page' is turned on
+    with an empty first-page footer."""
+    section.different_first_page_header_footer = True
+
+    footer = section.footer
+    footer.is_linked_to_previous = False
+    f_p = footer.paragraphs[0]
+    f_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+    r_page = f_p.add_run()
+    _add_page_field(r_page)
+    r_page.font.size = Pt(10)
+    set_font(r_page, BODY_FONT)
+
+    # First-page footer left explicitly empty so page 1 (title page) has
+    # no numeral.  The default section footer applies to pages 2+.
+    _ = section.first_page_footer  # instantiate to override linkage
+
+    set_page_number_format(section, fmt="lowerRoman", start=1)
+
+
 def start_main_body_section(doc):
     """Insert a section break at the current position and configure the
     new section as the main-body running-header layout:
@@ -1587,6 +1612,9 @@ def build():
     cp.last_modified_by = STUDENT_NAME
     cp.title = PROJECT_TITLE
     cp.comments = ""
+
+    # Front matter uses lowercase Roman page numbers, title page unnumbered
+    configure_front_matter_section(doc.sections[0])
 
     add_title_page(doc)
     add_certificate(doc)
