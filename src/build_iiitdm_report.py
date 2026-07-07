@@ -739,8 +739,7 @@ def add_list_of_tables(doc):
     tables = [
         ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "12"),
         ("4.1", "NMQ 12-month pain prevalence per body area.",                                "19"),
-        ("4.2", "Chi-square test of independence between each risk factor and "
-                "self-reported discomfort.",                                                   "20"),
+        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "20"),
         ("4.3", "Significant predictors of discomfort from multivariable "
                 "logistic regression.",                                                        "21"),
         ("4.4", "Stage-1 risk band counts per factor.",                                        "22"),
@@ -1320,8 +1319,8 @@ def chapter_4(doc):
                   ["Contact Stress",  "0.544",  "0.762",  "No"],
               ],
               widths_cm=[4.0, 3.5, 3.0, 3.5])
-    add_line(doc, "Table 4.2: Chi-square test of independence between each risk "
-                  "factor and self-reported discomfort.",
+    add_line(doc, "Table 4.2: Chi-square test: risk factor vs "
+                  "self-reported discomfort.",
              size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
              space_after=12)
 
