@@ -451,7 +451,10 @@ def add_title_page(doc):
 
 
 def add_certificate(doc):
-    doc.add_page_break()
+    # Section break from start_front_matter_section already put us on
+    # a fresh page (Roman 'i'), so no internal page break is needed --
+    # adding one would create a blank page between the title page and
+    # Certificate.
     add_line(doc, "Certificate",
              size=28, bold=True, italic=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
