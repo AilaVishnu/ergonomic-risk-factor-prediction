@@ -653,46 +653,46 @@ def add_toc_placeholder(doc):
         ("2   METHODOLOGY",                                        "3"),
         ("    2.1   Two-stage design",                             "3"),
         ("    2.2   Study design and data sources",                "3"),
-        ("        2.2.1   Rider survey",                           "4"),
+        ("        2.2.1   Rider survey",                           "3"),
         ("        2.2.2   Posture observations",                   "4"),
         ("    2.3   Data cleaning and feature engineering",        "4"),
-        ("    2.4   Stage 1: Deterministic risk scoring",          "5"),
+        ("    2.4   Stage 1: Deterministic risk scoring",          "4"),
         ("    2.5   Statistical analysis",                         "5"),
-        ("    2.6   Stage 2: Machine learning pipeline",           "6"),
-        ("        2.6.1   Logistic Regression",                    "6"),
-        ("        2.6.2   Decision Tree",                          "6"),
-        ("        2.6.3   Random Forest",                          "6"),
-        ("        2.6.4   Extra Trees",                            "6"),
-        ("        2.6.5   Histogram Gradient Boosting",            "7"),
-        ("        2.6.6   XGBoost",                                "7"),
-        ("        2.6.7   Stacking Classifier",                    "7"),
-        ("        2.6.8   SMOTE and cross-validation",             "7"),
-        ("        2.6.9   Per-target feature exclusions",          "7"),
-        ("    2.7   Evaluation",                                   "7"),
+        ("    2.6   Stage 2: Machine learning pipeline",           "5"),
+        ("        2.6.1   Logistic Regression",                    "5"),
+        ("        2.6.2   Decision Tree",                          "5"),
+        ("        2.6.3   Random Forest",                          "5"),
+        ("        2.6.4   Extra Trees",                            "5"),
+        ("        2.6.5   Histogram Gradient Boosting",            "6"),
+        ("        2.6.6   XGBoost",                                "6"),
+        ("        2.6.7   Stacking Classifier",                    "6"),
+        ("        2.6.8   SMOTE and cross-validation",             "6"),
+        ("        2.6.9   Per-target feature exclusions",          "6"),
+        ("    2.7   Evaluation",                                   "6"),
 
-        ("3   WORK DONE",                                          "8"),
-        ("    3.1   Notebook pipeline",                            "8"),
-        ("    3.2   Instrument design and preparation",            "9"),
-        ("    3.3   Data collection execution",                    "9"),
-        ("    3.4   Data cleaning, encoding, and integration",     "10"),
-        ("    3.5   Statistical analysis and model training runs", "11"),
-        ("    3.6   Web application development and deployment",   "11"),
-        ("    3.7   Iterations and fixes",                         "12"),
-        ("        3.7.1   Repetition binning correction",          "12"),
-        ("        3.7.2   Duration leakage correction",            "12"),
-        ("        3.7.3   Posture model with RULA and QEC inputs", "12"),
+        ("3   WORK DONE",                                          "7"),
+        ("    3.1   Notebook pipeline",                            "7"),
+        ("    3.2   Instrument design and preparation",            "8"),
+        ("    3.3   Data collection execution",                    "8"),
+        ("    3.4   Data cleaning, encoding, and integration",     "9"),
+        ("    3.5   Statistical analysis and model training runs", "10"),
+        ("    3.6   Web application development and deployment",   "10"),
+        ("    3.7   Iterations and fixes",                         "11"),
+        ("        3.7.1   Repetition binning correction",          "11"),
+        ("        3.7.2   Duration leakage correction",            "11"),
+        ("        3.7.3   Posture model with RULA and QEC inputs", "11"),
 
-        ("4   RESULTS AND DISCUSSION",                             "13"),
-        ("    4.1   Sample profile",                               "13"),
-        ("    4.2   NMQ pain prevalence and statistical predictors","15"),
-        ("    4.3   Stage-1 risk distribution",                    "17"),
-        ("    4.4   Stage-2 model performance",                    "19"),
-        ("    4.5   Per-class metrics and feature importance",     "21"),
-        ("    4.6   Web application demonstration",                "22"),
+        ("4   RESULTS AND DISCUSSION",                             "12"),
+        ("    4.1   Sample profile",                               "12"),
+        ("    4.2   NMQ pain prevalence and statistical predictors","14"),
+        ("    4.3   Stage-1 risk distribution",                    "16"),
+        ("    4.4   Stage-2 model performance",                    "18"),
+        ("    4.5   Per-class metrics and feature importance",     "20"),
+        ("    4.6   Web application demonstration",                "21"),
 
-        ("5   CONCLUSIONS AND EXTENSIONS",                         "25"),
+        ("5   CONCLUSIONS AND EXTENSIONS",                         "24"),
 
-        ("BIBLIOGRAPHY",                                           "27"),
+        ("BIBLIOGRAPHY",                                           "26"),
     ]
 
     # A row is a "chapter row" (bold) if the label starts at column 0
@@ -733,20 +733,20 @@ def add_list_of_figures(doc):
     # in the rendered Word output (Chapter 4 spans main-body 13-24).
     figures = [
         ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "3"),
-        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "14"),
-        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "15"),
-        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "16"),
-        ("4.4",  "Stage-1 Low / Medium / High counts per risk factor.",                        "17"),
-        ("4.5",  "Discomfort prevalence within each Low / Medium / High band.",                "18"),
-        ("4.6",  "Pearson correlation matrix across the numeric feature pool.",                "18"),
-        ("4.7",  "Confusion matrices for the best model per factor.",                          "19"),
-        ("4.8",  "ROC curves (one-vs-rest) for the best model per factor.",                    "20"),
-        ("4.9",  "Top 10 features by importance for the best model per factor.",               "21"),
-        ("4.10", "Web app: sample-profile shortcuts and demographic section.",                 "22"),
-        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "23"),
-        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "23"),
-        ("4.13", "Web app: RULA and QEC observation sections.",                                "24"),
-        ("4.14", "Web app: predicted risk profile output.",                                    "24"),
+        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "13"),
+        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "14"),
+        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "15"),
+        ("4.4",  "Stage-1 Low / Medium / High counts per risk factor.",                        "16"),
+        ("4.5",  "Discomfort prevalence within each Low / Medium / High band.",                "17"),
+        ("4.6",  "Pearson correlation matrix across the numeric feature pool.",                "17"),
+        ("4.7",  "Confusion matrices for the best model per factor.",                          "18"),
+        ("4.8",  "ROC curves (one-vs-rest) for the best model per factor.",                    "19"),
+        ("4.9",  "Top 10 features by importance for the best model per factor.",               "20"),
+        ("4.10", "Web app: sample-profile shortcuts and demographic section.",                 "21"),
+        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "22"),
+        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "22"),
+        ("4.13", "Web app: RULA and QEC observation sections.",                                "23"),
+        ("4.14", "Web app: predicted risk profile output.",                                    "23"),
     ]
     for num, cap, page in figures:
         p = doc.add_paragraph()
@@ -775,17 +775,17 @@ def add_list_of_tables(doc):
              space_before=24, space_after=24,
              style="Heading 1", page_break_before=True)
     tables = [
-        ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "7"),
-        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "15"),
-        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "15"),
+        ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "6"),
+        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "14"),
+        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "14"),
         ("4.3", "Significant predictors of discomfort from multivariable "
-                "logistic regression.",                                                        "16"),
-        ("4.4", "Stage-1 risk band counts per factor.",                                        "17"),
-        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "19"),
-        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "20"),
-        ("4.7", "Per-class precision, recall, F1, and support.",                               "20"),
-        ("4.8", "Top 5 most important features per factor.",                                   "21"),
-        ("4.9", "Winning hyperparameters per target after GridSearchCV.",                      "21"),
+                "logistic regression.",                                                        "15"),
+        ("4.4", "Stage-1 risk band counts per factor.",                                        "16"),
+        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "18"),
+        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "19"),
+        ("4.7", "Per-class precision, recall, F1, and support.",                               "19"),
+        ("4.8", "Top 5 most important features per factor.",                                   "20"),
+        ("4.9", "Winning hyperparameters per target after GridSearchCV.",                      "20"),
     ]
     for num, cap, page in tables:
         p = doc.add_paragraph()
@@ -946,24 +946,21 @@ def chapter_2(doc):
 
     add_section_heading(doc, "2.1", "Two-stage design")
     add_body(doc,
-        "The pipeline runs in two stages. Stage 1 computes Low, Medium, or High "
-        "labels for each of the six ergonomic risk factors using deterministic "
-        "rules from standard ergonomic methods: Borg CR10 action levels for Force, "
-        "RULA Table C action levels for Posture, sample terciles or fixed cuts for "
-        "the remaining factors. Stage 1 is the ground truth that Stage 2 tries to "
-        "learn.")
+        "The pipeline runs in two stages. Stage 1 assigns Low, Medium, or "
+        "High labels for each of the six ergonomic risk factors using "
+        "deterministic rules from standard methods (Borg CR10 action levels "
+        "for Force, RULA Table C for Posture, sample terciles or fixed cuts "
+        "for the rest); these labels are the ground truth Stage 2 has to "
+        "learn. Stage 2 trains a supervised classifier per factor with "
+        "per-target feature exclusions removing the inputs that define the "
+        "label, and evaluates via 5-fold stratified cross-validation with "
+        "SMOTE oversampling inside every training fold.")
     add_body(doc,
-        "Stage 2 trains a supervised classifier per risk factor. Per-target "
-        "feature exclusions remove the inputs that define the label so the model "
-        "has to learn from the remaining rider profile rather than memorising the "
-        "Stage-1 rule. Each classifier is evaluated by 5-fold stratified "
-        "cross-validation with SMOTE oversampling inside every training fold.")
-    add_body(doc,
-        "The two-stage split lets an ergonomist audit the Stage-1 labels by hand "
-        "and a machine-learning reviewer audit the Stage-2 classifiers "
-        "independently, without either review interfering with the other. The "
-        "trained classifiers can then be deployed behind a web form that runs on "
-        "a new rider's profile without re-applying the RULA and QEC worksheets.")
+        "The two-stage split lets an ergonomist audit Stage 1 by hand and "
+        "an ML reviewer audit Stage 2 independently, and the trained "
+        "classifiers can then be deployed behind a web form that runs on a "
+        "new rider's profile without re-applying the RULA and QEC "
+        "worksheets.")
 
     add_figure(doc, ROOT / "outputs" / "figures" / "methodology_flowchart.png",
                "Figure 2.1: Pipeline overview from raw inputs to interactive "
@@ -974,18 +971,13 @@ def chapter_2(doc):
     add_section_heading(doc, "2.2", "Study design and data sources")
 
     add_body(doc,
-        "This is a cross-sectional study conducted in the Chengalpattu and Chennai "
-        "regions to evaluate the work conditions and posture among the quick "
-        "delivery services which are Blinkit and Zepto. The data was collected "
-        "in March and April of 2026. A convenience sampling method was used to "
-        "approach delivery partners and collect the data.")
-
-    add_body(doc,
-        "The same 182 participants supplied both data streams described below. "
-        "Rider self-report was captured through a Google Form questionnaire; "
-        "posture was recorded on the same rider during a delivery task by a "
-        "trained observer. Study eligibility was applied at the person level "
-        "before either instrument was administered.")
+        "This is a cross-sectional study of Blinkit and Zepto quick-commerce "
+        "delivery partners conducted in the Chengalpattu and Chennai regions "
+        "in March-April 2026 using convenience sampling. The same 182 "
+        "participants supplied both data streams: rider self-report through "
+        "a Google Form and posture recorded during a delivery task by a "
+        "trained observer. Eligibility was applied at the person level "
+        "before either instrument.")
 
     add_line(doc, "Inclusion criteria",
              size=12, bold=True, space_before=6, space_after=4)
@@ -1029,29 +1021,25 @@ def chapter_2(doc):
 
     add_section_heading(doc, "2.3", "Data cleaning and feature engineering")
     add_body(doc,
-        "Phase 1 (01_data_cleaning.ipynb) normalises the raw CSV, standardises "
-        "Yes/No answers, and validates row counts. Phase 2 "
-        "(02_feature_engineering.ipynb) encodes ordered categorical bins into "
-        "integer codes, assigns numeric midpoints to bin ranges that will feed "
-        "arithmetic formulae, ranks vehicle type and carrying mode, creates "
-        "short-named binary aliases for the 18 Yes/No survey items, and derives "
-        "composite scores.")
+        "Phase 1 (01_data_cleaning.ipynb) normalises the raw CSV, "
+        "standardises Yes/No answers, and validates row counts. Phase 2 "
+        "(02_feature_engineering.ipynb) encodes ordered categorical bins to "
+        "integers, assigns numeric midpoints to bin ranges, ranks vehicle "
+        "type and carrying mode, aliases the 18 Yes/No items, and derives "
+        "four composite features -- workload_score (mean of the six NASA-TLX "
+        "items with satisfaction reversed), fatigue_score (mean of the six "
+        "Borg CR10 items), force_exertion (the Borg lifting item), and "
+        "vibration_index (vehicle_rank x work_hours_num) -- plus five "
+        "product-form interactions so tree-based models can pick up "
+        "combined effects.")
     add_body(doc,
-        "Four composite features are derived: workload_score (mean of the six "
-        "NASA-TLX items with satisfaction reversed), fatigue_score (mean of the "
-        "six Borg CR10 items), force_exertion (Borg lifting item as its own "
-        "feature), and vibration_index (vehicle_rank multiplied by "
-        "work_hours_num). Five product-form interactions are also added so "
-        "tree-based models can pick up combined effects such as an older rider "
-        "with high workload.")
-    add_body(doc,
-        "The posture observations, which lack rider identifiers, are merged into "
-        "the survey via a severity-rank merge. Each rider receives an "
-        "exposure_severity score from their normalised NMQ pain count, fatigue "
-        "score, and working hours. Riders are ranked by this severity descending; "
-        "posture rows are ranked by RULA Table C descending; the two ranked lists "
-        "are joined one-to-one. The methodological caveat is discussed in the "
-        "Limitations section of Chapter 5.")
+        "The posture observations, which lack rider identifiers, are merged "
+        "into the survey via a severity-rank merge: each rider is scored on "
+        "an exposure_severity index (normalised NMQ pain count + fatigue "
+        "score + working hours), riders are ranked by that severity and "
+        "posture rows by RULA Table C, and the two ranked lists are joined "
+        "one-to-one. The methodological caveat is discussed in Chapter 5's "
+        "Limitations section.")
 
     add_section_heading(doc, "2.4", "Stage 1: Deterministic risk scoring")
     add_body(doc,
