@@ -1742,10 +1742,6 @@ def add_bibliography(doc):
         "Pedregosa F, Varoquaux G, Gramfort A, et al. (2011). Scikit-learn: "
         "Machine Learning in Python. Journal of Machine Learning Research, "
         "12, 2825-2830.",
-
-        "Lemaitre G, Nogueira F, Aridas CK (2017). Imbalanced-learn: A Python "
-        "toolbox to tackle the curse of imbalanced datasets in machine "
-        "learning. Journal of Machine Learning Research, 18(17), 1-5.",
     ]
     for i, ref in enumerate(refs, 1):
         p = doc.add_paragraph()
