@@ -688,15 +688,15 @@ def add_toc_placeholder(doc):
 
         ("4   RESULTS AND DISCUSSION",                             "11"),
         ("    4.1   Sample profile",                               "11"),
-        ("    4.2   NMQ pain prevalence and statistical predictors","13"),
-        ("    4.3   Stage-1 risk distribution",                    "15"),
-        ("    4.4   Stage-2 model performance",                    "17"),
-        ("    4.5   Per-class metrics and feature importance",     "19"),
-        ("    4.6   Web application demonstration",                "20"),
+        ("    4.2   NMQ pain prevalence and statistical predictors","12"),
+        ("    4.3   Stage-1 risk distribution",                    "14"),
+        ("    4.4   Stage-2 model performance",                    "15"),
+        ("    4.5   Per-class metrics and feature importance",     "16"),
+        ("    4.6   Web application demonstration",                "17"),
 
-        ("5   CONCLUSIONS AND EXTENSIONS",                         "23"),
+        ("5   CONCLUSIONS AND EXTENSIONS",                         "19"),
 
-        ("BIBLIOGRAPHY",                                           "25"),
+        ("BIBLIOGRAPHY",                                           "20"),
     ]
 
     # A row is a "chapter row" (bold) if the label starts at column 0
@@ -739,18 +739,18 @@ def add_list_of_figures(doc):
     figures = [
         ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "3"),
         ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "11"),
-        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "13"),
-        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "14"),
-        ("4.4",  "Discomfort prevalence within each Low / Medium / High band.",                "15"),
-        ("4.5",  "Pearson correlation matrix across the numeric feature pool.",                "16"),
-        ("4.6",  "Confusion matrices for the best model per factor.",                          "19"),
-        ("4.7",  "ROC curves (one-vs-rest) for the best model per factor.",                    "19"),
-        ("4.8",  "Top 10 features by importance for the best model per factor.",               "20"),
-        ("4.9",  "Web app: sample-profile shortcuts and demographic section.",                 "20"),
-        ("4.10", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "20"),
-        ("4.11", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "20"),
-        ("4.12", "Web app: RULA and QEC observation sections.",                                "21"),
-        ("4.13", "Web app: predicted risk profile output.",                                    "21"),
+        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "12"),
+        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "13"),
+        ("4.4",  "Discomfort prevalence within each Low / Medium / High band.",                "14"),
+        ("4.5",  "Pearson correlation matrix across the numeric feature pool.",                "14"),
+        ("4.6",  "Confusion matrices for the best model per factor.",                          "16"),
+        ("4.7",  "ROC curves (one-vs-rest) for the best model per factor.",                    "16"),
+        ("4.8",  "Top 10 features by importance for the best model per factor.",               "16"),
+        ("4.9",  "Web app: sample-profile shortcuts and demographic section.",                 "17"),
+        ("4.10", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "17"),
+        ("4.11", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "17"),
+        ("4.12", "Web app: RULA and QEC observation sections.",                                "18"),
+        ("4.13", "Web app: predicted risk profile output.",                                    "18"),
     ]
     for num, cap, page in figures:
         p = doc.add_paragraph()
@@ -780,15 +780,15 @@ def add_list_of_tables(doc):
              style="Heading 1", page_break_before=True)
     tables = [
         ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "5"),
-        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "13"),
-        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "13"),
+        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "12"),
+        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "12"),
         ("4.3", "Significant predictors of discomfort from multivariable "
-                "logistic regression.",                                                        "14"),
-        ("4.4", "Stage-1 risk band counts per factor.",                                        "15"),
-        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "17"),
-        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "19"),
-        ("4.7", "Per-class precision, recall, F1, and support.",                               "19"),
-        ("4.8", "Winning hyperparameters per target after GridSearchCV.",                      "20"),
+                "logistic regression.",                                                        "13"),
+        ("4.4", "Stage-1 risk band counts per factor.",                                        "14"),
+        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "15"),
+        ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "16"),
+        ("4.7", "Per-class precision, recall, F1, and support.",                               "16"),
+        ("4.8", "Winning hyperparameters per target after GridSearchCV.",                      "17"),
     ]
     for num, cap, page in tables:
         p = doc.add_paragraph()
