@@ -230,11 +230,11 @@ def add_table(doc, header, rows, header_bg="D9D9D9", widths_cm=None):
     return t
 
 
-def add_figure(doc, path, caption, width_cm=15):
+def add_figure(doc, path, caption, width_cm=11):
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.paragraph_format.space_before = Pt(10)
-    p.paragraph_format.space_after  = Pt(4)
+    p.paragraph_format.space_before = Pt(4)
+    p.paragraph_format.space_after  = Pt(2)
     if Path(path).exists():
         run = p.add_run()
         run.add_picture(str(path), width=Cm(width_cm))
@@ -244,9 +244,10 @@ def add_figure(doc, path, caption, width_cm=15):
 
     cap = doc.add_paragraph()
     cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    cap.paragraph_format.space_after = Pt(12)
+    cap.paragraph_format.space_before = Pt(0)
+    cap.paragraph_format.space_after  = Pt(6)
     r = cap.add_run(caption)
-    r.font.size = Pt(10)
+    r.font.size = Pt(9)
     r.italic = True
     set_font(r, BODY_FONT)
 
@@ -1161,8 +1162,8 @@ def chapter_2(doc):
               widths_cm=[3.5, 8.0, 4.0])
     add_line(doc, "Table 2.1: Per-target feature exclusions to prevent label "
                   "leakage.",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
 
     add_section_heading(doc, "2.7", "Evaluation")
     add_body(doc,
@@ -1427,8 +1428,8 @@ def chapter_4(doc):
               ],
               widths_cm=[7.0, 4.0])
     add_line(doc, "Table 4.1: NMQ 12-month pain prevalence per body area.",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
 
     add_figure(doc, ROOT / "outputs" / "figures" / "nordic_prevalence.png",
                "Figure 4.2: NMQ 12-month pain prevalence per body area.")
@@ -1453,8 +1454,8 @@ def chapter_4(doc):
               widths_cm=[4.0, 3.5, 3.0, 3.5])
     add_line(doc, "Table 4.2: Chi-square test: risk factor vs "
                   "self-reported discomfort.",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
 
     add_body(doc,
         "The multivariable logistic regression identifies seven significant "
@@ -1475,8 +1476,8 @@ def chapter_4(doc):
               widths_cm=[6.0, 2.0, 3.5, 2.5])
     add_line(doc, "Table 4.3: Significant predictors of discomfort from "
                   "multivariable logistic regression.",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
 
     add_section_heading(doc, "4.3", "Stage-1 risk distribution")
     add_table(doc,
@@ -1491,8 +1492,8 @@ def chapter_4(doc):
               ],
               widths_cm=[5.0, 2.5, 2.5, 2.5])
     add_line(doc, "Table 4.4: Stage-1 risk band counts per factor (n = 182).",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
     add_body(doc,
         "Posture, Duration, and Repetition are the three factors where the "
         "High band dominates. Posture is at 84 percent High (153 of 182 "
@@ -1521,8 +1522,8 @@ def chapter_4(doc):
               widths_cm=[3.2, 3.8, 1.8, 2.0, 2.2, 2.0])
     add_line(doc, "Table 4.5: Best Stage-2 model per risk factor after 5-fold "
                   "stratified CV.",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
     add_body(doc,
         "The five survey-derived factors land between 58 and 62 percent "
         "cross-validation accuracy with macro AUC in the 71 to 76 percent "
@@ -1545,8 +1546,8 @@ def chapter_4(doc):
               widths_cm=[3.5, 2.5, 2.5, 2.5])
     add_line(doc, "Table 4.6: Per-class ROC AUC (one-vs-rest) for the best "
                   "model per factor.",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
 
     add_figure(doc, ROOT / "outputs" / "figures" / "confusion_matrices.png",
                "Figure 4.7: Confusion matrices for the best model per factor "
@@ -1583,8 +1584,8 @@ def chapter_4(doc):
               ],
               widths_cm=[3.5, 2.0, 2.5, 2.2, 2.0, 2.0])
     add_line(doc, "Table 4.7: Per-class precision, recall, F1, and support.",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
 
     add_figure(doc, ROOT / "outputs" / "figures" / "feature_importance.png",
                "Figure 4.9: Top 10 features by importance for the best model "
@@ -1601,8 +1602,8 @@ def chapter_4(doc):
     add_line(doc, "Table 4.8: Top 5 most important features per factor. Force "
                   "and Posture are omitted because HistGradientBoosting does "
                   "not expose split-based importances directly.",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
 
     add_table(doc,
               header=["Factor", "Best model", "Hyperparameters", "SMOTE k"],
@@ -1617,8 +1618,8 @@ def chapter_4(doc):
               widths_cm=[3.2, 2.8, 6.0, 2.0])
     add_line(doc, "Table 4.9: Winning hyperparameters per target after "
                   "GridSearchCV.",
-             size=10, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=12)
+             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_after=6)
 
     add_section_heading(doc, "4.6", "Web application demonstration")
     add_body(doc,
@@ -1630,24 +1631,24 @@ def chapter_4(doc):
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_02_assessment_top.png",
         "Figure 4.10: Web app: sample-profile shortcuts and demographic "
-        "section (Q1 to Q17).", width_cm=15)
+        "section (Q1 to Q17).", width_cm=11)
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_03_assessment_nmq.png",
         "Figure 4.11: Web app: Nordic Musculoskeletal Questionnaire section "
-        "(Q18 to Q24).", width_cm=15)
+        "(Q18 to Q24).", width_cm=11)
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_04_assessment_nasa_borg.png",
         "Figure 4.12: Web app: NASA-TLX and Borg CR10 sliders (Q25 to Q36).",
-        width_cm=15)
+        width_cm=11)
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_05_assessment_rula_qec.png",
         "Figure 4.13: Web app: RULA (11 items) and QEC (8 scores) observation "
-        "sections above the Predict button.", width_cm=15)
+        "sections above the Predict button.", width_cm=11)
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_06_results.png",
         "Figure 4.14: Web app: predicted risk profile output with colour-coded "
         "level cards, radar chart, tabular result, and per-factor "
-        "recommendations.", width_cm=15)
+        "recommendations.", width_cm=11)
 
 
 def chapter_5(doc):
