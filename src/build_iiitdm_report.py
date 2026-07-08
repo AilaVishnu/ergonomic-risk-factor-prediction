@@ -735,20 +735,19 @@ def add_list_of_figures(doc):
     # in the rendered Word output (Chapter 4 spans main-body 13-24).
     figures = [
         ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "3"),
-        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "13"),
-        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "14"),
-        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "15"),
-        ("4.4",  "Stage-1 Low / Medium / High counts per risk factor.",                        "16"),
-        ("4.5",  "Discomfort prevalence within each Low / Medium / High band.",                "17"),
-        ("4.6",  "Pearson correlation matrix across the numeric feature pool.",                "17"),
-        ("4.7",  "Confusion matrices for the best model per factor.",                          "18"),
-        ("4.8",  "ROC curves (one-vs-rest) for the best model per factor.",                    "19"),
-        ("4.9",  "Top 10 features by importance for the best model per factor.",               "20"),
-        ("4.10", "Web app: sample-profile shortcuts and demographic section.",                 "21"),
-        ("4.11", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "22"),
-        ("4.12", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "22"),
-        ("4.13", "Web app: RULA and QEC observation sections.",                                "23"),
-        ("4.14", "Web app: predicted risk profile output.",                                    "23"),
+        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "12"),
+        ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "13"),
+        ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "14"),
+        ("4.4",  "Discomfort prevalence within each Low / Medium / High band.",                "15"),
+        ("4.5",  "Pearson correlation matrix across the numeric feature pool.",                "15"),
+        ("4.6",  "Confusion matrices for the best model per factor.",                          "16"),
+        ("4.7",  "ROC curves (one-vs-rest) for the best model per factor.",                    "17"),
+        ("4.8",  "Top 10 features by importance for the best model per factor.",               "18"),
+        ("4.9",  "Web app: sample-profile shortcuts and demographic section.",                 "19"),
+        ("4.10", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "20"),
+        ("4.11", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "20"),
+        ("4.12", "Web app: RULA and QEC observation sections.",                                "21"),
+        ("4.13", "Web app: predicted risk profile output.",                                    "21"),
     ]
     for num, cap, page in figures:
         p = doc.add_paragraph()
@@ -785,9 +784,9 @@ def add_list_of_tables(doc):
         ("4.4", "Stage-1 risk band counts per factor.",                                        "16"),
         ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "18"),
         ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "19"),
-        ("4.7", "Per-class precision, recall, F1, and support.",                               "19"),
-        ("4.8", "Top 5 most important features per factor.",                                   "20"),
-        ("4.9", "Winning hyperparameters per target after GridSearchCV.",                      "20"),
+        ("4.6", "Per-class precision, recall, F1, and support.",                               "19"),
+        ("4.7", "Top 5 most important features per factor.",                                   "20"),
+        ("4.8", "Winning hyperparameters per target after GridSearchCV.",                      "20"),
     ]
     for num, cap, page in tables:
         p = doc.add_paragraph()
@@ -1494,13 +1493,11 @@ def chapter_4(doc):
         "High band dominates. Posture is at 84 percent High (153 of 182 "
         "observations); Duration is at 49 percent High; Repetition is at 41 "
         "percent High after the binning fix.")
-    add_figure(doc, ROOT / "outputs" / "figures" / "risk_factor_distribution.png",
-               "Figure 4.4: Stage-1 Low / Medium / High counts per risk factor.")
     add_figure(doc, ROOT / "outputs" / "figures" / "risk_vs_discomfort.png",
-               "Figure 4.5: Discomfort prevalence within each Low / Medium / "
+               "Figure 4.4: Discomfort prevalence within each Low / Medium / "
                "High band, per risk factor.")
     add_figure(doc, ROOT / "outputs" / "figures" / "correlation_heatmap.png",
-               "Figure 4.6: Pearson correlation matrix across the numeric "
+               "Figure 4.5: Pearson correlation matrix across the numeric "
                "feature pool, upper triangle masked.")
 
     add_section_heading(doc, "4.4", "Stage-2 model performance")
@@ -1545,10 +1542,10 @@ def chapter_4(doc):
              space_after=6)
 
     add_figure(doc, ROOT / "outputs" / "figures" / "confusion_matrices.png",
-               "Figure 4.7: Confusion matrices for the best model per factor "
+               "Figure 4.6: Confusion matrices for the best model per factor "
                "(rows = true class, columns = predicted class).")
     add_figure(doc, ROOT / "outputs" / "figures" / "roc_curves.png",
-               "Figure 4.8: ROC curves (one-vs-rest) for the best model per "
+               "Figure 4.7: ROC curves (one-vs-rest) for the best model per "
                "factor.")
 
     add_body(doc,
@@ -1583,7 +1580,7 @@ def chapter_4(doc):
              space_after=6)
 
     add_figure(doc, ROOT / "outputs" / "figures" / "feature_importance.png",
-               "Figure 4.9: Top 10 features by importance for the best model "
+               "Figure 4.8: Top 10 features by importance for the best model "
                "per factor.")
     add_table(doc,
               header=["Factor", "Rank 1", "Rank 2", "Rank 3", "Rank 4", "Rank 5"],
@@ -1625,23 +1622,23 @@ def chapter_4(doc):
         "entire form so the mentor can trigger a prediction in one click.")
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_02_assessment_top.png",
-        "Figure 4.10: Web app: sample-profile shortcuts and demographic "
+        "Figure 4.9: Web app: sample-profile shortcuts and demographic "
         "section (Q1 to Q17).", width_cm=10.5)
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_03_assessment_nmq.png",
-        "Figure 4.11: Web app: Nordic Musculoskeletal Questionnaire section "
+        "Figure 4.10: Web app: Nordic Musculoskeletal Questionnaire section "
         "(Q18 to Q24).", width_cm=10.5)
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_04_assessment_nasa_borg.png",
-        "Figure 4.12: Web app: NASA-TLX and Borg CR10 sliders (Q25 to Q36).",
+        "Figure 4.11: Web app: NASA-TLX and Borg CR10 sliders (Q25 to Q36).",
         width_cm=10.5)
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_05_assessment_rula_qec.png",
-        "Figure 4.13: Web app: RULA (11 items) and QEC (8 scores) observation "
+        "Figure 4.12: Web app: RULA (11 items) and QEC (8 scores) observation "
         "sections above the Predict button.", width_cm=10.5)
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_06_results.png",
-        "Figure 4.14: Web app: predicted risk profile output with colour-coded "
+        "Figure 4.13: Web app: predicted risk profile output with colour-coded "
         "level cards, radar chart, tabular result, and per-factor "
         "recommendations.", width_cm=10.5)
 
