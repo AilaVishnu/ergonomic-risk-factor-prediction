@@ -118,16 +118,16 @@ def add_chapter_heading(doc, chapter_num, title, skip_page_break=False):
 def add_section_heading(doc, num, title):
     """Main section like '2.1 Two-stage pipeline' -- Heading 4 in Word."""
     p = doc.add_paragraph(style=doc.styles["Heading 4"])
-    p.paragraph_format.space_before = Pt(18)
-    p.paragraph_format.space_after  = Pt(6)
+    p.paragraph_format.space_before = Pt(10)
+    p.paragraph_format.space_after  = Pt(3)
     p.paragraph_format.keep_with_next = True
     r_num = p.add_run(f"{num}   ")
-    r_num.font.size = Pt(16)
+    r_num.font.size = Pt(14)
     r_num.bold = True
     r_num.font.color.rgb = BLACK
     set_font(r_num, BODY_FONT)
     r_title = p.add_run(title)
-    r_title.font.size = Pt(16)
+    r_title.font.size = Pt(14)
     r_title.bold = True
     r_title.font.color.rgb = BLACK
     set_font(r_title, BODY_FONT)
@@ -136,16 +136,16 @@ def add_section_heading(doc, num, title):
 def add_subsection_heading(doc, num, title):
     """Subsection like '2.1.1 ...' -- Heading 5 in Word."""
     p = doc.add_paragraph(style=doc.styles["Heading 5"])
-    p.paragraph_format.space_before = Pt(12)
-    p.paragraph_format.space_after  = Pt(4)
+    p.paragraph_format.space_before = Pt(6)
+    p.paragraph_format.space_after  = Pt(2)
     p.paragraph_format.keep_with_next = True
     r_num = p.add_run(f"{num}   ")
-    r_num.font.size = Pt(13)
+    r_num.font.size = Pt(11)
     r_num.bold = True
     r_num.font.color.rgb = BLACK
     set_font(r_num, BODY_FONT)
     r_title = p.add_run(title)
-    r_title.font.size = Pt(13)
+    r_title.font.size = Pt(11)
     r_title.bold = True
     r_title.font.color.rgb = BLACK
     set_font(r_title, BODY_FONT)
