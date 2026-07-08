@@ -1002,23 +1002,18 @@ def chapter_2(doc):
 
     add_subsection_heading(doc, "2.2.1", "Rider survey")
     add_body(doc,
-        "The file delivery_rider_survey.csv contains 182 self-administered "
-        "responses to a 36-item questionnaire covering demographics, lifestyle, "
-        "work pattern, Nordic Musculoskeletal Questionnaire 12-month pain across "
-        "9 body areas, 7-day discomfort in 4 areas, five discomfort-related "
-        "follow-ups, six NASA-TLX workload items (each on a 0-100 scale), and "
-        "six Borg CR10 perceived-exertion items (each on a 0-10 scale). After "
-        "cleaning the file contains 182 rows and 48 columns.")
+        "delivery_rider_survey.csv holds 182 self-administered responses "
+        "to a 36-item questionnaire covering demographics, work pattern, "
+        "NMQ 12-month pain (9 body areas), 7-day discomfort (4 areas), "
+        "five discomfort follow-ups, six NASA-TLX items (0-100), and six "
+        "Borg CR10 items (0-10). After cleaning: 182 rows, 48 columns.")
 
     add_subsection_heading(doc, "2.2.2", "Posture observations")
     add_body(doc,
-        "The file posture_data.xlsx contains 182 ergonomic observation records "
-        "across the workbook's sheets. Each record carries 11 RULA components "
-        "(upper arm, lower arm, wrist, wrist twist, neck position, trunk "
-        "position, legs, muscle A, force A, muscle B, force B), 3 derived RULA "
-        "Table scores, and 8 QEC scores. The observation rows do not carry rider "
-        "identifiers; the pairing to the survey uses the severity-rank merge "
-        "described in section 2.3.")
+        "posture_data.xlsx holds 182 observation records, each carrying "
+        "the 11 RULA components, 3 derived RULA Table scores, and 8 QEC "
+        "scores. The rows lack rider identifiers; pairing to the survey "
+        "uses the severity-rank merge in section 2.3.")
 
     add_section_heading(doc, "2.3", "Data cleaning and feature engineering")
     add_body(doc,
@@ -1034,39 +1029,34 @@ def chapter_2(doc):
         "product-form interactions so tree-based models can pick up "
         "combined effects.")
     add_body(doc,
-        "The posture observations, which lack rider identifiers, are merged "
-        "into the survey via a severity-rank merge: each rider is scored on "
-        "an exposure_severity index (normalised NMQ pain count + fatigue "
-        "score + working hours), riders are ranked by that severity and "
-        "posture rows by RULA Table C, and the two ranked lists are joined "
-        "one-to-one. The methodological caveat is discussed in Chapter 5's "
-        "Limitations section.")
+        "The posture observations are merged into the survey via a "
+        "severity-rank merge: riders are ranked by an exposure_severity "
+        "index (normalised NMQ pain count + fatigue score + hours), "
+        "posture rows by RULA Table C, and the two ranked lists are "
+        "joined one-to-one. Caveats are noted in Chapter 5.")
 
     add_section_heading(doc, "2.4", "Stage 1: Deterministic risk scoring")
     add_body(doc,
         "Phase 3 (03_risk_scoring.ipynb) applies the following rules and writes "
         "risk_profile.csv:")
-    add_bullet(doc, "Force: Borg CR10 action levels applied to force_exertion "
-                    "(0-3 Low, 4-6 Medium, 7-10 High).")
-    add_bullet(doc, "Repetition: deliveries per hour with fixed cuts at 2.5 and "
-                    "3.75. The earlier version used pandas qcut into terciles, "
-                    "which had a boundary degeneracy documented in Chapter 3.")
-    add_bullet(doc, "Duration: continuous riding hours (5 or fewer Low, 6-7 "
-                    "Medium, over 7 High).")
+    add_bullet(doc, "Force: Borg CR10 lifting (0-3 Low, 4-6 Medium, "
+                    "7-10 High).")
+    add_bullet(doc, "Repetition: deliveries per hour, fixed cuts at 2.5 "
+                    "and 3.75.")
+    add_bullet(doc, "Duration: continuous riding hours (<=5 Low, 6-7 "
+                    "Medium, >7 High).")
     add_bullet(doc, "Vibration: vibration_index binned by sample tercile.")
-    add_bullet(doc, "Contact Stress: composite of carrying_contact_rank, "
-                    "work_hours_num, and a small age multiplier, binned by "
-                    "sample tercile.")
-    add_bullet(doc, "Posture: RULA Table C action levels (1-2 Low, 3-4 Medium, "
-                    "5 or higher High). The training data minimum is 3, so the "
-                    "Posture model in practice has no Low class.")
+    add_bullet(doc, "Contact Stress: carrying_contact_rank x "
+                    "work_hours_num x age multiplier, sample tercile.")
+    add_bullet(doc, "Posture: RULA Table C (1-2 Low, 3-4 Medium, >=5 "
+                    "High); training minimum is 3, so Posture has no "
+                    "Low class.")
 
     add_section_heading(doc, "2.5", "Statistical analysis")
     add_body(doc,
-        "Phase 5 (05_stats.ipynb) runs two analyses on the outcome variable "
-        "discomfort (binary: 1 if the rider reported pain in any NMQ 12-month "
-        "area). First, a chi-square test of independence "
-        "(scipy.stats.chi2_contingency) tests whether each risk factor is "
+        "Phase 5 (05_stats.ipynb) runs two analyses on discomfort (binary: "
+        "any NMQ 12-month pain). A chi-square test of independence "
+        "(scipy.stats.chi2_contingency) checks whether each risk factor is "
         "associated with discomfort at p less than 0.05. Second, a multivariable "
         "logistic regression (statsmodels.api.Logit) estimates the effect of "
         "eleven predictors while controlling for the others; results are reported "
@@ -1074,13 +1064,12 @@ def chapter_2(doc):
 
     add_section_heading(doc, "2.6", "Stage 2: Machine learning pipeline")
     add_body(doc,
-        "Phase 6 (06_modeling.ipynb) trains a classifier per target using "
-        "seven candidate algorithms. Each algorithm sits inside an "
-        "imblearn.Pipeline with SMOTE oversampling upstream so the "
-        "resampling only affects training folds. Hyperparameters are tuned "
-        "with GridSearchCV on the macro-F1 score inside 5-fold stratified "
-        "cross-validation, and the best model per target is refit on the "
-        "full sample and saved as outputs/models/best_<factor>.pkl.")
+        "Phase 6 (06_modeling.ipynb) trains a classifier per target from "
+        "seven candidate algorithms.  Each sits inside an imblearn.Pipeline "
+        "with SMOTE upstream so resampling only touches training folds. "
+        "GridSearchCV tunes hyperparameters on macro-F1 inside 5-fold "
+        "stratified CV, and the best model per target is refit on the full "
+        "sample and saved as outputs/models/best_<factor>.pkl.")
 
     add_subsection_heading(doc, "2.6.1", "Logistic Regression")
     add_body(doc,
