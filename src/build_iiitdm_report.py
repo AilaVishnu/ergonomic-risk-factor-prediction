@@ -251,7 +251,7 @@ def add_table(doc, header, rows, header_bg="D9D9D9", widths_cm=None):
     return t
 
 
-def add_figure(doc, path, caption, width_cm=9.5):
+def add_figure(doc, path, caption, width_cm=10.5):
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.paragraph_format.space_before = Pt(4)
@@ -1652,24 +1652,24 @@ def chapter_4(doc):
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_02_assessment_top.png",
         "Figure 4.10: Web app: sample-profile shortcuts and demographic "
-        "section (Q1 to Q17).", width_cm=9.5)
+        "section (Q1 to Q17).")
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_03_assessment_nmq.png",
         "Figure 4.11: Web app: Nordic Musculoskeletal Questionnaire section "
-        "(Q18 to Q24).", width_cm=9.5)
+        "(Q18 to Q24).")
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_04_assessment_nasa_borg.png",
         "Figure 4.12: Web app: NASA-TLX and Borg CR10 sliders (Q25 to Q36).",
-        width_cm=9.5)
+        )
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_05_assessment_rula_qec.png",
         "Figure 4.13: Web app: RULA (11 items) and QEC (8 scores) observation "
-        "sections above the Predict button.", width_cm=9.5)
+        "sections above the Predict button.")
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_06_results.png",
         "Figure 4.14: Web app: predicted risk profile output with colour-coded "
         "level cards, radar chart, tabular result, and per-factor "
-        "recommendations.", width_cm=9.5)
+        "recommendations.")
 
 
 def chapter_5(doc):
