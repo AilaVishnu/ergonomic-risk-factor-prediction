@@ -251,7 +251,7 @@ def add_table(doc, header, rows, header_bg="D9D9D9", widths_cm=None):
     return t
 
 
-def add_figure(doc, path, caption, width_cm=11):
+def add_figure(doc, path, caption, width_cm=9.5):
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.paragraph_format.space_before = Pt(4)
