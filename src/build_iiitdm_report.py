@@ -1591,11 +1591,10 @@ def chapter_4(doc):
 
     add_section_heading(doc, "4.6", "Web application demonstration")
     add_body(doc,
-        "The Streamlit web application is the mentor-facing artefact of the "
-        "project. Figures 4.10 through 4.14 show one full pass through the "
-        "form and the resulting prediction output. The header contains three "
-        "sample-profile shortcuts (Low, Average, High risk) that pre-fill the "
-        "entire form so the mentor can trigger a prediction in one click.")
+        "Figures 4.9 through 4.13 show one full pass through the form and "
+        "the resulting prediction output. Three sample-profile shortcuts "
+        "at the top of the form (Low, Average, High risk) pre-fill every "
+        "field for a one-click demo.")
     add_figure(doc,
         ROOT / "outputs" / "app_screenshots" / "web_02_assessment_top.png",
         "Figure 4.9: Web app: sample-profile shortcuts and demographic "
