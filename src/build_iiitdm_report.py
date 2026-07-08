@@ -58,16 +58,23 @@ def set_font(run, name=BODY_FONT):
 
 def add_line(doc, text="", size=12, bold=False, italic=False, align=None,
              space_before=0, space_after=6, font=BODY_FONT, color=BLACK,
-             style=None):
+             style=None, page_break_before=False):
     """Add a single paragraph.  When `style` is set to a Word heading style
     name ("Heading 1" / "Heading 2" / ...), the paragraph is tagged with
     that style so Word's Navigation Pane, auto-TOC, and PDF outline pick
     it up.  The visual formatting (size / bold / colour) still comes from
     the run so we keep the design consistent regardless of the heading
-    style's defaults."""
+    style's defaults.
+
+    Set page_break_before=True to attach the page break to the paragraph
+    itself instead of adding a separate empty break-paragraph -- avoids
+    stray blank pages when the previous chapter/section content ends
+    near a page boundary."""
     p = doc.add_paragraph()
     if style is not None:
         p.style = doc.styles[style]
+    if page_break_before:
+        p.paragraph_format.page_break_before = True
     p.paragraph_format.space_before = Pt(space_before)
     p.paragraph_format.space_after  = Pt(space_after)
     if align is not None:
@@ -85,16 +92,21 @@ def add_line(doc, text="", size=12, bold=False, italic=False, align=None,
 def add_chapter_heading(doc, chapter_num, title, skip_page_break=False):
     """Chapter heading as a single Heading 2 paragraph 'Chapter N. Title'
     so a STYLEREF field in the running header can pick it up whole.
+
+    Uses paragraph_format.page_break_before instead of an explicit
+    doc.add_page_break() so Word does not have to render a separate
+    'break paragraph' -- that separate paragraph is what was producing
+    the intermittent blank pages between chapters.
+
     Set skip_page_break=True when a section break has just been added
     (which already starts a new page) to avoid an extra blank page."""
-    if not skip_page_break:
-        doc.add_page_break()
-
     heading_text = (f"Chapter {chapter_num}. {title}"
                     if chapter_num != "" else title)
 
     p = doc.add_paragraph(style=doc.styles["Heading 2"])
-    p.paragraph_format.space_before = Pt(36)
+    if not skip_page_break:
+        p.paragraph_format.page_break_before = True
+    p.paragraph_format.space_before = Pt(24)
     p.paragraph_format.space_after  = Pt(28)
     r = p.add_run(heading_text)
     r.font.size = Pt(28)
@@ -509,12 +521,11 @@ def add_certificate(doc):
 
 
 def add_abstract(doc):
-    doc.add_page_break()
     add_line(doc, "Abstract",
              size=28, bold=True, italic=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=36,
-             style="Heading 3")
+             style="Heading 3", page_break_before=True)
 
     add_body(doc,
         "Last-mile quick-commerce delivery riders (Blinkit, Zepto) face prolonged "
@@ -554,12 +565,11 @@ def add_abstract(doc):
 
 
 def add_acknowledgements(doc):
-    doc.add_page_break()
     add_line(doc, "Acknowledgements",
              size=28, bold=True, italic=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=36,
-             style="Heading 3")
+             style="Heading 3", page_break_before=True)
 
     add_body(doc,
         "I would like to express my gratitude to my mentor, " + MENTOR_NAME +
@@ -591,12 +601,11 @@ def add_toc_placeholder(doc):
     are anchored to the LoF entries so they stay in sync with the actual
     layout, and are still refreshable via Word's "Update Field" if the
     user ever inserts an auto-TOC."""
-    doc.add_page_break()
     add_line(doc, "Contents",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24,
-             style="Heading 1")
+             style="Heading 1", page_break_before=True)
 
     # Page anchors below match what Word actually renders (verified by
     # driving Word COM to convert the built docx to PDF and reading the
@@ -693,12 +702,11 @@ def add_toc_placeholder(doc):
 
 
 def add_list_of_figures(doc):
-    doc.add_page_break()
     add_line(doc, "List of Figures",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24,
-             style="Heading 1")
+             style="Heading 1", page_break_before=True)
     # Page anchors are aligned to Chapter 4 sections' actual pages
     # in the rendered Word output (Chapter 4 spans main-body 13-24).
     figures = [
@@ -739,12 +747,11 @@ def add_list_of_figures(doc):
 
 
 def add_list_of_tables(doc):
-    doc.add_page_break()
     add_line(doc, "List of Tables",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24,
-             style="Heading 1")
+             style="Heading 1", page_break_before=True)
     tables = [
         ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "7"),
         ("4.1", "NMQ 12-month pain prevalence per body area.",                                "15"),
@@ -775,12 +782,11 @@ def add_list_of_tables(doc):
 
 
 def add_abbreviations(doc):
-    doc.add_page_break()
     add_line(doc, "Abbreviations",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24,
-             style="Heading 1")
+             style="Heading 1", page_break_before=True)
     abbrevs = [
         ("MSD",       "Musculoskeletal Disorder"),
         ("NMQ",       "Nordic Musculoskeletal Questionnaire"),
@@ -815,12 +821,11 @@ def add_abbreviations(doc):
 
 
 def add_symbols(doc):
-    doc.add_page_break()
     add_line(doc, "Symbols",
              size=28, bold=True,
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24,
-             style="Heading 1")
+             style="Heading 1", page_break_before=True)
     symbols = [
         ("n",   "sample size (n = 182 riders)"),
         ("k",   "number of nearest minority neighbours used by SMOTE"),
@@ -1711,10 +1716,13 @@ def chapter_5(doc):
 def add_bibliography(doc):
     # Bibliography ALSO carries a Heading 2 marker at the top of the
     # first paragraph so the STYLEREF running header switches from the
-    # last chapter's name to 'BIBLIOGRAPHY'.
-    doc.add_page_break()
+    # last chapter's name to 'BIBLIOGRAPHY'.  Uses page_break_before on
+    # the heading paragraph itself instead of a separate page-break
+    # paragraph -- avoids stray blank pages when Chapter 5 ends near
+    # a page boundary.
     p = doc.add_paragraph(style=doc.styles["Heading 2"])
-    p.paragraph_format.space_before = Pt(36)
+    p.paragraph_format.page_break_before = True
+    p.paragraph_format.space_before = Pt(24)
     p.paragraph_format.space_after  = Pt(28)
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r = p.add_run("Bibliography")
