@@ -1693,26 +1693,9 @@ def add_bibliography(doc):
         "in Tamil Nadu: a cross-sectional study. Discover Social Sciences "
         "and Health, 5:14.",
 
-        "Boniardi L, Campo L, Prudenzi S, Fasano L, Natale P, Consonni D, "
-        "Carugno M, Pesatori AC, Fustinoni S (2024). Occupational Safety "
-        "and Health of Riders Working for Digital Food Delivery Platforms "
-        "in the City of Milan, Italy. International Journal of "
-        "Occupational Safety and Health, 14(2), 155-167.",
-
         "Pandit S, Adhikari P (2023). Ergonomics Issues Among Last Mile "
         "Delivery Rides in Jabalpur, India. Springer Ergonomics "
         "Proceedings, 209-215.",
-
-        "Srinivasan R, Reza A, Kumar AKVK (2024). Prevalence of "
-        "musculoskeletal disorders in delivery personnel. International "
-        "Journal of Community Medicine and Public Health, 11(3), "
-        "1102-1108.",
-
-        "Cagayan BJT, Medrana MM, Ocampo AMT (2025-2026). Ergonomic risk "
-        "analysis of food delivery riders using the Rapid Upper Limb "
-        "Assessment [Capstone project proposal]. College of Engineering "
-        "and Computer Studies, Bachelor of Science in Industrial "
-        "Engineering.",
 
         "Daud A, Mohd Basri IS, Ahmad E, Mohd Hairon S, Nordin R, Azali "
         "Azmir N, Md Jalil MAS (2023). Assessing ergonomic risks: REBA "
@@ -1756,9 +1739,6 @@ def add_bibliography(doc):
         "Friedman JH (2001). Greedy function approximation: A gradient "
         "boosting machine. Annals of Statistics, 29(5), 1189-1232.",
 
-        "Wolpert DH (1992). Stacked generalization. Neural Networks, 5(2), "
-        "241-259.",
-
         "Pedregosa F, Varoquaux G, Gramfort A, et al. (2011). Scikit-learn: "
         "Machine Learning in Python. Journal of Machine Learning Research, "
         "12, 2825-2830.",
@@ -1766,10 +1746,6 @@ def add_bibliography(doc):
         "Lemaitre G, Nogueira F, Aridas CK (2017). Imbalanced-learn: A Python "
         "toolbox to tackle the curse of imbalanced datasets in machine "
         "learning. Journal of Machine Learning Research, 18(17), 1-5.",
-
-        "Kohavi R (1995). A study of cross-validation and bootstrap for "
-        "accuracy estimation and model selection. Proceedings of the 14th "
-        "International Joint Conference on Artificial Intelligence, 1137-1145.",
     ]
     for i, ref in enumerate(refs, 1):
         p = doc.add_paragraph()
