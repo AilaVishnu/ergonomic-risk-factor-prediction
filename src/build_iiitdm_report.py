@@ -210,7 +210,7 @@ def add_table(doc, header, rows, header_bg="D9D9D9", widths_cm=None):
         hdr[i].text = ""
         p = hdr[i].paragraphs[0]
         r = p.add_run(h)
-        r.font.size = Pt(10)
+        r.font.size = Pt(9)
         r.bold = True
         set_font(r, BODY_FONT)
         set_cell_bg(hdr[i], header_bg)
@@ -219,8 +219,10 @@ def add_table(doc, header, rows, header_bg="D9D9D9", widths_cm=None):
         for i, txt in enumerate(row):
             cells[i].text = ""
             p = cells[i].paragraphs[0]
+            p.paragraph_format.space_before = Pt(0)
+            p.paragraph_format.space_after  = Pt(0)
             r = p.add_run(str(txt))
-            r.font.size = Pt(10)
+            r.font.size = Pt(9)
             set_font(r, BODY_FONT)
     if widths_cm:
         for row in t.rows:
@@ -266,7 +268,7 @@ def add_figure(doc, path, caption, width_cm=9):
     cap = doc.add_paragraph()
     cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
     cap.paragraph_format.space_before = Pt(0)
-    cap.paragraph_format.space_after  = Pt(6)
+    cap.paragraph_format.space_after  = Pt(3)
     r = cap.add_run(caption)
     r.font.size = Pt(9)
     r.italic = True
