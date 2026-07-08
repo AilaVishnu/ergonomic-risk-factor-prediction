@@ -1655,62 +1655,49 @@ def chapter_5(doc):
 
     add_body(doc,
         "This project designed, implemented, and deployed a per-rider "
-        "ergonomic risk screening pipeline for last-mile quick-commerce delivery workers. The "
-        "pipeline turns a 36-item self-report questionnaire and a 26-column "
-        "RULA-plus-QEC observation record into six standardised risk levels "
-        "spanning the classical ergonomic dimensions of Force, Repetition, "
-        "Posture, Duration, Contact Stress, and Vibration. The five "
-        "survey-derived factors land at 58 to 62 percent accuracy with macro "
-        "AUC between 71 and 76 percent; the Posture model, which uses the "
-        "observation inputs directly, reaches 97 percent accuracy and 98 "
-        "percent macro AUC. The final artefact is a Streamlit web application "
-        "that produces the six risk levels along with per-factor "
-        "recommendations from a single form submission.")
+        "ergonomic risk screening pipeline for last-mile quick-commerce "
+        "delivery workers, turning a 36-item self-report questionnaire and "
+        "a RULA + QEC observation record into six standardised risk levels "
+        "across Force, Repetition, Posture, Duration, Contact Stress, and "
+        "Vibration. The five survey-derived factors land at 58-62 percent "
+        "cross-validation accuracy with macro AUC between 71 and 76 percent; "
+        "the Posture model, which receives the RULA and QEC observation "
+        "inputs directly, reaches 97 percent accuracy and 98 percent AUC. "
+        "Chi-square identifies Posture, Repetition, and Force as the risk "
+        "factors significantly associated with self-reported discomfort, and "
+        "multivariable logistic regression flags age (OR 3.58 per band), "
+        "job duration (OR 2.89), workload score, and fatigue score as the "
+        "strongest individual predictors.")
 
     add_body(doc,
-        "Statistically the two factors most strongly associated with "
-        "self-reported discomfort in this 182-rider sample are Posture and "
-        "Force. Individually, age (OR 3.58 per band), job duration (OR 2.89 "
-        "per band), workload score, and fatigue score are the strongest "
-        "predictors of discomfort under multivariable logistic regression. "
-        "These findings match the intuition that riders in higher age bands "
-        "and longer careers accumulate MSD risk that is amplified by workload "
-        "and fatigue.")
-
-    add_body(doc,
-        "The main limitations of this work are the self-report nature of most "
-        "input variables, the approximate per-rider linkage in the posture "
-        "observations (a severity-rank merge because the observation records "
-        "do not carry rider identifiers), and the small sample size (n = 182) "
-        "that keeps multivariable ML variance visible. Two methodological "
-        "corrections were made and openly documented during the project: the "
-        "Repetition binning was changed from qcut to fixed cuts to remove a "
-        "boundary tie that hid the worst real schedule, and the Duration "
-        "model's feature list was adjusted to remove indirect leakage through "
-        "vibration_index. Both changes cost some raw accuracy but produced "
-        "more meaningful models.")
+        "The main limitations are the self-report nature of most input "
+        "variables, the severity-rank merge used to pair the "
+        "identifier-less posture xlsx with the survey, and the small sample "
+        "(n = 182) that keeps ML variance visible. Two methodological "
+        "corrections were made and openly documented: Repetition binning "
+        "moved from qcut to fixed cuts to remove a boundary tie that hid "
+        "the worst real schedule, and vibration_index was added to the "
+        "Duration exclusion list to remove indirect leakage.")
 
     add_body(doc,
         "Five interventions for a delivery-platform operator follow directly "
-        "from the results, ordered by how many riders they would reach. First, "
-        "cap daily hours (roughly half the sample exceeds 8 hours per day). "
-        "Second, invest in posture-focused equipment and training (84 percent "
-        "of observed postures are at RULA action level 5 or above). Third, "
-        "encourage bike-storage-box carrying over handheld bags. Fourth, "
-        "introduce age-targeted MSD screening for riders in the 36-and-above "
-        "cohort. Fifth, tune workload management at the platform level to "
-        "reduce the NASA-TLX component of the workload score, which is a "
-        "significant discomfort predictor at p = 0.0005.")
+        "from the results: (i) cap daily hours (49 percent of the sample "
+        "exceeds 8 hours per day); (ii) invest in posture-focused equipment "
+        "and training (84 percent of observed postures at RULA action level "
+        "5 or above); (iii) encourage bike-storage-box carrying over "
+        "handheld bags; (iv) age-targeted MSD screening for the "
+        "36-and-above cohort; and (v) platform-level workload management to "
+        "reduce the NASA-TLX component of the workload score, a significant "
+        "discomfort predictor at p = 0.0005.")
 
     add_body(doc,
-        "Future extensions of the work include a longitudinal follow-up study "
-        "that would let a causal claim replace the current cross-sectional "
-        "association; per-rider RULA and QEC observations to eliminate the "
-        "severity-rank merge; the addition of wearable accelerometer data as "
-        "a Vibration proxy replacement; and a periodic re-training schedule "
-        "that lets the platform update its screening tool as the workforce "
-        "changes. The two-stage design leaves room for each of these "
-        "extensions without disturbing the audited Stage-1 labels.")
+        "Future extensions include a longitudinal follow-up so a causal "
+        "claim can replace the cross-sectional association, per-rider RULA "
+        "and QEC observations to eliminate the severity-rank merge, "
+        "wearable accelerometer data as a Vibration proxy, and a periodic "
+        "re-training schedule so the screening tool tracks a changing "
+        "workforce. The two-stage design leaves room for each of these "
+        "without disturbing the audited Stage-1 labels.")
 
 
 def add_bibliography(doc):
