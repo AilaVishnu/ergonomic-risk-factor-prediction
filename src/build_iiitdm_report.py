@@ -118,16 +118,16 @@ def add_chapter_heading(doc, chapter_num, title, skip_page_break=False):
 def add_section_heading(doc, num, title):
     """Main section like '2.1 Two-stage pipeline' -- Heading 4 in Word."""
     p = doc.add_paragraph(style=doc.styles["Heading 4"])
-    p.paragraph_format.space_before = Pt(10)
-    p.paragraph_format.space_after  = Pt(3)
+    p.paragraph_format.space_before = Pt(14)
+    p.paragraph_format.space_after  = Pt(5)
     p.paragraph_format.keep_with_next = True
     r_num = p.add_run(f"{num}   ")
-    r_num.font.size = Pt(14)
+    r_num.font.size = Pt(15)
     r_num.bold = True
     r_num.font.color.rgb = BLACK
     set_font(r_num, BODY_FONT)
     r_title = p.add_run(title)
-    r_title.font.size = Pt(14)
+    r_title.font.size = Pt(15)
     r_title.bold = True
     r_title.font.color.rgb = BLACK
     set_font(r_title, BODY_FONT)
@@ -136,16 +136,16 @@ def add_section_heading(doc, num, title):
 def add_subsection_heading(doc, num, title):
     """Subsection like '2.1.1 ...' -- Heading 5 in Word."""
     p = doc.add_paragraph(style=doc.styles["Heading 5"])
-    p.paragraph_format.space_before = Pt(6)
-    p.paragraph_format.space_after  = Pt(2)
+    p.paragraph_format.space_before = Pt(9)
+    p.paragraph_format.space_after  = Pt(3)
     p.paragraph_format.keep_with_next = True
     r_num = p.add_run(f"{num}   ")
-    r_num.font.size = Pt(11)
+    r_num.font.size = Pt(12)
     r_num.bold = True
     r_num.font.color.rgb = BLACK
     set_font(r_num, BODY_FONT)
     r_title = p.add_run(title)
-    r_title.font.size = Pt(11)
+    r_title.font.size = Pt(12)
     r_title.bold = True
     r_title.font.color.rgb = BLACK
     set_font(r_title, BODY_FONT)
@@ -209,8 +209,10 @@ def add_table(doc, header, rows, header_bg="D9D9D9", widths_cm=None):
     for i, h in enumerate(header):
         hdr[i].text = ""
         p = hdr[i].paragraphs[0]
+        p.paragraph_format.space_before = Pt(1)
+        p.paragraph_format.space_after  = Pt(1)
         r = p.add_run(h)
-        r.font.size = Pt(9)
+        r.font.size = Pt(10)
         r.bold = True
         set_font(r, BODY_FONT)
         set_cell_bg(hdr[i], header_bg)
@@ -219,10 +221,10 @@ def add_table(doc, header, rows, header_bg="D9D9D9", widths_cm=None):
         for i, txt in enumerate(row):
             cells[i].text = ""
             p = cells[i].paragraphs[0]
-            p.paragraph_format.space_before = Pt(0)
-            p.paragraph_format.space_after  = Pt(0)
+            p.paragraph_format.space_before = Pt(1)
+            p.paragraph_format.space_after  = Pt(1)
             r = p.add_run(str(txt))
-            r.font.size = Pt(9)
+            r.font.size = Pt(10)
             set_font(r, BODY_FONT)
     if widths_cm:
         for row in t.rows:
@@ -253,11 +255,11 @@ def add_table(doc, header, rows, header_bg="D9D9D9", widths_cm=None):
     return t
 
 
-def add_figure(doc, path, caption, width_cm=9):
+def add_figure(doc, path, caption, width_cm=10):
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.paragraph_format.space_before = Pt(4)
-    p.paragraph_format.space_after  = Pt(2)
+    p.paragraph_format.space_before = Pt(6)
+    p.paragraph_format.space_after  = Pt(3)
     if Path(path).exists():
         run = p.add_run()
         run.add_picture(str(path), width=Cm(width_cm))
@@ -267,8 +269,8 @@ def add_figure(doc, path, caption, width_cm=9):
 
     cap = doc.add_paragraph()
     cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    cap.paragraph_format.space_before = Pt(0)
-    cap.paragraph_format.space_after  = Pt(3)
+    cap.paragraph_format.space_before = Pt(1)
+    cap.paragraph_format.space_after  = Pt(6)
     r = cap.add_run(caption)
     r.font.size = Pt(9)
     r.italic = True
