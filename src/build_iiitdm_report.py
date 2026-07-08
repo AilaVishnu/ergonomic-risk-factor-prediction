@@ -657,42 +657,42 @@ def add_toc_placeholder(doc):
         ("        2.2.2   Posture observations",                   "4"),
         ("    2.3   Data cleaning and feature engineering",        "4"),
         ("    2.4   Stage 1: Deterministic risk scoring",          "4"),
-        ("    2.5   Statistical analysis",                         "5"),
-        ("    2.6   Stage 2: Machine learning pipeline",           "5"),
-        ("        2.6.1   Logistic Regression",                    "5"),
-        ("        2.6.2   Decision Tree",                          "5"),
+        ("    2.5   Statistical analysis",                         "4"),
+        ("    2.6   Stage 2: Machine learning pipeline",           "4"),
+        ("        2.6.1   Logistic Regression",                    "4"),
+        ("        2.6.2   Decision Tree",                          "4"),
         ("        2.6.3   Random Forest",                          "5"),
         ("        2.6.4   Extra Trees",                            "5"),
-        ("        2.6.5   Histogram Gradient Boosting",            "6"),
-        ("        2.6.6   XGBoost",                                "6"),
-        ("        2.6.7   Stacking Classifier",                    "6"),
-        ("        2.6.8   SMOTE and cross-validation",             "6"),
-        ("        2.6.9   Per-target feature exclusions",          "6"),
-        ("    2.7   Evaluation",                                   "6"),
+        ("        2.6.5   Histogram Gradient Boosting",            "5"),
+        ("        2.6.6   XGBoost",                                "5"),
+        ("        2.6.7   Stacking Classifier",                    "5"),
+        ("        2.6.8   SMOTE and cross-validation",             "5"),
+        ("        2.6.9   Per-target feature exclusions",          "5"),
+        ("    2.7   Evaluation",                                   "5"),
 
-        ("3   WORK DONE",                                          "7"),
-        ("    3.1   Notebook pipeline",                            "7"),
-        ("    3.2   Instrument design and preparation",            "8"),
-        ("    3.3   Data collection execution",                    "8"),
-        ("    3.4   Data cleaning, encoding, and integration",     "9"),
-        ("    3.5   Statistical analysis and model training runs", "10"),
-        ("    3.6   Web application development and deployment",   "10"),
-        ("    3.7   Iterations and fixes",                         "11"),
-        ("        3.7.1   Repetition binning correction",          "11"),
-        ("        3.7.2   Duration leakage correction",            "11"),
-        ("        3.7.3   Posture model with RULA and QEC inputs", "11"),
+        ("3   WORK DONE",                                          "6"),
+        ("    3.1   Notebook pipeline",                            "6"),
+        ("    3.2   Instrument design and preparation",            "7"),
+        ("    3.3   Data collection execution",                    "7"),
+        ("    3.4   Data cleaning, encoding, and integration",     "8"),
+        ("    3.5   Statistical analysis and model training runs", "9"),
+        ("    3.6   Web application development and deployment",   "9"),
+        ("    3.7   Iterations and fixes",                         "10"),
+        ("        3.7.1   Repetition binning correction",          "10"),
+        ("        3.7.2   Duration leakage correction",            "10"),
+        ("        3.7.3   Posture model with RULA and QEC inputs", "10"),
 
-        ("4   RESULTS AND DISCUSSION",                             "12"),
-        ("    4.1   Sample profile",                               "12"),
-        ("    4.2   NMQ pain prevalence and statistical predictors","14"),
-        ("    4.3   Stage-1 risk distribution",                    "16"),
-        ("    4.4   Stage-2 model performance",                    "18"),
-        ("    4.5   Per-class metrics and feature importance",     "20"),
-        ("    4.6   Web application demonstration",                "21"),
+        ("4   RESULTS AND DISCUSSION",                             "11"),
+        ("    4.1   Sample profile",                               "11"),
+        ("    4.2   NMQ pain prevalence and statistical predictors","13"),
+        ("    4.3   Stage-1 risk distribution",                    "15"),
+        ("    4.4   Stage-2 model performance",                    "17"),
+        ("    4.5   Per-class metrics and feature importance",     "19"),
+        ("    4.6   Web application demonstration",                "20"),
 
-        ("5   CONCLUSIONS AND EXTENSIONS",                         "24"),
+        ("5   CONCLUSIONS AND EXTENSIONS",                         "23"),
 
-        ("BIBLIOGRAPHY",                                           "26"),
+        ("BIBLIOGRAPHY",                                           "25"),
     ]
 
     # A row is a "chapter row" (bold) if the label starts at column 0
@@ -964,9 +964,7 @@ def chapter_2(doc):
 
     add_figure(doc, ROOT / "outputs" / "figures" / "methodology_flowchart.png",
                "Figure 2.1: Pipeline overview from raw inputs to interactive "
-               "prediction. Rider survey and posture observations are cleaned, "
-               "engineered, then labelled by the Stage-1 rules; Stage 2 learns "
-               "the labels from the profile.")
+               "prediction.")
 
     add_section_heading(doc, "2.2", "Study design and data sources")
 
@@ -1083,81 +1081,68 @@ def chapter_2(doc):
 
     add_subsection_heading(doc, "2.6.1", "Logistic Regression")
     add_body(doc,
-        "Regularised linear classifier used as the baseline. Runs with L2 "
-        "penalty and class_weight='balanced' so the minority Low / Medium "
-        "class does not get ignored on imbalanced targets. Serves as a "
-        "floor: any tree-based method that fails to beat Logistic "
-        "Regression on a factor is either overfitting or getting nothing "
-        "from feature interactions.")
+        "Regularised linear classifier used as the baseline (L2 penalty, "
+        "class_weight balanced).  Any tree-based method that fails to beat "
+        "it on a factor is either overfitting or getting nothing from "
+        "feature interactions.")
 
     add_subsection_heading(doc, "2.6.2", "Decision Tree")
     add_body(doc,
-        "Single CART decision tree with tuned max_depth (grid 3 to 10) "
-        "and min_samples_leaf (grid 2 to 10). Included to establish the "
-        "value added by ensembling; not competitive on its own for any "
-        "of the six targets.")
+        "Single CART tree with max_depth (3-10) and min_samples_leaf "
+        "(2-10) tuned via grid search.  Included as the ensembling "
+        "floor; not competitive on its own for any of the six targets.")
 
     add_subsection_heading(doc, "2.6.3", "Random Forest")
     add_body(doc,
-        "Bagged ensemble of 300 to 500 trees with bootstrap sampling and "
-        "sqrt(p) features per split. Its low-variance predictions and "
-        "graceful handling of mixed feature types (encoded categoricals "
-        "plus continuous scores) made it the winning model on three of "
-        "the six targets: Repetition, Duration, and Contact Stress.")
+        "Bagged ensemble of 300-500 trees with bootstrap sampling and "
+        "sqrt(p) features per split.  Low-variance predictions and mixed "
+        "feature-type handling made it the winner on Repetition, "
+        "Duration, and Contact Stress.")
 
     add_subsection_heading(doc, "2.6.4", "Extra Trees")
     add_body(doc,
-        "Extremely randomised trees: like Random Forest but with fully "
-        "random splits at every node (no split-quality optimisation on "
-        "features). The extra randomisation trades a small drop in "
-        "individual-tree accuracy for lower between-tree correlation, "
-        "which helped it win on Vibration.")
+        "Like Random Forest but with fully random splits per node.  The "
+        "extra randomisation lowers between-tree correlation and helped "
+        "it win on Vibration.")
 
     add_subsection_heading(doc, "2.6.5", "Histogram Gradient Boosting")
     add_body(doc,
-        "Sequential ensemble that fits new trees to the residuals of "
-        "the current model, using histogram binning of the input features "
-        "for training speed. Won on Force and Posture, the two targets "
-        "where the training signal is either strongest (Posture, thanks "
-        "to the RULA and QEC observation features) or most nonlinear "
-        "(Force, with the Borg CR10 cutoffs).")
+        "Sequential residual-fit ensemble with histogram-binned features "
+        "for training speed.  Won on Force (Borg CR10 cutoffs are "
+        "nonlinear) and Posture (strongest signal from RULA + QEC "
+        "features).")
 
     add_subsection_heading(doc, "2.6.6", "XGBoost")
     add_body(doc,
-        "Gradient-boosted trees with L1 and L2 regularisation on the "
-        "leaf weights and column subsampling per tree. Placed second on "
-        "several factors but did not win any; the tuned Random Forest "
-        "and HistGBM absorbed the same signal at the default search "
+        "Gradient-boosted trees with L1 + L2 regularisation on the leaf "
+        "weights and per-tree column subsampling.  Placed second on "
+        "several targets but did not win any at the default search "
         "budget.")
 
     add_subsection_heading(doc, "2.6.7", "Stacking Classifier")
     add_body(doc,
-        "Meta-learner that takes the out-of-fold predictions of the "
-        "Random Forest, Extra Trees, HistGBM, and XGBoost base learners "
-        "as inputs and fits a Logistic Regression on top. Failed to "
-        "beat the strongest base learner on any factor because the four "
-        "base learners largely agreed with each other; stacking helps "
-        "when base learners disagree, and here they did not.")
+        "Meta-learner taking the out-of-fold predictions of Random "
+        "Forest, Extra Trees, HistGBM, and XGBoost as inputs and "
+        "fitting a Logistic Regression on top.  Failed to beat the "
+        "strongest base learner because the four base learners largely "
+        "agreed.")
 
     add_subsection_heading(doc, "2.6.8", "SMOTE and cross-validation")
     add_body(doc,
-        "SMOTE (Synthetic Minority Over-sampling Technique) synthesises "
-        "new minority-class samples along the segments joining a "
-        "minority point to its k nearest minority neighbours. Placing it "
-        "inside imblearn.Pipeline ensures the synthesis runs only on "
-        "training folds during cross-validation, so validation-fold "
-        "accuracy is never inflated by peeking at test-fold neighbours. "
-        "k_neighbors is set per target so it never exceeds the minority "
-        "training-fold count. GridSearchCV picks the best hyperparameters "
-        "per algorithm-target pair on macro-F1 (StratifiedKFold with "
-        "shuffle=True, random_state=42).")
+        "SMOTE synthesises new minority-class samples along segments "
+        "between k nearest minority neighbours.  Wrapping it in "
+        "imblearn.Pipeline keeps the synthesis inside training folds "
+        "only, so validation-fold accuracy is never inflated.  "
+        "k_neighbors is set per target below the minority training-fold "
+        "count; GridSearchCV picks hyperparameters on macro-F1 with "
+        "StratifiedKFold(5, shuffle=True, random_state=42).")
 
     add_subsection_heading(doc, "2.6.9", "Per-target feature exclusions")
     add_body(doc,
         "Each target excludes the survey inputs that directly define its "
-        "Stage-1 label; otherwise the model would just memorise the rule "
-        "(label leakage). The Posture target also receives the 11 RULA "
-        "components and 8 QEC scores as extra features, giving 63 total.")
+        "Stage-1 label (otherwise the model would memorise the rule).  "
+        "Posture additionally receives the 11 RULA components and 8 QEC "
+        "scores, giving 63 total features.")
     add_table(doc,
               header=["Target", "Excluded features", "Final feature count"],
               rows=[
@@ -1176,13 +1161,12 @@ def chapter_2(doc):
 
     add_section_heading(doc, "2.7", "Evaluation")
     add_body(doc,
-        "Phase 7 (07_evaluation.ipynb) uses cross_val_predict to produce "
-        "out-of-fold predictions for every rider. The evaluation outputs are: "
-        "per-class precision, recall, F1, and support from "
-        "classification_report; confusion matrices per target; one-vs-rest ROC "
-        "curves and per-class AUC (macro AUC is reported as the unweighted "
-        "mean); and feature importance (feature_importances_ for tree models, "
-        "abs(coef_) for Logistic Regression).")
+        "Phase 7 (07_evaluation.ipynb) uses cross_val_predict for "
+        "out-of-fold predictions and writes per-class precision / recall "
+        "/ F1 / support, confusion matrices, one-vs-rest ROC curves with "
+        "per-class AUC (macro AUC is the unweighted mean), and feature "
+        "importance (feature_importances_ for tree models, abs(coef_) "
+        "for Logistic Regression).")
 
 
 def chapter_3(doc):
