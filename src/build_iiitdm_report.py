@@ -226,6 +226,27 @@ def add_table(doc, header, rows, header_bg="D9D9D9", widths_cm=None):
         for row in t.rows:
             for i, w in enumerate(widths_cm):
                 row.cells[i].width = Cm(w)
+
+    # Keep the entire table together on one page.  Word only respects
+    # this if EVERY row (except the last) is tagged both cantSplit
+    # (row can't break mid-cell) AND keep-with-next (row stays with
+    # the following row).  This is what stops tables like 4.3 from
+    # being cut in half at a page break.
+    trs = t.rows
+    for idx, row in enumerate(trs):
+        trPr = row._tr.get_or_add_trPr()
+        # cantSplit -- individual row won't split across pages
+        cant = OxmlElement("w:cantSplit")
+        trPr.append(cant)
+        # keep with next -- row won't be separated from the following row
+        if idx < len(trs) - 1:
+            for r_p in row.cells[0].paragraphs:
+                r_p.paragraph_format.keep_with_next = True
+    # Also mark the last row's paragraph keep_with_next so the caption
+    # add_line() that follows stays with the table too.
+    for r_p in trs[-1].cells[0].paragraphs:
+        r_p.paragraph_format.keep_with_next = True
+
     add_line(doc, space_before=0, space_after=6)
     return t
 
