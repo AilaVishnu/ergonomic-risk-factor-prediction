@@ -1708,6 +1708,17 @@ def add_bibliography(doc):
         "Journal of Community Medicine and Public Health, 11(3), "
         "1102-1108.",
 
+        "Cagayan BJT, Medrana MM, Ocampo AMT (2025-2026). Ergonomic risk "
+        "analysis of food delivery riders using the Rapid Upper Limb "
+        "Assessment [Capstone project proposal]. College of Engineering "
+        "and Computer Studies, Bachelor of Science in Industrial "
+        "Engineering.",
+
+        "Daud A, Mohd Basri IS, Ahmad E, Mohd Hairon S, Nordin R, Azali "
+        "Azmir N, Md Jalil MAS (2023). Assessing ergonomic risks: REBA "
+        "analysis of food delivery riders in Eastern Peninsular Malaysia. "
+        "Industrial Health, 61(4), 282-291.",
+
         "McAtamney L, Corlett EN (1993). RULA: a survey method for the "
         "investigation of work-related upper limb disorders. Applied "
         "Ergonomics, 24(2), 91-99.",
