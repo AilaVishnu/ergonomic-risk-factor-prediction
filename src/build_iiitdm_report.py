@@ -786,8 +786,7 @@ def add_list_of_tables(doc):
         ("4.4", "Stage-1 risk band counts per factor.",                                        "16"),
         ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "18"),
         ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "19"),
-        ("4.6", "Per-class precision, recall, F1, and support.",                               "19"),
-        ("4.7", "Top 5 most important features per factor.",                                   "20"),
+        ("4.7", "Per-class precision, recall, F1, and support.",                               "19"),
         ("4.8", "Winning hyperparameters per target after GridSearchCV.",                      "20"),
     ]
     for num, cap, page in tables:
@@ -1573,20 +1572,6 @@ def chapter_4(doc):
     add_figure(doc, ROOT / "outputs" / "figures" / "feature_importance.png",
                "Figure 4.8: Top 10 features by importance for the best model "
                "per factor.")
-    add_table(doc,
-              header=["Factor", "Rank 1", "Rank 2", "Rank 3", "Rank 4", "Rank 5"],
-              rows=[
-                  ["Repetition",     "income_ord",     "vibration_index",    "fatigue_score",  "workload_x_fatigue", "out_riding_worsens"],
-                  ["Duration",       "deliveries_num", "deliv_x_days",       "income_ord",     "fatigue_x_jobdur",   "rest_break_num"],
-                  ["Vibration",      "deliveries_num", "income_ord",         "deliv_x_days",   "rest_break_num",     "workload_score"],
-                  ["Contact Stress", "vibration_index","workload_x_fatigue", "fatigue_score",  "workload_x_age",     "deliv_x_days"],
-              ],
-              widths_cm=[3.0, 2.8, 3.0, 2.8, 3.0, 3.0])
-    add_line(doc, "Table 4.8: Top 5 most important features per factor. Force "
-                  "and Posture are omitted because HistGradientBoosting does "
-                  "not expose split-based importances directly.",
-             size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_after=6)
 
     add_table(doc,
               header=["Factor", "Best model", "Hyperparameters", "SMOTE k"],
@@ -1599,7 +1584,7 @@ def chapter_4(doc):
                   ["Posture",        "HistGBM",      "max_depth=5, learning_rate=0.05",               "5"],
               ],
               widths_cm=[3.2, 2.8, 6.0, 2.0])
-    add_line(doc, "Table 4.9: Winning hyperparameters per target after "
+    add_line(doc, "Table 4.8: Winning hyperparameters per target after "
                   "GridSearchCV.",
              size=9, italic=True, align=WD_ALIGN_PARAGRAPH.CENTER,
              space_after=6)
