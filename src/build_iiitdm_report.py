@@ -733,19 +733,20 @@ def add_list_of_figures(doc):
              align=WD_ALIGN_PARAGRAPH.CENTER,
              space_before=24, space_after=24,
              style="Heading 1", page_break_before=True)
-    # Page anchors are aligned to Chapter 4 sections' actual pages
-    # in the rendered Word output (Chapter 4 spans main-body 13-24).
+    # Page anchors aligned to the TOC section pages: Chapter 4 sits at
+    # main-body pages 11-21.  Each figure lands in the section it belongs
+    # to (see the add_figure calls in chapter_4).
     figures = [
         ("2.1",  "Pipeline overview: raw inputs to interactive prediction.",                  "3"),
-        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "12"),
+        ("4.1",  "Sample profile: age, platform, vehicle, and carrying mode.",                "11"),
         ("4.2",  "NMQ 12-month pain prevalence per body area.",                                "13"),
         ("4.3",  "Discomfort prevalence broken down by demographic group.",                    "14"),
         ("4.4",  "Discomfort prevalence within each Low / Medium / High band.",                "15"),
-        ("4.5",  "Pearson correlation matrix across the numeric feature pool.",                "15"),
-        ("4.6",  "Confusion matrices for the best model per factor.",                          "16"),
-        ("4.7",  "ROC curves (one-vs-rest) for the best model per factor.",                    "17"),
-        ("4.8",  "Top 10 features by importance for the best model per factor.",               "18"),
-        ("4.9",  "Web app: sample-profile shortcuts and demographic section.",                 "19"),
+        ("4.5",  "Pearson correlation matrix across the numeric feature pool.",                "16"),
+        ("4.6",  "Confusion matrices for the best model per factor.",                          "19"),
+        ("4.7",  "ROC curves (one-vs-rest) for the best model per factor.",                    "19"),
+        ("4.8",  "Top 10 features by importance for the best model per factor.",               "20"),
+        ("4.9",  "Web app: sample-profile shortcuts and demographic section.",                 "20"),
         ("4.10", "Web app: Nordic Musculoskeletal Questionnaire section.",                     "20"),
         ("4.11", "Web app: NASA-TLX and Borg CR10 sliders.",                                   "20"),
         ("4.12", "Web app: RULA and QEC observation sections.",                                "21"),
@@ -778,13 +779,13 @@ def add_list_of_tables(doc):
              space_before=24, space_after=24,
              style="Heading 1", page_break_before=True)
     tables = [
-        ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "6"),
-        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "14"),
-        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "14"),
+        ("2.1", "Per-target feature exclusions to prevent label leakage.",                    "5"),
+        ("4.1", "NMQ 12-month pain prevalence per body area.",                                "13"),
+        ("4.2", "Chi-square test: risk factor vs self-reported discomfort.",                  "13"),
         ("4.3", "Significant predictors of discomfort from multivariable "
-                "logistic regression.",                                                        "15"),
-        ("4.4", "Stage-1 risk band counts per factor.",                                        "16"),
-        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "18"),
+                "logistic regression.",                                                        "14"),
+        ("4.4", "Stage-1 risk band counts per factor.",                                        "15"),
+        ("4.5", "Best Stage-2 model per risk factor: 5-fold stratified CV.",                   "17"),
         ("4.6", "Per-class ROC AUC (one-vs-rest) for the best model per factor.",              "19"),
         ("4.7", "Per-class precision, recall, F1, and support.",                               "19"),
         ("4.8", "Winning hyperparameters per target after GridSearchCV.",                      "20"),
