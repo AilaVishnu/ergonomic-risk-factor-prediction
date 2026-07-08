@@ -1687,6 +1687,27 @@ def add_bibliography(doc):
     r.font.color.rgb = BLACK
     set_font(r, BODY_FONT)
     refs = [
+        "Benson TM, Sathiyarajeswaran NS, Radhakrishnan R, Gafoor AA, "
+        "Krupalakshme M, Samal J (2025). Factors and prevalence of "
+        "musculoskeletal pain among the app-based food delivery riders "
+        "in Tamil Nadu: a cross-sectional study. Discover Social Sciences "
+        "and Health, 5:14.",
+
+        "Boniardi L, Campo L, Prudenzi S, Fasano L, Natale P, Consonni D, "
+        "Carugno M, Pesatori AC, Fustinoni S (2024). Occupational Safety "
+        "and Health of Riders Working for Digital Food Delivery Platforms "
+        "in the City of Milan, Italy. International Journal of "
+        "Occupational Safety and Health, 14(2), 155-167.",
+
+        "Pandit S, Adhikari P (2023). Ergonomics Issues Among Last Mile "
+        "Delivery Rides in Jabalpur, India. Springer Ergonomics "
+        "Proceedings, 209-215.",
+
+        "Srinivasan R, Reza A, Kumar AKVK (2024). Prevalence of "
+        "musculoskeletal disorders in delivery personnel. International "
+        "Journal of Community Medicine and Public Health, 11(3), "
+        "1102-1108.",
+
         "McAtamney L, Corlett EN (1993). RULA: a survey method for the "
         "investigation of work-related upper limb disorders. Applied "
         "Ergonomics, 24(2), 91-99.",
@@ -1738,9 +1759,6 @@ def add_bibliography(doc):
         "Kohavi R (1995). A study of cross-validation and bootstrap for "
         "accuracy estimation and model selection. Proceedings of the 14th "
         "International Joint Conference on Artificial Intelligence, 1137-1145.",
-
-        "Cortes C, Vapnik V (1995). Support-vector networks. Machine "
-        "Learning, 20(3), 273-297.",
     ]
     for i, ref in enumerate(refs, 1):
         p = doc.add_paragraph()
