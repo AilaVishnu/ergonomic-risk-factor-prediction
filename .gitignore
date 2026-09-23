@@ -44,6 +44,7 @@ finalize.ipynb
 # Workflow / diagnostic scratch dirs
 sandbox/
 tmp_diag/
+scratchpad/
 
 # Local IDE / editor settings
 .claude/
